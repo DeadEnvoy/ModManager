@@ -2,9 +2,8 @@ require "ISUI/ISPanelJoypad"
 require "OptionScreens/ModSelector/ModSelector"
 local MLOS_sorting = require('OptionScreens/ModSelector/MLOS_sorting')
 
-local FONT_HGT_TITLE = getTextManager():getFontHeight(UIFont.Title)
-local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
+local FONT_HGT_LARGE = getTextManager():getFontHeight(UIFont.Large)
 local UI_BORDER_SPACING = 10
 local BUTTON_HGT = FONT_HGT_SMALL + 6
 local JOYPAD_TEX_SIZE = 32
@@ -19,7 +18,7 @@ function ISButton:enableBlueColor()
 end
 
 function ModSelector:create()
-    local listY = UI_BORDER_SPACING*2 + math.max(FONT_HGT_TITLE, BUTTON_HGT) + 1
+    local listY = UI_BORDER_SPACING*2 + math.max(FONT_HGT_LARGE, BUTTON_HGT) + 1
     local listHgt = self.height - listY - BUTTON_HGT - UI_BORDER_SPACING*2 - 1
     self.modListPanel = ModSelector.ModListPanel:new(UI_BORDER_SPACING+1, listY, self.width/2-UI_BORDER_SPACING, listHgt, self.model)
     self.modListPanel:initialise()

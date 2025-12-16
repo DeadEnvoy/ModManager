@@ -96,6 +96,7 @@ function ModListPanel:createChildren()
     self.searchEntry.font = UIFont.Small
     self.searchEntry.onTextChange = function() self:updateView() end
     self.searchEntry.setText = ModListPanel.setText
+    self.searchEntry:setClearButton(true)
     self.searchEntry:initialise()
     self.searchEntry:instantiate()
     self:addChild(self.searchEntry)
