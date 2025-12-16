@@ -25,27 +25,22 @@ function MainOptions:addModOptionsPanel() end
 -- CONSTANTS AND CONFIGURATION
 -- ==============================================================================
 
-local ModOptionsConstants = {
-    FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small),
-    FONT_HGT_TITLE = getTextManager():getFontFromEnum(UIFont.Title):getLineHeight(),
-    FONT_HGT_MEDIUM = getTextManager():getFontFromEnum(UIFont.Medium):getLineHeight(),
-    UI_BORDER_SPACING = 10,
-    JOYPAD_TEX_SIZE = 32,
-    
-    BUTTON_HGT = nil, -- Calculated below
-    ENTRY_HGT = nil,  -- Calculated below
-    CONTROL_WIDTH = 150 + ((getCore():getOptionFontSizeReal() - 1) * 50),
-    
-    SORT_BY_NAME = 1,
-    SORT_BY_DATE = 2,
-    
-    DEFAULT_COLOR = { r = 1, g = 1, b = 1, a = 1 },
-    SEARCH_HIGHLIGHT_COLOR = { r = 0, g = 0.9, b = 0 },
-    NORMAL_TEXT_COLOR = { r = 0.9, g = 0.9, b = 0.9 }
-}
+local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
+local FONT_HGT_MEDIUM = getTextManager():getFontFromEnum(UIFont.Medium):getLineHeight()
+local FONT_HGT_LARGE = getTextManager():getFontHeight(UIFont.Large)
+local UI_BORDER_SPACING = 10
+local JOYPAD_TEX_SIZE = 32
 
-ModOptionsConstants.BUTTON_HGT = ModOptionsConstants.FONT_HGT_SMALL + 6
-ModOptionsConstants.ENTRY_HGT = ModOptionsConstants.FONT_HGT_MEDIUM + 6
+local BUTTON_HGT = getTextManager():getFontHeight(UIFont.Small) + 6
+local ENTRY_HGT = getTextManager():getFontFromEnum(UIFont.Medium):getLineHeight() + 6
+local CONTROL_WIDTH = 150 + ((getCore():getOptionFontSizeReal() - 1) * 50)
+
+local SORT_BY_NAME = 1
+local SORT_BY_DATE = 2
+
+local DEFAULT_COLOR = { r = 1, g = 1, b = 1, a = 1 }
+local SEARCH_HIGHLIGHT_COLOR = { r = 0, g = 0.9, b = 0 }
+local NORMAL_TEXT_COLOR = { r = 0.9, g = 0.9, b = 0.9 }
 
 -- ==============================================================================
 -- UTILITY FUNCTIONS MODULE
@@ -340,8 +335,6 @@ end
 local ModOptionsScreenListBox = ISScrollingListBox:derive("ModOptionsScreenListBox")
 
 function ModOptionsScreenListBox:doDrawItem(y, item, alt)
-    local constants = ModOptionsConstants
-    
     self:drawRectBorder(0, y, self:getWidth(), self.itemheight - 1, 0.5, 
         self.borderColor.r, self.borderColor.g, self.borderColor.b)
     
@@ -351,12 +344,12 @@ function ModOptionsScreenListBox:doDrawItem(y, item, alt)
         self:drawRect(1, y + 1, self:getWidth() - 2, self.itemheight - 4, 0.95, 0.05, 0.05, 0.05)
     end
     
-    local dx = constants.UI_BORDER_SPACING
+    local dx = UI_BORDER_SPACING
     local dy = (self.itemheight - getTextManager():getFontFromEnum(self.font):getLineHeight()) / 2
     
-    local r, g, b = constants.NORMAL_TEXT_COLOR.r, constants.NORMAL_TEXT_COLOR.g, constants.NORMAL_TEXT_COLOR.b
+    local r, g, b = NORMAL_TEXT_COLOR.r, NORMAL_TEXT_COLOR.g, NORMAL_TEXT_COLOR.b
     if item.searchFound then
-        r, g, b = constants.SEARCH_HIGHLIGHT_COLOR.r, constants.SEARCH_HIGHLIGHT_COLOR.g, constants.SEARCH_HIGHLIGHT_COLOR.b
+        r, g, b = SEARCH_HIGHLIGHT_COLOR.r, SEARCH_HIGHLIGHT_COLOR.g, SEARCH_HIGHLIGHT_COLOR.b
     end
     
     self:drawText(item.text, dx, y + dy, r, g, b, 0.9, self.font)
@@ -525,7 +518,7 @@ function ModOptionsScreen:sortAndRefillListbox()
         end
     end
     
-    if self.sortCombo and self.sortCombo.selected == ModOptionsConstants.SORT_BY_DATE then
+    if self.sortCombo and self.sortCombo.selected == SORT_BY_DATE then
         table.sort(sortedModOptions, function(a, b)
             return self:getModIndex(a.modOptionsID) > self:getModIndex(b.modOptionsID)
         end)
@@ -571,9 +564,7 @@ function ModOptionsScreen:createChildren()
         return
     end
     
-    local constants = ModOptionsConstants
-    
-    local btnPadding = constants.JOYPAD_TEX_SIZE + constants.UI_BORDER_SPACING * 2
+    local btnPadding = JOYPAD_TEX_SIZE + UI_BORDER_SPACING * 2
     local btnWidthBack = btnPadding + getTextManager():MeasureStringX(UIFont.Small, 
         ModOptionsUtils.safeGetText("UI_btn_back", "Back"))
     local btnWidthAccept = btnPadding + getTextManager():MeasureStringX(UIFont.Small, 
@@ -581,7 +572,7 @@ function ModOptionsScreen:createChildren()
     local btnWidthApply = btnPadding + getTextManager():MeasureStringX(UIFont.Small, 
         ModOptionsUtils.safeGetText("UI_btn_apply", "Apply"))
     
-    local totalBtnWidth = btnWidthBack + btnWidthAccept + btnWidthApply + constants.UI_BORDER_SPACING * 2
+    local totalBtnWidth = btnWidthBack + btnWidthAccept + btnWidthApply + UI_BORDER_SPACING * 2
     local startX = (self.width - totalBtnWidth) / 2
     
     self:createButtons(startX, btnWidthBack, btnWidthAccept, btnWidthApply)
@@ -597,10 +588,8 @@ function ModOptionsScreen:createChildren()
 end
 
 function ModOptionsScreen:createButtons(startX, btnWidthBack, btnWidthAccept, btnWidthApply)
-    local constants = ModOptionsConstants
-    
-    self.backButton = ISButton:new(startX, self.height - constants.UI_BORDER_SPACING - constants.BUTTON_HGT - 1, 
-        btnWidthBack, constants.BUTTON_HGT, ModOptionsUtils.safeGetText("UI_btn_back", "Back"), self, self.onOptionMouseDown)
+    self.backButton = ISButton:new(startX, self.height - UI_BORDER_SPACING - BUTTON_HGT - 1, 
+        btnWidthBack, BUTTON_HGT, ModOptionsUtils.safeGetText("UI_btn_back", "Back"), self, self.onOptionMouseDown)
     self.backButton.internal = "BACK"
     self.backButton:initialise()
     self.backButton:instantiate()
@@ -611,8 +600,8 @@ function ModOptionsScreen:createButtons(startX, btnWidthBack, btnWidthAccept, bt
     self.backButton:enableCancelColor()
     self:addChild(self.backButton)
     
-    self.acceptButton = ISButton:new(self.backButton:getRight() + constants.UI_BORDER_SPACING, self.backButton.y, 
-        btnWidthAccept, constants.BUTTON_HGT, ModOptionsUtils.safeGetText("UI_btn_accept", "Accept"), self, self.onOptionMouseDown)
+    self.acceptButton = ISButton:new(self.backButton:getRight() + UI_BORDER_SPACING, self.backButton.y, 
+        btnWidthAccept, BUTTON_HGT, ModOptionsUtils.safeGetText("UI_btn_accept", "Accept"), self, self.onOptionMouseDown)
     self.acceptButton.internal = "ACCEPT"
     self.acceptButton:initialise()
     self.acceptButton:instantiate()
@@ -623,8 +612,8 @@ function ModOptionsScreen:createButtons(startX, btnWidthBack, btnWidthAccept, bt
     self.acceptButton:enableAcceptColor()
     self:addChild(self.acceptButton)
     
-    self.applyButton = ISButton:new(self.acceptButton:getRight() + constants.UI_BORDER_SPACING, self.backButton.y, 
-        btnWidthApply, constants.BUTTON_HGT, ModOptionsUtils.safeGetText("UI_btn_apply", "Apply"), self, self.onOptionMouseDown)
+    self.applyButton = ISButton:new(self.acceptButton:getRight() + UI_BORDER_SPACING, self.backButton.y, 
+        btnWidthApply, BUTTON_HGT, ModOptionsUtils.safeGetText("UI_btn_apply", "Apply"), self, self.onOptionMouseDown)
     self.applyButton.internal = "APPLY"
     self.applyButton:initialise()
     self.applyButton:instantiate()
@@ -648,24 +637,23 @@ function ModOptionsScreen:calculateListboxWidth()
         end
     end
     
-    return math.min(listboxWidth + ModOptionsConstants.UI_BORDER_SPACING * 2, 300)
+    return math.min(listboxWidth + UI_BORDER_SPACING * 2, 300)
 end
 
 function ModOptionsScreen:createSortAndSearchControls(listboxWidth)
-    local constants = ModOptionsConstants
-    local searchEntryY = constants.UI_BORDER_SPACING * 2 + constants.FONT_HGT_TITLE + 1
+    local searchEntryY = UI_BORDER_SPACING * 2 + FONT_HGT_LARGE + 1
     
-    self.sortCombo = ISComboBox:new(constants.UI_BORDER_SPACING + 1, searchEntryY, listboxWidth, constants.ENTRY_HGT, 
+    self.sortCombo = ISComboBox:new(UI_BORDER_SPACING + 1, searchEntryY, listboxWidth, ENTRY_HGT, 
         self, self.onSortChanged)
     self.sortCombo:initialise()
     self.sortCombo:addOptionWithData(ModOptionsUtils.safeGetText("UI_modlistpanel_sortBy_name", "Name"), "name")
     self.sortCombo:addOptionWithData(ModOptionsUtils.safeGetText("UI_modlistpanel_sortBy_date", "Date Added"), "date_added")
-    self.sortCombo.selected = constants.SORT_BY_NAME
+    self.sortCombo.selected = SORT_BY_NAME
     self:addChild(self.sortCombo)
     
-    local searchX = self.sortCombo:getRight() + constants.UI_BORDER_SPACING
+    local searchX = self.sortCombo:getRight() + UI_BORDER_SPACING
     self.searchEntry = ISTextEntryBox:new("", searchX, searchEntryY, 
-        self.width - searchX - constants.UI_BORDER_SPACING - 1, constants.ENTRY_HGT)
+        self.width - searchX - UI_BORDER_SPACING - 1, ENTRY_HGT)
     self.searchEntry.font = UIFont.Medium
     self.searchEntry.onTextChange = function() self:doSearch() end
     self.searchEntry:initialise()
@@ -679,11 +667,10 @@ function ModOptionsScreen:createSortAndSearchControls(listboxWidth)
 end
 
 function ModOptionsScreen:createMainListbox(listboxWidth)
-    local constants = ModOptionsConstants
-    local listY = self.searchEntry:getBottom() + constants.UI_BORDER_SPACING
-    local listHeight = self.height - listY - constants.UI_BORDER_SPACING * 2 - constants.BUTTON_HGT - 1
+    local listY = self.searchEntry:getBottom() + UI_BORDER_SPACING
+    local listHeight = self.height - listY - UI_BORDER_SPACING * 2 - BUTTON_HGT - 1
     
-    self.listbox = ModOptionsScreenListBox:new(constants.UI_BORDER_SPACING + 1, listY, listboxWidth, listHeight)
+    self.listbox = ModOptionsScreenListBox:new(UI_BORDER_SPACING + 1, listY, listboxWidth, listHeight)
     self.listbox:initialise()
     self.listbox:setAnchorLeft(true)
     self.listbox:setAnchorRight(false)
@@ -753,11 +740,10 @@ function ModOptionsScreen:createPanel(page)
         error("Invalid page data provided to createPanel")
     end
     
-    local constants = ModOptionsConstants
     local panel = ModOptionsScreenPanel:new(
-        self.listbox:getRight() + constants.UI_BORDER_SPACING,
+        self.listbox:getRight() + UI_BORDER_SPACING,
         self.listbox:getY(),
-        self.width - self.listbox:getRight() - constants.UI_BORDER_SPACING * 2 - 1,
+        self.width - self.listbox:getRight() - UI_BORDER_SPACING * 2 - 1,
         self.listbox:getHeight()
     )
     
@@ -796,7 +782,6 @@ function ModOptionsScreen:createPanel(page)
 end
 
 function ModOptionsScreen:createOptionControls(option, page)
-    local constants = ModOptionsConstants
     local label, control
     
     if option.type == "title" or option.type == "separator" or 
@@ -827,10 +812,9 @@ function ModOptionsScreen:createOptionControls(option, page)
 end
 
 function ModOptionsScreen:createTickboxControl(option, page)
-    local constants = ModOptionsConstants
-    local label = ISLabel:new(0, 0, constants.ENTRY_HGT, 
+    local label = ISLabel:new(0, 0, ENTRY_HGT, 
         ModOptionsUtils.safeGetText(option.name), 1, 1, 1, 1, UIFont.Medium)
-    local control = ISTickBox:new(0, 0, constants.ENTRY_HGT, constants.ENTRY_HGT, "")
+    local control = ISTickBox:new(0, 0, ENTRY_HGT, ENTRY_HGT, "")
     control:addOption("")
     option.element = control
     
@@ -857,10 +841,9 @@ function ModOptionsScreen:createTickboxControl(option, page)
 end
 
 function ModOptionsScreen:createMultipleTickboxControl(option, page)
-    local constants = ModOptionsConstants
-    local label = ISLabel:new(0, 0, constants.ENTRY_HGT, 
+    local label = ISLabel:new(0, 0, ENTRY_HGT, 
         ModOptionsUtils.safeGetText(option.name), 1, 1, 1, 1, UIFont.Medium)
-    local control = ISTickBox:new(0, 0, constants.BUTTON_HGT, constants.BUTTON_HGT, "")
+    local control = ISTickBox:new(0, 0, BUTTON_HGT, BUTTON_HGT, "")
     
     if option.values then
         for _, value in ipairs(option.values) do
@@ -903,10 +886,9 @@ function ModOptionsScreen:createMultipleTickboxControl(option, page)
 end
 
 function ModOptionsScreen:createComboboxControl(option, page)
-    local constants = ModOptionsConstants
-    local label = ISLabel:new(0, 0, constants.ENTRY_HGT, 
+    local label = ISLabel:new(0, 0, ENTRY_HGT, 
         ModOptionsUtils.safeGetText(option.name), 1, 1, 1, 1, UIFont.Medium)
-    local control = ISComboBox:new(0, 0, constants.CONTROL_WIDTH, constants.ENTRY_HGT, self, nil)
+    local control = ISComboBox:new(0, 0, CONTROL_WIDTH, ENTRY_HGT, self, nil)
     
     if option.values then
         for _, v in ipairs(option.values) do
@@ -939,19 +921,18 @@ function ModOptionsScreen:createComboboxControl(option, page)
 end
 
 function ModOptionsScreen:createSliderControl(option, page)
-    local constants = ModOptionsConstants
-    local label = ISLabel:new(0, 0, constants.ENTRY_HGT, 
+    local label = ISLabel:new(0, 0, ENTRY_HGT, 
         ModOptionsUtils.safeGetText(option.name), 1, 1, 1, 1, UIFont.Medium)
     
-    local container = ISPanel:new(0, 0, constants.CONTROL_WIDTH * 2, constants.ENTRY_HGT)
+    local container = ISPanel:new(0, 0, CONTROL_WIDTH * 2, ENTRY_HGT)
     container:noBackground()
     
-    local valueLabel = ISLabel:new(60, 0, constants.ENTRY_HGT, 
+    local valueLabel = ISLabel:new(60, 0, ENTRY_HGT, 
         tostring(option.value or 0), 1, 1, 1, 1, UIFont.Small, false)
     valueLabel:initialise()
     container:addChild(valueLabel)
     
-    local control = ISSliderPanel:new(70, 0, constants.CONTROL_WIDTH * 2 - 70, constants.ENTRY_HGT)
+    local control = ISSliderPanel:new(70, 0, CONTROL_WIDTH * 2 - 70, ENTRY_HGT)
     control:setValues(
         option.min or 0, 
         option.max or 100, 
@@ -988,8 +969,7 @@ function ModOptionsScreen:createSliderControl(option, page)
 end
 
 function ModOptionsScreen:createColorPickerControl(option, page)
-    local constants = ModOptionsConstants
-    local label = ISLabel:new(0, 0, constants.ENTRY_HGT, 
+    local label = ISLabel:new(0, 0, ENTRY_HGT, 
         ModOptionsUtils.safeGetText(option.name), 1, 1, 1, 1, UIFont.Medium)
     
     if not option.modOptionsID then
@@ -1025,11 +1005,10 @@ function ModOptionsScreen:createColorPickerControl(option, page)
 end
 
 function ModOptionsScreen:createTextEntryControl(option, page)
-    local constants = ModOptionsConstants
-    local label = ISLabel:new(0, 0, constants.ENTRY_HGT, 
+    local label = ISLabel:new(0, 0, ENTRY_HGT, 
         ModOptionsUtils.safeGetText(option.name), 1, 1, 1, 1, UIFont.Medium)
     local control = ISTextEntryBox:new(option.value or "", 0, 0, 
-        constants.CONTROL_WIDTH * 2, constants.ENTRY_HGT)
+        CONTROL_WIDTH * 2, ENTRY_HGT)
     control.font = UIFont.Medium
     option.element = control
     
@@ -1054,8 +1033,6 @@ function ModOptionsScreen:createTextEntryControl(option, page)
 end
 
 function ModOptionsScreen:createKeybindControl(option, page)
-    local constants = ModOptionsConstants
-    
     if option.key ~= nil then
         option.value = tostring(option.key)
     elseif option.value == nil and option.defaultkey ~= nil then
@@ -1063,13 +1040,13 @@ function ModOptionsScreen:createKeybindControl(option, page)
         option.key = option.defaultkey
     end
     
-    local label = ISLabel:new(0, 0, constants.ENTRY_HGT, 
+    local label = ISLabel:new(0, 0, ENTRY_HGT, 
         ModOptionsUtils.safeGetText(option.name), 1, 1, 1, 1, UIFont.Medium)
     
     local keyValue = ModOptionsUtils.safeToNumber(option.value, 0)
     local keyName = ModOptionsUtils.safeGetKeyName(keyValue)
     
-    local control = ISButton:new(0, 0, constants.CONTROL_WIDTH, constants.ENTRY_HGT, 
+    local control = ISButton:new(0, 0, CONTROL_WIDTH, ENTRY_HGT, 
         keyName, self, MainOptions.onKeyBindingBtnPress)
     control.internal = option.name
     control.isModBind = true
@@ -1104,7 +1081,6 @@ function ModOptionsScreen:configureControlTooltips(label, control, option)
 end
 
 function ModOptionsScreen:addImageToPanel(addControlsTo, option, currentY, panelWidth, labelWidth, maxControlWidth)
-    local constants = ModOptionsConstants
     local texture = getTexture(option.path)
     if not texture then
         print("Warning: Could not load image for mod options: " .. tostring(option.path))
@@ -1120,14 +1096,14 @@ function ModOptionsScreen:addImageToPanel(addControlsTo, option, currentY, panel
     local finalWidth, finalHeight
 
     if option.fit then
-        finalWidth = fullContentWidth - constants.UI_BORDER_SPACING * 2
+        finalWidth = fullContentWidth - UI_BORDER_SPACING * 2
         finalHeight = (imgHeight / imgWidth) * finalWidth
     else
         if option.minWidth then
-            finalWidth = math.min(option.minWidth, fullContentWidth - constants.UI_BORDER_SPACING * 2)
+            finalWidth = math.min(option.minWidth, fullContentWidth - UI_BORDER_SPACING * 2)
             finalHeight = (imgHeight / imgWidth) * finalWidth
         else
-            local controlsAreaWidth = labelWidth + maxControlWidth + constants.UI_BORDER_SPACING
+            local controlsAreaWidth = labelWidth + maxControlWidth + UI_BORDER_SPACING
             finalWidth = imgWidth
             finalHeight = imgHeight
             if finalWidth > controlsAreaWidth then
@@ -1144,12 +1120,10 @@ function ModOptionsScreen:addImageToPanel(addControlsTo, option, currentY, panel
     image:initialise()
     addControlsTo:addChild(image)
 
-    return currentY + finalHeight + constants.UI_BORDER_SPACING
+    return currentY + finalHeight + UI_BORDER_SPACING
 end
 
 function ModOptionsScreen:layoutControlsOnPanel(panel, addControlsTo, page, labels, controls)
-    local constants = ModOptionsConstants
-    
     local labelWidth = 0
     for _, label in ipairs(labels) do
         if label then
@@ -1168,7 +1142,7 @@ function ModOptionsScreen:layoutControlsOnPanel(panel, addControlsTo, page, labe
         end
     end
     
-    local xOffset = (panel.width - (labelWidth + maxControlWidth + constants.UI_BORDER_SPACING * 2)) / 2
+    local xOffset = (panel.width - (labelWidth + maxControlWidth + UI_BORDER_SPACING * 2)) / 2
     local currentY = 11
     local optionIndex = 0
     
@@ -1216,26 +1190,23 @@ function ModOptionsScreen:layoutControlsOnPanel(panel, addControlsTo, page, labe
 end
 
 function ModOptionsScreen:addTitleToPanel(addControlsTo, option, currentY, panelWidth)
-    local constants = ModOptionsConstants
-    local title = ISLabel:new(0, currentY + constants.UI_BORDER_SPACING, 
-        constants.FONT_HGT_MEDIUM + 6, ModOptionsUtils.safeGetText(option.name), 
+    local title = ISLabel:new(0, currentY + UI_BORDER_SPACING, 
+        FONT_HGT_MEDIUM + 6, ModOptionsUtils.safeGetText(option.name), 
         1, 1, 1, 1, UIFont.Large)
     title:initialise()
     addControlsTo:addChild(title)
     title:setX((panelWidth - title:getWidth()) / 2)
-    return currentY + title:getHeight() + constants.UI_BORDER_SPACING * 2
+    return currentY + title:getHeight() + UI_BORDER_SPACING * 2
 end
 
 function ModOptionsScreen:addSeparatorToPanel(addControlsTo, currentY, panelWidth)
-    local constants = ModOptionsConstants
-    local hLine = HorizontalLine:new(constants.UI_BORDER_SPACING, currentY, 
-        panelWidth - constants.UI_BORDER_SPACING * 2 - 13)
+    local hLine = HorizontalLine:new(UI_BORDER_SPACING, currentY, 
+        panelWidth - UI_BORDER_SPACING * 2 - 13)
     addControlsTo:addChild(hLine)
-    return currentY + hLine:getHeight() + constants.UI_BORDER_SPACING
+    return currentY + hLine:getHeight() + UI_BORDER_SPACING
 end
 
 function ModOptionsScreen:addDescriptionToPanel(addControlsTo, option, currentY, xOffset, panelWidth)
-    local constants = ModOptionsConstants
     local richText = ISRichTextPanel:new(xOffset, currentY, panelWidth - xOffset * 2, 100)
     richText.background = false
     richText.autosetheight = true
@@ -1245,16 +1216,15 @@ function ModOptionsScreen:addDescriptionToPanel(addControlsTo, option, currentY,
     richText:setText("<RGB:0.8,0.8,0.8>" .. (option.text or ""))
     richText:paginate()
     richText.onMouseWheel = function(self, del) return false end
-    return currentY + richText:getHeight() + constants.UI_BORDER_SPACING
+    return currentY + richText:getHeight() + UI_BORDER_SPACING
 end
 
 function ModOptionsScreen:addButtonToPanel(addControlsTo, option, currentY, xOffset, labelWidth)
-    local constants = ModOptionsConstants
-    local button = ISButton:new(0, currentY, constants.CONTROL_WIDTH, constants.ENTRY_HGT, 
+    local button = ISButton:new(0, currentY, CONTROL_WIDTH, ENTRY_HGT,
         ModOptionsUtils.safeGetText(option.name))
     button:initialise()
     addControlsTo:addChild(button)
-    button:setX(xOffset + labelWidth + constants.UI_BORDER_SPACING)
+    button:setX(xOffset + labelWidth + UI_BORDER_SPACING)
     
     if option.onclick and option.args then
         button:setOnClick(option.onclick, option.args[1], option.args[2], option.args[3], option.args[4])
@@ -1267,27 +1237,25 @@ function ModOptionsScreen:addButtonToPanel(addControlsTo, option, currentY, xOff
         end
     end
     
-    return currentY + button:getHeight() + constants.UI_BORDER_SPACING
+    return currentY + button:getHeight() + UI_BORDER_SPACING
 end
 
 function ModOptionsScreen:addControlPairToPanel(addControlsTo, label, control, currentY, xOffset, labelWidth)
-    local constants = ModOptionsConstants
-    
     addControlsTo:addChild(label)
     label:setX(xOffset)
     label:setY(currentY)
     
     if control.Type == 'ISSliderPanel' and control.container then
         addControlsTo:addChild(control.container)
-        control.container:setX(xOffset + labelWidth + constants.UI_BORDER_SPACING)
+        control.container:setX(xOffset + labelWidth + UI_BORDER_SPACING)
         control.container:setY(currentY)
     else
         addControlsTo:addChild(control)
-        control:setX(xOffset + labelWidth + constants.UI_BORDER_SPACING)
+        control:setX(xOffset + labelWidth + UI_BORDER_SPACING)
         control:setY(currentY)
     end
     
-    return currentY + math.max(label:getHeight(), control:getHeight()) + constants.UI_BORDER_SPACING
+    return currentY + math.max(label:getHeight(), control:getHeight()) + UI_BORDER_SPACING
 end
 
 -- ==============================================================================
@@ -1412,10 +1380,9 @@ end
 -- ==============================================================================
 
 function ModOptionsScreen:createColorButton(option)
-    local constants = ModOptionsConstants
-    local button = ISButton:new(0, 0, constants.ENTRY_HGT * 2, constants.ENTRY_HGT, 
+    local button = ISButton:new(0, 0, ENTRY_HGT * 2, ENTRY_HGT, 
         "", self, self.onModColorPick)
-    button.backgroundColor = option.color or ModOptionsUtils.deepCopy(constants.DEFAULT_COLOR)
+    button.backgroundColor = option.color or ModOptionsUtils.deepCopy(DEFAULT_COLOR)
     button.option = option
     
     button.colorPicker = ISColorPicker:new(0, 0)
@@ -1423,7 +1390,7 @@ function ModOptionsScreen:createColorButton(option)
     button.colorPicker.pickedTarget = self
     button.colorPicker.resetFocusTo = self
     
-    local initialColor = option.color or constants.DEFAULT_COLOR
+    local initialColor = option.color or DEFAULT_COLOR
     button.colorPicker:setInitialColor(ColorInfo.new(
         initialColor.r or 1, initialColor.g or 1, initialColor.b or 1, initialColor.a or 1))
     
@@ -1497,7 +1464,7 @@ function ModOptionsScreen:prerender()
     ISPanelJoypad.prerender(self)
     
     local titleText = ModOptionsUtils.safeGetText("UI_modoptions_title", "Mod Options")
-    self:drawTextCentre(titleText, self.width / 2, ModOptionsConstants.UI_BORDER_SPACING + 1, 
+    self:drawTextCentre(titleText, self.width / 2, UI_BORDER_SPACING + 1,
         1, 1, 1, 1, UIFont.Title)
     
     if self.applyButton and self.gameOptions then
