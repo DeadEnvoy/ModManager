@@ -50,3 +50,10 @@ link1 = Workshop = https://steamcommunity.com/id/acrynos/myworkshopfiles/?appid=
 - Added a warning dialog when disabling library mods and those that other mods depend on.
 - The width of the mod tabs area has been limited.
 [ ------ ]
+
+[ 1.2.0 ]
+- Merged changes from updated original files.
+- Added arrow key navigation between mods and toggle via spacebar.
+- Optimized vanilla logic for bulk enabling/disabling mods.
+- Optimized dependency storage architecture.
+[ ------ ]
