@@ -226,15 +226,17 @@ function ModListPresets:choosePreset(combo)
         if combo.selected == 2 then
             for _, modData in pairs(self.parent.model.mods) do
                 if modData.isActive then
-                    self.parent.model:forceActivateMods(modData.modInfo, false, true)
+                    self.parent.model:forceActivateMods(modData.modInfo, false, true, true)
                 end
             end
+            self.parent.model:refreshMods()
         elseif combo.selected == 3 then
             for _, modData in pairs(self.parent.model.mods) do
                 if not modData.isActive and modData.isAvailable and modData.modId ~= "ModTemplate" then
-                    self.parent.model:forceActivateMods(modData.modInfo, true, true)
+                    self.parent.model:forceActivateMods(modData.modInfo, true, true, true)
                 end
             end
+            self.parent.model:refreshMods()
         end
         return
     end
@@ -244,15 +246,16 @@ function ModListPresets:choosePreset(combo)
     for modId, modData in pairs(self.parent.model.mods) do
         if data[modId] then
             if not modData.isActive and modData.isAvailable then
-                self.parent.model:forceActivateMods(modData.modInfo, true, true)
+                self.parent.model:forceActivateMods(modData.modInfo, true, true, true)
             end
             availableMods[modId] = true
         else
             if modData.isActive then
-                self.parent.model:forceActivateMods(modData.modInfo, false, true)
+                self.parent.model:forceActivateMods(modData.modInfo, false, true, true)
             end
         end
     end
+    self.parent.model:refreshMods()
 
     local modList = {}
     for id, _ in pairs(data) do

@@ -406,7 +406,7 @@ function ModSelector.Model:onConfirmDisable(modInfo)
     self:forceActivateMods(modInfo, false, true)
 end
 
-function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm)
+function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm, suppressRefresh)
     local modId = modInfo:getId()
     local isModActive = self:isModActive(modId)
 
@@ -422,7 +422,7 @@ function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm)
                 for i = 0, requiredMods:size()-1 do
                     local reqId = requiredMods:get(i)
                     if self.mods[reqId] then
-                        self:forceActivateMods(self.mods[reqId].modInfo, true, true)
+                        self:forceActivateMods(self.mods[reqId].modInfo, true, true, true)
                     end
                 end
             end
@@ -448,11 +448,14 @@ function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm)
         self.mods[modId].isActive = false
         if not self:isModActive(modId) then
             for id, _ in pairs(self.requirements[modId].neededFor) do
-                self:forceActivateMods(self.mods[id].modInfo, false, true)
+                self:forceActivateMods(self.mods[id].modInfo, false, true, true)
             end
         end
     end
-    self:refreshMods()
+
+    if not suppressRefresh then
+        self:refreshMods()
+    end
 end
 
 local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
