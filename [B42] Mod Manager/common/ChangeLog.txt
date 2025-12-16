@@ -1,0 +1,52 @@
+[ ALERT_CONFIG ]
+link1 = Workshop = https://steamcommunity.com/id/acrynos/myworkshopfiles/?appid=108600,
+[ ------ ]
+
+[ 1.0.0 ]
+- Initial release.
+[ ------ ]
+
+[ 1.0.1 ]
+- Added a search field for modification settings.
+- Changed the color of the "SORT & ACCEPT" button.
+- Adjusted the width of the modification settings window.
+- Fixed a bug where element descriptions weren't rendering.
+- Fixed incompatibility with Change Sandbox Options.
+[ ------ ]
+
+[ 1.0.2 ]
+- Fixed a bug where saved mod settings weren't loading when starting the game.
+[ ------ ]
+
+[ 1.0.3 ]
+- Adjusted the minimum width for the mod tabs area.
+- Added a name/date sorting option for the mod settings window.
+- Fixed a bug with incorrect key assignment and initialization.
+[ ------ ]
+
+[ 1.0.4 ]
+- ModOptionsScreen: Sorting was temporarily disabled.
+[ ------ ]
+
+[ 1.0.5 ]
+- ModOptionsScreen: Sorting was restored.
+[ ------ ]
+
+[ 1.0.6 ]
+- The mod settings window remembers the last selected mod before sorting is applied.
+[ ------ ]
+
+[ 1.0.7 ]
+- Fixed compatibility issue with mods that add their own settings directly to MainOptions.
+[ ------ ]
+
+[ 1.0.8 ]
+- Minor fixes and code refactoring.
+[ ------ ]
+
+[ 1.1.0 ]
+- Mod search now always displays hidden mods.
+- Added the ability for mod authors to add images in the configuration window.
+- Added a warning dialog when disabling library mods and those that other mods depend on.
+- The width of the mod tabs area has been limited.
+[ ------ ]
