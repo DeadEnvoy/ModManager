@@ -5,6 +5,8 @@ function ModSelector.Model:new(view)
     local o = original_new(self, view)
     o.currentSort = 'name'
     o.hidden = {}
+    o.incompatibles = {}
+    o.requirements = {}
     o:trackMods()
     return o
 end
@@ -56,6 +58,10 @@ function ModSelector.Model:reloadMods()
 
     table.wipe(self.mods)
     table.wipe(self.sortedMods)
+    
+    self.incompatibles = {}
+    self.requirements = {}
+
     for _, directory in ipairs(getModDirectoryTable()) do
         local modInfoFromDir = getModInfo(directory)
         if modInfoFromDir then
@@ -73,6 +79,14 @@ function ModSelector.Model:reloadMods()
                 data.indexAdded = self:indexByDateAdded(modId)
                 if data.icon == "" then data.icon = ModSelector.Model.categories[data.category] end
 
+                data.lowerName = string.lower(data.name)
+                data.lowerId = string.lower(data.modId)
+                local author = modInfo:getAuthor() or ""
+                data.lowerAuthor = string.lower(author)
+                
+                local workshopID = modInfo:getWorkshopID()
+                data.workshopIDStr = workshopID and tostring(workshopID) or ""
+
                 self.mods[modId] = data
                 table.insert(self.sortedMods, data)
             end
@@ -80,53 +94,64 @@ function ModSelector.Model:reloadMods()
     end
 
     self.ModsEnabled = getCore():getOptionModsEnabled()
+    
+    self:buildDependencyGraph()
 
     self:refreshMods()
 end
 
-function ModSelector.Model:refreshMods()
-    self.incompatibles = {}
+function ModSelector.Model:buildDependencyGraph()
     local function addIncompatibles(id, data)
         self.incompatibles[id] = self.incompatibles[id] or {}
         if data == nil then return end
         for i = 0, data:size()-1 do
             local id2 = data:get(i)
-
             self.incompatibles[id][id2] = true
-
+            
             self.incompatibles[id2] = self.incompatibles[id2] or {}
             self.incompatibles[id2][id] = true
         end
     end
 
-    self.requirements = {}
     local function addRequire(id, data)
         self.requirements[id] = self.requirements[id] or { dependsOn = {}, neededFor = {} }
         if data == nil then return end
         for i = 0, data:size()-1 do
             local id2 = data:get(i)
             self.requirements[id2] = self.requirements[id2] or { dependsOn = {}, neededFor = {} }
+            
             self.requirements[id].dependsOn[id2] = true
             self.requirements[id2].neededFor[id] = true
         end
     end
 
     for modId, modData in pairs(self.mods) do
+        self.incompatibles[modId] = self.incompatibles[modId] or {}
+        self.requirements[modId] = self.requirements[modId] or { dependsOn = {}, neededFor = {} }
+
+        addIncompatibles(modId, modData.modInfo:getIncompatible())
+        addRequire(modId, modData.modInfo:getRequire())
+    end
+end
+
+function ModSelector.Model:refreshMods()
+    for modId, modData in pairs(self.mods) do
         modData.isAvailable = modData.modInfo:isAvailable()
         modData.isActive = self:isModActive(modId)
         modData.favorite = self:isFavorite(modId)
         modData.isHidden = self:isHidden(modId)
-
-        addIncompatibles(modId, modData.modInfo:getIncompatible())
-        addRequire(modId, modData.modInfo:getRequire())
     end
 
     for modId, modData in pairs(self.mods) do
         modData.incompatibleWith = self.incompatibles[modId]
         modData.isIncompatible = false
-        for id, _ in pairs(self.incompatibles[modId]) do
-            if self.mods[id] and self.mods[id].isActive then
-                modData.isIncompatible = true
+        
+        if self.incompatibles[modId] then
+            for id, _ in pairs(self.incompatibles[modId]) do
+                if self.mods[id] and self.mods[id].isActive then
+                    modData.isIncompatible = true
+                    break
+                end
             end
         end
 
@@ -140,6 +165,7 @@ end
 
 function ModSelector.Model:filterMods(category, searchWord, favoriteMode, onlyEnabled, onlyDisabled, showHidden)
     table.wipe(self.currentMods)
+    
     for _, modData in ipairs(self.sortedMods) do
         local show = true
         if category ~= "" and modData.category ~= category then
@@ -152,21 +178,16 @@ function ModSelector.Model:filterMods(category, searchWord, favoriteMode, onlyEn
 
         if searchWord ~= "" then
             local isMatch = false
-            if string.find(string.lower(modData.modInfo:getName()), searchWord, 1, true) then
+            if string.find(modData.lowerName, searchWord, 1, true) then
+                isMatch = true
+            elseif string.find(modData.lowerId, searchWord, 1, true) then
+                isMatch = true
+            elseif string.find(modData.workshopIDStr, searchWord, 1, true) then
+                isMatch = true
+            elseif string.find(modData.lowerAuthor, searchWord, 1, true) then
                 isMatch = true
             end
-            if string.find(string.lower(modData.modInfo:getId()), searchWord, 1, true) then
-                isMatch = true
-            end
-            if string.find(tostring(modData.modInfo:getWorkshopID()), searchWord, 1, true) then
-                isMatch = true
-            end
-            local author = modData.modInfo:getAuthor()
-            if author and author ~= "" then
-                if string.find(string.lower(author), searchWord, 1, true) then
-                    isMatch = true
-                end
-            end
+
             if not isMatch then
                 show = false
             end
@@ -185,8 +206,6 @@ function ModSelector.Model:filterMods(category, searchWord, favoriteMode, onlyEn
                 show = false
             end
         end
-
-        local verMin = modData.modInfo:getVersionMin()
 
         if show then
             table.insert(self.currentMods, modData)
