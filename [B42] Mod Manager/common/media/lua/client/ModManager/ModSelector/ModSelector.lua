@@ -1,5 +1,7 @@
 require "ISUI/ISPanelJoypad"
+require "OptionScreens/MainScreen"
 require "OptionScreens/ModSelector/ModSelector"
+
 local MLOS_sorting = require('OptionScreens/ModSelector/MLOS_sorting')
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
@@ -15,6 +17,16 @@ function ISButton:enableBlueColor()
     self:setBackgroundRGBA(r, g, b, 0.25)
     self:setBackgroundColorMouseOverRGBA(r, g, b, 0.50)
     self:setBorderRGBA(r, g, b, 1)
+end
+
+local original_onKeyRelease = MainScreen.onKeyRelease
+function MainScreen:onKeyRelease(key)
+    if ModSelector.instance and ModSelector.instance:isReallyVisible() then
+        ModSelector.instance:onKeyRelease(key)
+        return
+    end
+
+    original_onKeyRelease(self, key)
 end
 
 function ModSelector:create()
@@ -182,4 +194,44 @@ function ModSelector:onSortAndApply()
     end
     
     self:onAccept()
+end
+
+function ModSelector:onKeyRelease(key)
+    if self.modListPanel.searchEntry:isFocused() then
+        if key == Keyboard.KEY_ESCAPE then
+            self.backButton:forceClick()
+        end
+        return
+    end
+
+    if key == Keyboard.KEY_ESCAPE then
+        self.backButton:forceClick()
+        return
+    end
+
+    if key == Keyboard.KEY_RETURN then
+        self.acceptButton:forceClick()
+        return
+    end
+
+    local modList = self.modListPanel.modList
+    if not modList or not modList.items or #modList.items == 0 or modList.selected == -1 then
+        return
+    end
+
+    if key == Keyboard.KEY_UP or key == Keyboard.KEY_DOWN then
+        local step = isKeyDown(Keyboard.KEY_LSHIFT) and 5 or 1
+
+        if key == Keyboard.KEY_UP then
+            modList.selected = math.max(1, modList.selected - step)
+        elseif key == Keyboard.KEY_DOWN then
+            modList.selected = math.min(#modList.items, modList.selected + step)
+        end
+
+        modList:onSelectItem(modList.items[modList.selected].item)
+        modList:ensureVisible(modList.selected)
+    elseif key == Keyboard.KEY_SPACE then
+        local selectedMod = modList.items[modList.selected].item
+        self.model:forceActivateMods(selectedMod.modInfo, not selectedMod.isActive)
+    end
 end
