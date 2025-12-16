@@ -24,8 +24,6 @@ No.
 I don't know, check it yourself. And if not, report it.
 ### 4. Will [...] feature be added?
 While I consider suggestions for improvements, I prefer to work on developing and implementing ideas independently.
-### 5. I found a bug! Read the comments!
-Bug reports in the comments are ignored and/or deleted. There is a [dedicated discussion](https://steamcommunity.com/workshop/filedetails/discussion/3567084868/546746241084660241/) for that.
 
 # **Update Policy:**
 I only update my mods when I'm actively playing the game. If a game patch breaks this mod, you are welcome to publish your own fix as a separate Workshop item.
