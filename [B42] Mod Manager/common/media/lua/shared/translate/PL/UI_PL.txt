@@ -1,7 +1,12 @@
 UI_PL = {
+    UI_mainscreen_btn_configs = "KONFIGI",
+
     UI_modselector_showEnabledMods = "Pokaż włączone mody",
     UI_modselector_showDisabledMods = "Pokaż wyłączone mody",
     UI_modselector_showHiddenMods = "Pokaż ukryte mody",
+
+    UI_modselector_disableWarningTitle = "UWAGA!",
+    UI_modselector_disableWarningText = "Wyłączenie tej modyfikacji spowoduje również wyłączenie następujących:",
 
     UI_modselector_modOptions = "KONFIGURACJA",
 
@@ -9,7 +14,7 @@ UI_PL = {
     UI_modlistpanel_sortBy_name = "Nazwa (A-Z)",
     UI_modlistpanel_sortBy_date = "Data dodania",
 
-    UI_modoptions_title = "KONFIGURACJA MODÓW",
+    UI_modoptions_title = "OPCJE MODÓW",
 
     UI_btn_sort_apply = "SORTUJ I ZASTOSUJ",
 

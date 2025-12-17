@@ -1,4 +1,6 @@
 UI_EN = {
+    UI_mainscreen_btn_configs = "CONFIGS",
+
     UI_modselector_showEnabledMods = "Show enabled mods",
     UI_modselector_showDisabledMods = "Show disabled mods",
     UI_modselector_showHiddenMods = "Show hidden mods",
@@ -12,7 +14,7 @@ UI_EN = {
     UI_modlistpanel_sortBy_name = "Name (A-Z)",
     UI_modlistpanel_sortBy_date = "Date Added",
 
-    UI_modoptions_title = "MOD CONFIGURATION",
+    UI_modoptions_title = "MOD OPTIONS",
 
     UI_btn_sort_apply = "SORT & ACCEPT",
 

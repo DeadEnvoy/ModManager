@@ -1,4 +1,6 @@
 UI_RU = {
+    UI_mainscreen_btn_configs = "КОНФИГИ",
+
     UI_modselector_showEnabledMods = "Показать включенные",
     UI_modselector_showDisabledMods = "Показать отключенные",
     UI_modselector_showHiddenMods = "Показать скрытые",

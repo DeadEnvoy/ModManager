@@ -1,7 +1,12 @@
 UI_PTBR = {
+    UI_mainscreen_btn_configs = "CONFIGS",
+
     UI_modselector_showEnabledMods = "Mostrar mods habilitados",
     UI_modselector_showDisabledMods = "Mostrar mods desabilitados",
     UI_modselector_showHiddenMods = "Mostrar mods ocultos",
+
+    UI_modselector_disableWarningTitle = "AVISO!",
+    UI_modselector_disableWarningText = "Desabilitar esta modificação também desabilitará as seguintes:",
 
     UI_modselector_modOptions = "CONFIGURAÇÃO",
 
@@ -9,7 +14,7 @@ UI_PTBR = {
     UI_modlistpanel_sortBy_name = "Nome (A-Z)",
     UI_modlistpanel_sortBy_date = "Data de adição",
 
-    UI_modoptions_title = "CONFIGURAÇÃO DE MODS",
+    UI_modoptions_title = "OPÇÕES DE MODS",
 
     UI_btn_sort_apply = "ORDENAR E ACEITAR",
 

@@ -1,7 +1,12 @@
 UI_HU = {
+    UI_mainscreen_btn_configs = "KONFIGOK",
+
     UI_modselector_showEnabledMods = "Engedélyezett modok",
     UI_modselector_showDisabledMods = "Letiltott modok",
     UI_modselector_showHiddenMods = "Rejtett modok",
+
+    UI_modselector_disableWarningTitle = "FIGYELEM!",
+    UI_modselector_disableWarningText = "Ezen mod letiltása a következőket is letiltja:",
 
     UI_modselector_modOptions = "KONFIGURÁCIÓ",
 
@@ -9,7 +14,7 @@ UI_HU = {
     UI_modlistpanel_sortBy_name = "Név (A-Z)",
     UI_modlistpanel_sortBy_date = "Hozzáadás dátuma",
 
-    UI_modoptions_title = "MOD KONFIGURÁCIÓ",
+    UI_modoptions_title = "MOD BEÁLLÍTÁSOK",
 
     UI_btn_sort_apply = "RENDEZÉS ÉS ELFOGADÁS",
 

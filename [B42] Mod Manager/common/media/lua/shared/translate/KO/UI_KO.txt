@@ -1,7 +1,12 @@
 UI_KO = {
+    UI_mainscreen_btn_configs = "설정",
+
     UI_modselector_showEnabledMods = "활성화된 모드 표시",
     UI_modselector_showDisabledMods = "비활성화된 모드 표시",
     UI_modselector_showHiddenMods = "숨겨진 모드 표시",
+
+    UI_modselector_disableWarningTitle = "경고!",
+    UI_modselector_disableWarningText = "이 모드를 비활성화하면 다음 모드도 비활성화됩니다:",
 
     UI_modselector_modOptions = "설정",
 
@@ -9,7 +14,7 @@ UI_KO = {
     UI_modlistpanel_sortBy_name = "이름 (A-Z)",
     UI_modlistpanel_sortBy_date = "추가 날짜",
 
-    UI_modoptions_title = "모드 설정",
+    UI_modoptions_title = "모드 옵션",
 
     UI_btn_sort_apply = "정렬 및 적용",
 
