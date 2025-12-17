@@ -10,7 +10,7 @@ function MainScreen:instantiate(...)
         local labelX = self.optionsOption:getX()
         local labelSeparator = 16
 
-        self.modOptionsOption = ISLabel:new(labelX, 0, labelHgt, getText("UI_modselector_modOptions"), 1, 1, 1, 1, UIFont.Large, true)
+        self.modOptionsOption = ISLabel:new(labelX, 0, labelHgt, getText("UI_mainscreen_btn_configs"), 1, 1, 1, 1, UIFont.Large, true)
         self.modOptionsOption.internal = "MODOPTIONS"
         self.modOptionsOption:initialise()
         self.modOptionsOption.onMouseDown = MainScreen.onMenuItemMouseDownMainMenu
@@ -58,6 +58,37 @@ function MainScreen:instantiate(...)
             self.sb_options.prerender = MainScreen.prerenderBottomPanelLabel
             self.sb_options.setJoypadFocused = NewGameScreen.Label_setJoypadFocused
         end
+    end
+end
+
+local original_render = MainScreen.render
+function MainScreen:render(...)
+    original_render(self, ...)
+
+    if self.inGame and isClient() and self.modOptionsOption and self.modOptionsOption:isVisible() then
+        local labelSeparator = 16
+        
+        local newY = self.optionsOption:getBottom()
+        self.modOptionsOption:setY(newY)
+        
+        newY = self.modOptionsOption:getBottom() + labelSeparator
+
+        if self.sb_options and self.sb_options:isVisible() then
+            self.sb_options:setY(newY)
+            newY = self.sb_options:getBottom() + labelSeparator
+        end
+
+        if self.exitOption then
+            self.exitOption:setY(newY)
+            newY = self.exitOption:getBottom()
+        end
+
+        if self.quitToDesktop then
+            self.quitToDesktop:setY(newY)
+            newY = self.quitToDesktop:getBottom()
+        end
+
+        self.bottomPanel:setHeight(newY)
     end
 end
 
