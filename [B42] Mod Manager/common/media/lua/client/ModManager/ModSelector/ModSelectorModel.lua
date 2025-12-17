@@ -14,10 +14,12 @@ end
 function ModSelector.Model:sortMods()
     local sortFunc
     if self.currentSort == 'name' then
+        ---@diagnostic disable-next-line: undefined-field
         sortFunc = function(a, b) return not string.sort(a.name, b.name) end
     elseif self.currentSort == 'date_added' then
         sortFunc = function(a, b) return a.indexAdded > b.indexAdded end
     else
+        ---@diagnostic disable-next-line: undefined-field
         sortFunc = function(a, b) return not string.sort(a.name, b.name) end
     end
 
@@ -56,7 +58,9 @@ end
 function ModSelector.Model:reloadMods()
     self:loadModDataFromFile()
 
+    ---@diagnostic disable-next-line: undefined-field
     table.wipe(self.mods)
+    ---@diagnostic disable-next-line: undefined-field
     table.wipe(self.sortedMods)
     
     self.incompatibles = {}
@@ -164,6 +168,7 @@ function ModSelector.Model:refreshMods()
 end
 
 function ModSelector.Model:filterMods(category, searchWord, favoriteMode, onlyEnabled, onlyDisabled, showHidden)
+    ---@diagnostic disable-next-line: undefined-field
     table.wipe(self.currentMods)
     
     for _, modData in ipairs(self.sortedMods) do
@@ -265,7 +270,7 @@ function ModSelector.Model:trackMods()
             if luautils.stringStarts(line, "version") then
                 local versionStr = string.match(line, "version%s*=%s*(%d+)")
                 if versionStr then
-                    version = tonumber(versionStr)
+                    -- version = tonumber(versionStr)
                 end
             elseif line == "mods = {" then
                 inModsSection = true
@@ -344,7 +349,9 @@ function ModSelector.Model:trackMods()
 end
 
 function ModSelector.Model:loadModDataFromFile()
+    ---@diagnostic disable-next-line: undefined-field
     table.wipe(self.presets)
+    ---@diagnostic disable-next-line: undefined-field
     table.wipe(self.favs)
 
     local file = getFileReader("pz_modlist_settings.cfg", true)
