@@ -35,7 +35,11 @@ function ModListBox:doDrawItem(y, item, alt)
     end
 
     if item.item.isActive then
-        self:drawTextureScaled(self.tickTexture, shift + 2, shift + 2 + y, self.boxSize-4, self.boxSize-4, 1, GHC:getR(), GHC:getG(), GHC:getB())
+        local tr, tg, tb = GHC:getR(), GHC:getG(), GHC:getB()
+        if item.item.defaultActive == false then
+            tr, tg, tb = 0.2, 0.8, 1.0
+        end
+        self:drawTextureScaled(self.tickTexture, shift + 2, shift + 2 + y, self.boxSize-4, self.boxSize-4, 1, tr, tg, tb)
     else
         if not item.item.isAvailable then
             self:drawTextureScaled(self.cantTexture, shift + 2, shift + 2 + y, self.boxSize-4, self.boxSize-4, 1, BHC:getR(), BHC:getG(), BHC:getB())
@@ -82,6 +86,9 @@ function ModListBox:doDrawItem(y, item, alt)
     if item.item.isAvailable then
         if item.item.isActive then
             r, g, b = GHC:getR(), GHC:getG(), GHC:getB()
+            if item.item.defaultActive == false then
+                r, g, b = 0.2, 0.8, 1.0
+            end
         elseif item.item.isIncompatible then
             r, g, b = 0.9, 0.45, 0.0
             item.tooltip = getText("UI_modselector_incompatibleWith")
