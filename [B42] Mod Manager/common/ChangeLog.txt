@@ -54,6 +54,9 @@ link1 = Workshop = https://steamcommunity.com/id/acrynos/myworkshopfiles/?appid=
 [ 1.2.0 ]
 - Merged changes from updated original files.
 - Added arrow key navigation between mods and toggle via spacebar.
-- Optimized vanilla logic for bulk enabling/disabling mods.
-- Optimized dependency storage architecture.
+- Optimized dependency storage architecture & vanilla logic for bulk enabling/disabling mods.
+- Added coloring for enabling mods to distinguish from active ones.
+- Fixed incorrect button position in pause menu (multiplayer).
+- Added display of total mod count.
+- Updated localization.
 [ ------ ]
