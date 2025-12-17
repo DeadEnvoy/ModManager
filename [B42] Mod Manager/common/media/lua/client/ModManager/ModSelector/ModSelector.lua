@@ -166,6 +166,49 @@ function ModSelector:create()
     self:addChild(self.helpButton);
 end
 
+function ModSelector:prerender()
+    self:drawRect(0, 0, self.width, self.height, self.backgroundColor.a, self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b)
+    ISPanelJoypad.prerender(self)
+    self:drawTextCentre(getText("UI_mods_SelectMods"), self.width / 2, 10, 1, 1, 1, 1, UIFont.Large)
+
+    local total, active, current = 0, 0, 0
+
+    if self.model and self.model.mods then
+        for _, mod in pairs(self.model.mods) do
+            total = total + 1
+            if mod.defaultActive then active = active + 1 end
+            if mod.isActive then current = current + 1 end
+        end
+    end
+
+    local diff = current - active
+    
+    local txtX, txtY, font = UI_BORDER_SPACING + 1, 15, UIFont.Medium
+    
+    local str1 = getText("UI_LoadGameScreen_Mods") .. " " .. active
+    self:drawText(str1, txtX, txtY, 1, 1, 1, 1, font)
+    txtX = txtX + getTextManager():MeasureStringX(font, str1)
+    
+    if diff ~= 0 then
+        local str2 = ""
+        local r, g, b = 1, 1, 1
+        
+        if diff > 0 then
+            str2 = " + " .. diff .. " "
+            r, g, b = 0.2, 0.8, 1
+        else
+            str2 = " - " .. math.abs(diff) .. " "
+            r, g, b = 1.0, 0.2, 0.2
+        end
+        
+        self:drawText(str2, txtX, txtY, r, g, b, 1, font)
+        txtX = txtX + getTextManager():MeasureStringX(font, str2)
+    end
+    
+    local str3 = " " .. getText("UI_modselector_separator") .. " " .. total
+    self:drawText(str3, txtX, txtY, 1, 1, 1, 1, font)
+end
+
 function ModSelector:updateView()
     self.modListPanel:updateView()
     self.presetPanel:updateView()
