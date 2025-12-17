@@ -1,6 +1,8 @@
 UI_HU = {
     UI_mainscreen_btn_configs = "KONFIGOK",
 
+    UI_modselector_separator = "/",
+
     UI_modselector_showEnabledMods = "Engedélyezett modok",
     UI_modselector_showDisabledMods = "Letiltott modok",
     UI_modselector_showHiddenMods = "Rejtett modok",

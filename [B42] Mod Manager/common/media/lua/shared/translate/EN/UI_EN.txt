@@ -1,6 +1,8 @@
 UI_EN = {
     UI_mainscreen_btn_configs = "CONFIGS",
 
+    UI_modselector_separator = "of",
+    
     UI_modselector_showEnabledMods = "Show enabled mods",
     UI_modselector_showDisabledMods = "Show disabled mods",
     UI_modselector_showHiddenMods = "Show hidden mods",

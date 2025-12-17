@@ -1,6 +1,8 @@
 UI_PL = {
     UI_mainscreen_btn_configs = "KONFIGI",
 
+    UI_modselector_separator = "z",
+
     UI_modselector_showEnabledMods = "Pokaż włączone mody",
     UI_modselector_showDisabledMods = "Pokaż wyłączone mody",
     UI_modselector_showHiddenMods = "Pokaż ukryte mody",
