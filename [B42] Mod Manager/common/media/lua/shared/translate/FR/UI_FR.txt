@@ -31,6 +31,17 @@ UI_FR = {
     UI_modselector_btn_enable = "ACTIVER",
     UI_modselector_btn_disable = "DÉSACTIVER",
 
+    UI_modinfopanel_Status = "Statut",
+    UI_modinfopanel_Version = "Version",
+    UI_modinfopanel_Author = "Auteur",
+    UI_modinfopanel_ModID = "Mod ID",
+    UI_modinfopanel_WorkshopID = "Workshop ID",
+    UI_modinfopanel_LastUpdate = "Dernière mise à jour",
+    UI_modinfopanel_ZomboidVersion = "Version du jeu",
+    UI_modinfopanel_Dependencies = "Dépendances",
+    UI_modinfopanel_IncompatibleWith = "Incompatible avec",
+    UI_modinfopanel_Changelog = "Liste des modifications",
+
     UI_modinfopanel_TimeFormat_Today = "Aujourd'hui à {hour24}h{min}",
     UI_modinfopanel_TimeFormat_Yesterday = "Hier à {hour24}h{min}",
     UI_modinfopanel_TimeFormat_ThisYear = "{day} {month} à {hour24}h{min}",

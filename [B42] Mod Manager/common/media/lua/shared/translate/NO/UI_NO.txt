@@ -31,6 +31,17 @@ UI_NO = {
     UI_modselector_btn_enable = "AKTIVER",
     UI_modselector_btn_disable = "DEAKTIVER",
 
+    UI_modinfopanel_Status = "Status",
+    UI_modinfopanel_Version = "Versjon",
+    UI_modinfopanel_Author = "Forfatter",
+    UI_modinfopanel_ModID = "Mod ID",
+    UI_modinfopanel_WorkshopID = "Workshop ID",
+    UI_modinfopanel_LastUpdate = "Sist oppdatert",
+    UI_modinfopanel_ZomboidVersion = "Spillversjon",
+    UI_modinfopanel_Dependencies = "Avhengigheter",
+    UI_modinfopanel_IncompatibleWith = "Inkompatibel med",
+    UI_modinfopanel_Changelog = "Endringslogg",
+
     UI_modinfopanel_TimeFormat_Today = "I dag kl. {hour24}.{min}",
     UI_modinfopanel_TimeFormat_Yesterday = "I går kl. {hour24}.{min}",
     UI_modinfopanel_TimeFormat_ThisYear = "{day}. {month} kl. {hour24}.{min}",

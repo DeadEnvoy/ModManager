@@ -31,6 +31,17 @@ UI_RU = {
     UI_modselector_btn_enable = "ВКЛЮЧИТЬ",
     UI_modselector_btn_disable = "ОТКЛЮЧИТЬ",
 
+    UI_modinfopanel_Status = "Статус",
+    UI_modinfopanel_Version = "Версия",
+    UI_modinfopanel_Author = "Автор",
+    UI_modinfopanel_ModID = "Mod ID",
+    UI_modinfopanel_WorkshopID = "Workshop ID",
+    UI_modinfopanel_LastUpdate = "Последнее обновление",
+    UI_modinfopanel_ZomboidVersion = "Версия игры",
+    UI_modinfopanel_Dependencies = "Зависимости",
+    UI_modinfopanel_IncompatibleWith = "Несовместимости",
+    UI_modinfopanel_Changelog = "Список изменений",
+
     UI_modinfopanel_TimeFormat_Today = "Сегодня в {hour24}:{min}",
     UI_modinfopanel_TimeFormat_Yesterday = "Вчера в {hour24}:{min}",
     UI_modinfopanel_TimeFormat_ThisYear = "{day} {month} в {hour24}:{min}",

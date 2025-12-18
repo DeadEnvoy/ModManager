@@ -31,6 +31,17 @@ UI_CN = {
     UI_modselector_btn_enable = "启用",
     UI_modselector_btn_disable = "禁用",
 
+    UI_modinfopanel_Status = "状态",
+    UI_modinfopanel_Version = "版本",
+    UI_modinfopanel_Author = "作者",
+    UI_modinfopanel_ModID = "Mod ID",
+    UI_modinfopanel_WorkshopID = "Workshop ID",
+    UI_modinfopanel_LastUpdate = "最后更新",
+    UI_modinfopanel_ZomboidVersion = "游戏版本",
+    UI_modinfopanel_Dependencies = "依赖项",
+    UI_modinfopanel_IncompatibleWith = "不兼容",
+    UI_modinfopanel_Changelog = "更新日志",
+
     UI_modinfopanel_TimeFormat_Today = "今天 {ampm} {hour12}:{min}",
     UI_modinfopanel_TimeFormat_Yesterday = "昨天 {ampm} {hour12}:{min}",
     UI_modinfopanel_TimeFormat_ThisYear = "{month} 月 {day} 日 {ampm} {hour12}:{min}",

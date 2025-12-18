@@ -31,6 +31,17 @@ UI_KO = {
     UI_modselector_btn_enable = "활성화",
     UI_modselector_btn_disable = "비활성화",
 
+    UI_modinfopanel_Status = "상태",
+    UI_modinfopanel_Version = "버전",
+    UI_modinfopanel_Author = "제작자",
+    UI_modinfopanel_ModID = "Mod ID",
+    UI_modinfopanel_WorkshopID = "Workshop ID",
+    UI_modinfopanel_LastUpdate = "마지막 업데이트",
+    UI_modinfopanel_ZomboidVersion = "게임 버전",
+    UI_modinfopanel_Dependencies = "선행 모드",
+    UI_modinfopanel_IncompatibleWith = "호환되지 않음",
+    UI_modinfopanel_Changelog = "변경 로그",
+
     UI_modinfopanel_TimeFormat_Today = "오늘 {ampm} {hour12}시 {min}분",
     UI_modinfopanel_TimeFormat_Yesterday = "어제 {ampm} {hour12}시 {min}분",
     UI_modinfopanel_TimeFormat_ThisYear = "{month}월 {day}일 {ampm} {hour12}시 {min}분",

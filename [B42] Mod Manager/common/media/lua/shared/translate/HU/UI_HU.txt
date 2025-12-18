@@ -31,6 +31,17 @@ UI_HU = {
     UI_modselector_btn_enable = "ENGEDÉLYEZÉS",
     UI_modselector_btn_disable = "LETILTÁS",
 
+    UI_modinfopanel_Status = "Állapot",
+    UI_modinfopanel_Version = "Verzió",
+    UI_modinfopanel_Author = "Szerző",
+    UI_modinfopanel_ModID = "Mod ID",
+    UI_modinfopanel_WorkshopID = "Workshop ID",
+    UI_modinfopanel_LastUpdate = "Utolsó frissítés",
+    UI_modinfopanel_ZomboidVersion = "Játékverzió",
+    UI_modinfopanel_Dependencies = "Függőségek",
+    UI_modinfopanel_IncompatibleWith = "Nem kompatibilis",
+    UI_modinfopanel_Changelog = "Változások listája",
+
     UI_modinfopanel_TimeFormat_Today = "Ma, {hour24}:{min}",
     UI_modinfopanel_TimeFormat_Yesterday = "Tegnap, {hour24}:{min}",
     UI_modinfopanel_TimeFormat_ThisYear = "{month} {day}., {hour24}:{min}",

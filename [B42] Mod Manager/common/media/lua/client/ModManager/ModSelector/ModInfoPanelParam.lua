@@ -218,7 +218,7 @@ function ModInfoPanel.Param:new(x, y, width, type)
     setmetatable(o, self)
     self.__index = self
     o.type = type
-    o.name = getText(type)
+    o.name = getText("UI_modinfopanel_" .. type)
     o.labelWidth = getTextManager():MeasureStringX(UIFont.Small, o.name)
     o.tickTexture = getTexture("media/ui/inventoryPanes/Tickbox_Tick.png")
     o.zomboidVersion = ""

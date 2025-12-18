@@ -31,6 +31,17 @@ UI_TR = {
     UI_modselector_btn_enable = "ETKİNLEŞTİR",
     UI_modselector_btn_disable = "DEVRE DIŞI",
 
+    UI_modinfopanel_Status = "Durum",
+    UI_modinfopanel_Version = "Sürüm",
+    UI_modinfopanel_Author = "Yazar",
+    UI_modinfopanel_ModID = "Mod ID",
+    UI_modinfopanel_WorkshopID = "Workshop ID",
+    UI_modinfopanel_LastUpdate = "Son Güncelleme",
+    UI_modinfopanel_ZomboidVersion = "Oyun Sürümü",
+    UI_modinfopanel_Dependencies = "Gereksinimler",
+    UI_modinfopanel_IncompatibleWith = "Uyumsuzluklar",
+    UI_modinfopanel_Changelog = "Değişiklikler",
+
     UI_modinfopanel_TimeFormat_Today = "Bugün @ {hour24}:{min}",
     UI_modinfopanel_TimeFormat_Yesterday = "Dün @ {hour24}:{min}",
     UI_modinfopanel_TimeFormat_ThisYear = "{day} {month} @ {hour24}:{min}",

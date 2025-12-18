@@ -31,6 +31,17 @@ UI_PTBR = {
     UI_modselector_btn_enable = "HABILITAR",
     UI_modselector_btn_disable = "DESABILITAR",
 
+    UI_modinfopanel_Status = "Status",
+    UI_modinfopanel_Version = "Versão",
+    UI_modinfopanel_Author = "Autor",
+    UI_modinfopanel_ModID = "Mod ID",
+    UI_modinfopanel_WorkshopID = "Workshop ID",
+    UI_modinfopanel_LastUpdate = "Última atualização",
+    UI_modinfopanel_ZomboidVersion = "Versão do jogo",
+    UI_modinfopanel_Dependencies = "Dependências",
+    UI_modinfopanel_IncompatibleWith = "Incompatível com",
+    UI_modinfopanel_Changelog = "Registro de alterações",
+
     UI_modinfopanel_TimeFormat_Today = "Hoje às {hour24}:{min}",
     UI_modinfopanel_TimeFormat_Yesterday = "Ontem às {hour24}:{min}",
     UI_modinfopanel_TimeFormat_ThisYear = "{day} de {month} às {hour24}:{min}",

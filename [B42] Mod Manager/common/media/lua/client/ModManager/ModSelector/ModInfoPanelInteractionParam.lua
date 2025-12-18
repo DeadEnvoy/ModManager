@@ -85,7 +85,7 @@ function ModInfoPanel.InteractionParam:new(x, y, width, type)
     setmetatable(o, self)
     self.__index = self
     o.type = type
-    o.name = getText(type)
+    o.name = getText("UI_modinfopanel_" .. type)
     o.labelWidth = getTextManager():MeasureStringX(UIFont.Small, o.name)
     o.padX = UI_BORDER_SPACING
     o.padY = UI_BORDER_SPACING

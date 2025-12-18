@@ -9,7 +9,7 @@ ModInfoPanel.Changelog = ModInfoPanel.InteractionParam:derive("ModInfoPanelChang
 
 function ModInfoPanel.Changelog:new(x, y, width, height)
     local o = ModInfoPanel.InteractionParam.new(self, x, y, width, "Changelog")
-    o.name = "Changelog"
+    o.name = getText("UI_modinfopanel_Changelog")
     o.labelWidth = getTextManager():MeasureStringX(UIFont.Small, o.name)
     o.modDict = {}
     return o
