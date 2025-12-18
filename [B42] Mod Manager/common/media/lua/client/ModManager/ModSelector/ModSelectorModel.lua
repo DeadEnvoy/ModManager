@@ -9,6 +9,7 @@ function ModSelector.Model:new(view)
     o.requirements = {}
     o.isQueryingWorkshop = false
     o.queryFinishedTime = 0
+    o.workshopDetailsCache = {}
     o:trackMods()
     return o
 end
@@ -96,15 +97,7 @@ function ModSelector.Model:reloadMods()
                 data.defaultActive = self:isModActive(modId)
                 data.defaultFav = self.favs[modId]
                 data.indexAdded = self:indexByDateAdded(modId)
-                data.timeUpdated = 0
-                data.workshopState = ""
-                if data.icon == "" then data.icon = ModSelector.Model.categories[data.category] end
 
-                data.lowerName = string.lower(data.name)
-                data.lowerId = string.lower(data.modId)
-                local author = modInfo:getAuthor() or ""
-                data.lowerAuthor = string.lower(author)
-                
                 local workshopID = modInfo:getWorkshopID()
                 if not workshopID or workshopID == "" then
                     local path = modInfo:getDir(); if path then
@@ -112,6 +105,17 @@ function ModSelector.Model:reloadMods()
                     end
                 end
                 data.workshopIDStr = workshopID and tostring(workshopID) or ""
+
+                local cachedData = self.workshopDetailsCache[data.workshopIDStr]
+                data.timeUpdated = (cachedData and cachedData.timeUpdated) or 0
+                data.workshopState = (cachedData and cachedData.workshopState) or ""
+                
+                if data.icon == "" then data.icon = ModSelector.Model.categories[data.category] end
+
+                data.lowerName = string.lower(data.name)
+                data.lowerId = string.lower(data.modId)
+                local author = modInfo:getAuthor() or ""
+                data.lowerAuthor = string.lower(author)
 
                 self.mods[modId] = data
                 table.insert(self.sortedMods, data)
@@ -529,7 +533,12 @@ function ModSelector.Model:onItemQueryFinished(status, info)
         local detailsMap = {}
         for i = 1, info:size() do
             local details = info:get(i - 1)
-            detailsMap[details:getIDString()] = details
+            local idStr = details:getIDString()
+            detailsMap[idStr] = details
+            self.workshopDetailsCache[idStr] = {
+                timeUpdated = details:getTimeUpdated() or 0,
+                workshopState = details:getState() or ""
+            }
         end
 
         if self.mods then
@@ -544,12 +553,8 @@ function ModSelector.Model:onItemQueryFinished(status, info)
             end
         end
         
-        if self.currentSort == 'date_updated' then
-            self:refreshMods()
-        else
-            if self.view and self.view.modInfoPanel and self.view.modInfoPanel:getIsVisible() and self.view.modInfoPanel.modInfo then
-                self.view.modInfoPanel:updateView(self.view.modInfoPanel.modInfo)
-            end
+        if self.view and self.view.modInfoPanel and self.view.modInfoPanel:getIsVisible() and self.view.modInfoPanel.modInfo then
+            self.view.modInfoPanel:updateView(self.view.modInfoPanel.modInfo)
         end
     end
 end
