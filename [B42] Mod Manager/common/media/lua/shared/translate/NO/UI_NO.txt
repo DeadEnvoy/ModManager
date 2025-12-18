@@ -18,7 +18,7 @@ UI_NO = {
     UI_modlistpanel_sortBy_dateUpdated = "Oppdatert dato",
 
     UI_modselector_status_installed = "Oppdatert",
-    UI_modselector_status_needsUpdate = "Oppdatering kreves!",
+    UI_modselector_status_needsUpdate = "Oppdatering tilgjengelig!",
 
     UI_modoptions_title = "MOD-ALTERNATIVER",
 

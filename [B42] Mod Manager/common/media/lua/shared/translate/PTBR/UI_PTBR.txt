@@ -18,7 +18,7 @@ UI_PTBR = {
     UI_modlistpanel_sortBy_dateUpdated = "Data de atualização",
 
     UI_modselector_status_installed = "Atualizado",
-    UI_modselector_status_needsUpdate = "Atualização necessária!",
+    UI_modselector_status_needsUpdate = "Atualização disponível!",
 
     UI_modoptions_title = "OPÇÕES DE MODS",
 

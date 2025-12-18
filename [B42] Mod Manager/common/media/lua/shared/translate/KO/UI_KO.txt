@@ -18,7 +18,7 @@ UI_KO = {
     UI_modlistpanel_sortBy_dateUpdated = "업데이트 날짜",
 
     UI_modselector_status_installed = "최신",
-    UI_modselector_status_needsUpdate = "업데이트 필요!",
+    UI_modselector_status_needsUpdate = "업데이트 가능!",
 
     UI_modoptions_title = "모드 옵션",
 

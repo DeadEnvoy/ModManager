@@ -18,7 +18,7 @@ UI_TR = {
     UI_modlistpanel_sortBy_dateUpdated = "Güncelleme tarihi",
 
     UI_modselector_status_installed = "Güncel",
-    UI_modselector_status_needsUpdate = "Güncelleme gerekli!",
+    UI_modselector_status_needsUpdate = "Güncelleme mevcut!",
 
     UI_modoptions_title = "MOD SEÇENEKLERİ",
 

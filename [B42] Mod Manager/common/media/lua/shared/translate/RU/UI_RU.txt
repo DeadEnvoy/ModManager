@@ -18,7 +18,7 @@ UI_RU = {
     UI_modlistpanel_sortBy_dateUpdated = "По дате обновления",
 
     UI_modselector_status_installed = "Актуальная",
-    UI_modselector_status_needsUpdate = "Требуется обновление!",
+    UI_modselector_status_needsUpdate = "Доступно обновление!",
 
     UI_modoptions_title = "НАСТРОЙКИ МОДИФИКАЦИЙ",
 

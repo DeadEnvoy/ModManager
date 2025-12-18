@@ -18,7 +18,7 @@ UI_PL = {
     UI_modlistpanel_sortBy_dateUpdated = "Data aktualizacji",
 
     UI_modselector_status_installed = "Aktualny",
-    UI_modselector_status_needsUpdate = "Wymagana aktualizacja!",
+    UI_modselector_status_needsUpdate = "Dostępna aktualizacja!",
 
     UI_modoptions_title = "OPCJE MODÓW",
 

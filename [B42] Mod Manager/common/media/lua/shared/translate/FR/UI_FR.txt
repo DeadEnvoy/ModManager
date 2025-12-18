@@ -18,7 +18,7 @@ UI_FR = {
     UI_modlistpanel_sortBy_dateUpdated = "Date de mise à jour",
 
     UI_modselector_status_installed = "À jour",
-    UI_modselector_status_needsUpdate = "Mise à jour requise !",
+    UI_modselector_status_needsUpdate = "Mise à jour disponible !",
 
     UI_modoptions_title = "OPTIONS DES MODS",
 
