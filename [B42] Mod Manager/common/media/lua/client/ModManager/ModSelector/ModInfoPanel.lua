@@ -35,14 +35,6 @@ function ModInfoPanel:createChildren()
     self.dependenciesPanel:instantiate()
     self:addChild(self.dependenciesPanel)
 
-    self.incompatiblePanel = ModInfoPanel.InteractionParam:new(0, self.dependenciesPanel:getBottom()-1, self.width, "IncompatibleWith")
-    self.incompatiblePanel:initialise()
-    self.incompatiblePanel:instantiate()
-    self:addChild(self.incompatiblePanel)
-
-    self:removeChild(self.incompatiblePanel)
-    self.incompatiblePanel = nil
-
     self.incompatiblePanel = ModInfoPanel.IncompatibleParam:new(0, self.dependenciesPanel:getBottom()-1, self.width, "IncompatibleWith")
     self.incompatiblePanel:initialise()
     self.incompatiblePanel:instantiate()
@@ -88,4 +80,31 @@ function ModInfoPanel:recalcSize()
     if self.changelogPanel then
         self.changelogPanel:setHeight(self:getHeight() - self.changelogPanel:getY())
     end
+end
+
+function ModInfoPanel:new(x, y, width, height)
+    local o = ISPanelJoypad:new(x, y, width, height)
+    setmetatable(o, self)
+    self.__index = self
+    o.modInfoParams = {"Status", "Version", "Author", "ModID", "WorkshopID", "ZomboidVersion"}
+    o.thumbnailPreviewImage = nil
+    return o
+end
+
+function ModInfoPanel:drawCustomRectBorder(x, y, w, h, r, g, b, a)
+    if self.javaObject ~= nil then
+        self.javaObject:DrawTextureScaledColor(nil, x, y, 2, h, r, g, b, a);
+        self.javaObject:DrawTextureScaledColor(nil, x+2, y, w-4, 2, r, g, b, a);
+        self.javaObject:DrawTextureScaledColor(nil, x+w-2, y, 2, h, r, g, b, a);
+        self.javaObject:DrawTextureScaledColor(nil, x+2, y+h-2, w-4, 2, r, g, b, a);
+    end
+end
+
+function ModInfoPanel:render()
+    if self.thumbnailPreviewImage then
+        local h = self.height - self.thumbnailPanel:getBottom() - 100
+        local w = self.thumbnailPreviewImage:getWidth() * (h / self.thumbnailPreviewImage:getHeight())
+        self:drawTextureScaledAspect(self.thumbnailPreviewImage, (self.width - w)/2, self.thumbnailPanel:getBottom() + 16, w, h, 1, 1, 1, 1)
+    end
+	self:renderJoypadFocus()
 end
