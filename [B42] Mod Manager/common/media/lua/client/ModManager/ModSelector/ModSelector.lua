@@ -255,6 +255,50 @@ function ModSelector:onSortAndApply()
     self:onAccept()
 end
 
+function ModSelector:update()
+    ISPanelJoypad.update(self)
+
+    if not self.modListPanel.modList.items or #self.modListPanel.modList.items == 0 then return end
+    if self.modListPanel.searchEntry:isFocused() then return end
+
+    local up = isKeyDown(Keyboard.KEY_UP)
+    local down = isKeyDown(Keyboard.KEY_DOWN)
+
+    if up or down then
+        local now = getTimestampMs()
+        local move = false
+        local direction = up and "up" or "down"
+
+        if self.lastKey ~= direction then
+            self.lastKey = direction
+            self.repeatTimer = now + 500
+            move = true
+        elseif now > self.repeatTimer then
+            self.repeatTimer = now + 50
+            move = true
+        end
+
+        if move then
+            local modList = self.modListPanel.modList
+            local step = isKeyDown(Keyboard.KEY_LSHIFT) and 5 or 1
+            if up then
+                modList.selected = math.max(1, modList.selected - step)
+            else
+                modList.selected = math.min(#modList.items, modList.selected + step)
+            end
+            
+            local selectedItem = modList.items[modList.selected].item
+            if selectedItem and selectedItem.modInfo then
+                 self.modInfoPanel:updateView(selectedItem.modInfo)
+            end
+
+            modList:ensureVisible(modList.selected)
+        end
+    else
+        self.lastKey = nil
+    end
+end
+
 function ModSelector:onKeyRelease(key)
     if self.modListPanel.searchEntry:isFocused() then
         if key == Keyboard.KEY_ESCAPE then
@@ -278,21 +322,7 @@ function ModSelector:onKeyRelease(key)
         return
     end
 
-    if key == Keyboard.KEY_UP or key == Keyboard.KEY_DOWN then
-        local step = isKeyDown(Keyboard.KEY_LSHIFT) and 5 or 1
-
-        if key == Keyboard.KEY_UP then
-            modList.selected = math.max(1, modList.selected - step)
-        elseif key == Keyboard.KEY_DOWN then
-            modList.selected = math.min(#modList.items, modList.selected + step)
-        end
-
-        local selectedItem = modList.items[modList.selected].item
-        if selectedItem and selectedItem.modInfo then
-             self.modInfoPanel:updateView(selectedItem.modInfo)
-        end
-        modList:ensureVisible(modList.selected)
-    elseif key == Keyboard.KEY_SPACE then
+    if key == Keyboard.KEY_SPACE then
         local selectedMod = modList.items[modList.selected].item
         self.model:forceActivateMods(selectedMod.modInfo, not selectedMod.isActive)
     end
