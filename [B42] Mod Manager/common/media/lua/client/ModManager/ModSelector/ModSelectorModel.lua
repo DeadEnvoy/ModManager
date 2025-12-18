@@ -7,6 +7,8 @@ function ModSelector.Model:new(view)
     o.hidden = {}
     o.incompatibles = {}
     o.requirements = {}
+    o.isQueryingWorkshop = false
+    o.queryFinishedTime = 0
     o:trackMods()
     return o
 end
@@ -66,6 +68,9 @@ function ModSelector.Model:setFavorite(id, isFavorite)
 end
 
 function ModSelector.Model:reloadMods()
+    self.isQueryingWorkshop = false
+    self.queryFinishedTime = 0
+
     self:loadModDataFromFile()
 
     ---@diagnostic disable-next-line: undefined-field
@@ -92,6 +97,7 @@ function ModSelector.Model:reloadMods()
                 data.defaultFav = self.favs[modId]
                 data.indexAdded = self:indexByDateAdded(modId)
                 data.timeUpdated = 0
+                data.workshopState = ""
                 if data.icon == "" then data.icon = ModSelector.Model.categories[data.category] end
 
                 data.lowerName = string.lower(data.name)
@@ -119,7 +125,6 @@ function ModSelector.Model:reloadMods()
 
     self:refreshMods()
     
-    -- Запускаем проверку обновлений сразу после загрузки списка модов
     self:queryWorkshopItemDetails()
 end
 
@@ -504,16 +509,22 @@ function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm, s
 end
 
 function ModSelector.Model:queryWorkshopItemDetails()
+    if not getSteamModeActive() then return end
+
     local workshopIDs = getSteamWorkshopItemIDs()
 
     if not workshopIDs or workshopIDs:isEmpty() then
         return
     end
 
+    self.isQueryingWorkshop = true
     querySteamWorkshopItemDetails(workshopIDs, self.onItemQueryFinished, self)
 end
 
 function ModSelector.Model:onItemQueryFinished(status, info)
+    self.queryFinishedTime = getTimestampMs()
+    self.isQueryingWorkshop = false
+    
     if status == "Completed" then
         local detailsMap = {}
         for i = 1, info:size() do
@@ -527,6 +538,7 @@ function ModSelector.Model:onItemQueryFinished(status, info)
                     local details = detailsMap[modData.workshopIDStr]
                     if details then
                         modData.timeUpdated = details:getTimeUpdated() or 0
+                        modData.workshopState = details:getState() or ""
                     end
                 end
             end
@@ -534,6 +546,10 @@ function ModSelector.Model:onItemQueryFinished(status, info)
         
         if self.currentSort == 'date_updated' then
             self:refreshMods()
+        else
+            if self.view and self.view.modInfoPanel and self.view.modInfoPanel:getIsVisible() and self.view.modInfoPanel.modInfo then
+                self.view.modInfoPanel:updateView(self.view.modInfoPanel.modInfo)
+            end
         end
     end
 end

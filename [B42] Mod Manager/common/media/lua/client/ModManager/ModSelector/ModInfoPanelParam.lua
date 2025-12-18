@@ -20,7 +20,77 @@ function ModInfoPanel.Param:render()
             self:drawText(getText("UI_mods_ModDisabled"), self.borderX+UI_BORDER_SPACING, 2, 0.9, 0.0, 0.0, 0.9, UIFont.Small)
         end
     elseif self.type == "Version" then
-        self:drawText(self.modInfo:getModVersion(), self.borderX+UI_BORDER_SPACING, 2, 0.9, 0.9, 0.9, 0.9, UIFont.Small)
+        local versionText = self.modInfo:getModVersion() or ""
+        local finalText = ""
+        local r, g, b = 0.9, 0.9, 0.9
+        
+        local model = self.parent.parent.model
+        local finishedTime, now = model.queryFinishedTime or 0, getTimestampMs()
+        local isInDelay = (now - finishedTime < 1000)
+        
+        local isQuerying = (model.isQueryingWorkshop or isInDelay) and self.workshopID ~= ""
+        
+        if isQuerying then
+            finalText = versionText
+        else
+            local statusText = ""
+            if self.workshopState == "NeedsUpdate" then
+                statusText = getText("UI_modselector_status_needsUpdate")
+                r, g, b = 0.2, 0.6, 1.0
+            elseif self.workshopState == "Installed" then
+                statusText = getText("UI_modselector_status_installed")
+            end
+
+            if statusText ~= "" then
+                if versionText ~= "" then
+                    local formattedStatus = statusText:gsub("!", ""):lower()
+                    finalText = versionText .. " (" .. formattedStatus .. ")"
+                else
+                    finalText = statusText
+                end
+            else
+                finalText = versionText
+            end
+        end
+
+        local textX = self.borderX + UI_BORDER_SPACING
+        self:drawText(finalText, textX, 2, r, g, b, 0.9, UIFont.Small)
+
+        if isQuerying then
+            local time = getTimestampMs()
+            local activeDotIndex = math.floor(time / 300) % 3 + 1
+            
+            local textLen = 0
+            if finalText ~= "" then
+                textLen = getTextManager():MeasureStringX(UIFont.Small, finalText) + 4
+            end
+            
+            local dotX = textX + textLen
+            local dotWidth = getTextManager():MeasureStringX(UIFont.Small, ".") + 1
+
+            for i = 1, 3 do
+                local dr, dg, db = 0.4, 0.4, 0.4
+                if i == activeDotIndex then
+                    dr, dg, db = 0.9, 0.9, 0.9
+                end
+                
+                self:drawText(".", dotX, 2, dr, dg, db, 0.9, UIFont.Small)
+                dotX = dotX + dotWidth
+            end
+        end
+
+        if self.isUpdateRequired and not isQuerying then
+            local textLen = getTextManager():MeasureStringX(UIFont.Small, finalText)
+            local lineY = 1 + FONT_HGT_SMALL
+            
+            local isMouseOverText = self:isMouseOver() and self:getMouseX() > textX and self:getMouseX() < textX + textLen and self:getMouseY() > 2 and self:getMouseY() < 2 + FONT_HGT_SMALL + 1
+            if not isMouseOverText then
+                self:drawRectBorder(textX, lineY, textLen, 1, 0.9, r, g, b)
+            elseif self.pressed then
+                activateSteamOverlayToWorkshopItem(self.workshopID)
+            end
+        end
+
     elseif self.type == "Author" then
         self:drawText(self.modInfo:getAuthor(), self.borderX+UI_BORDER_SPACING, 2, 0.9, 0.9, 0.9, 0.9, UIFont.Small)
     elseif self.type == "ModID" then
@@ -56,18 +126,20 @@ end
 function ModInfoPanel.Param:setModInfo(modInfo)
     self.modInfo = modInfo
 
-    self.zomboidVersion = (self.modInfo:getVersionMin() and self.modInfo:getVersionMin():toString() or "**")
-            .. " - "
-            .. (self.modInfo:getVersionMax() and self.modInfo:getVersionMax():toString() or "**")
+    self.zomboidVersion = (self.modInfo:getVersionMin() and self.modInfo:getVersionMin():toString() or "**") .. " - " .. (self.modInfo:getVersionMax() and self.modInfo:getVersionMax():toString() or "**")
     
     local model = self.parent.parent.model
     local modId = modInfo:getId()
     local modData = model.mods[modId]
 
-    if modData and modData.workshopIDStr and modData.workshopIDStr ~= "" then
-        self.workshopID = modData.workshopIDStr
+    if modData then
+        self.workshopID = modData.workshopIDStr or ""
+        self.workshopState = modData.workshopState or ""
+        self.isUpdateRequired = (self.workshopState == "NeedsUpdate")
     else
         self.workshopID = ""
+        self.workshopState = ""
+        self.isUpdateRequired = false
     end
 
     self.workshopIDLen = getTextManager():MeasureStringX(UIFont.Small, self.workshopID)
