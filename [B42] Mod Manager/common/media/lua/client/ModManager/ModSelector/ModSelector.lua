@@ -209,6 +209,22 @@ function ModSelector:prerender()
     self:drawText(str3, txtX, txtY, 1, 1, 1, 1, font)
 end
 
+function ModSelector:selectModByInfo(modInfo)
+    if not modInfo then return end
+
+    local modList = self.modListPanel.modList
+    local modIdToSelect = modInfo:getId()
+    for i, item in ipairs(modList.items) do
+        if item.item.modId == modIdToSelect then
+            modList.selected = i
+            modList:ensureVisible(i)
+            break
+        end
+    end
+
+    self.modInfoPanel:updateView(modInfo)
+end
+
 function ModSelector:updateView()
     self.modListPanel:updateView()
     self.presetPanel:updateView()
