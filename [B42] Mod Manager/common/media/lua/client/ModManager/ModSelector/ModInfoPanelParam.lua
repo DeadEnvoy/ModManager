@@ -103,6 +103,30 @@ function ModInfoPanel.Param:render()
         elseif self.workshopID ~= "" and self.pressed then
             activateSteamOverlayToWorkshopItem(self.workshopID)
         end
+    elseif self.type == "LastUpdate" then
+        local model = self.parent.parent.model
+        local finishedTime, now = model.queryFinishedTime or 0, getTimestampMs()
+        local isInDelay = (now - finishedTime < 1000)
+        local isQuerying = (model.isQueryingWorkshop or isInDelay) and self.workshopID ~= ""
+        local textX = self.borderX + UI_BORDER_SPACING
+
+        if isQuerying then
+            local time = getTimestampMs()
+            local activeDotIndex = math.floor(time / 300) % 3 + 1
+            local dotWidth = getTextManager():MeasureStringX(UIFont.Small, ".") + 1
+            local dotX = textX
+
+            for i = 1, 3 do
+                local dr, dg, db = 0.4, 0.4, 0.4
+                if i == activeDotIndex then
+                    dr, dg, db = 0.9, 0.9, 0.9
+                end
+                self:drawText(".", dotX, 2, dr, dg, db, 0.9, UIFont.Small)
+                dotX = dotX + dotWidth
+            end
+        else
+            self:drawText(self.formattedDate, textX, 2, 0.9, 0.9, 0.9, 0.9, UIFont.Small)
+        end
     elseif self.type == "ZomboidVersion" then
         if self.modInfo:isAvailableSelf() then
             self:drawText(self.zomboidVersion, self.borderX+UI_BORDER_SPACING, 2, 0.9, 0.9, 0.9, 0.9, UIFont.Small)
@@ -123,6 +147,48 @@ function ModInfoPanel.Param:onMouseDown(x, y)
     self.pressed = true
 end
 
+function ModInfoPanel.Param:formatDate(seconds)
+    if not seconds or seconds == 0 then return "" end
+    
+    local d, now = os.date("*t", seconds), os.date("*t")
+    local midnight = os.time({year=now.year, month=now.month, day=now.day, hour=0, min=0, sec=0})
+    local isToday, isYesterday = (seconds >= midnight), (seconds >= midnight - 86400 and seconds < midnight)
+    
+    local timeFormat
+    
+    if isToday then
+        timeFormat = getText("UI_modinfopanel_TimeFormat_Today")
+    elseif isYesterday then
+        timeFormat = getText("UI_modinfopanel_TimeFormat_Yesterday")
+    elseif d.year == now.year then
+        timeFormat = getText("UI_modinfopanel_TimeFormat_ThisYear")
+    else
+        timeFormat = getText("UI_modinfopanel_TimeFormat_OtherYears")
+    end
+
+    local month = getText("UI_modinfopanel_Month_Short_" .. d.month)
+
+    local h12, ampm = d.hour, ""
+    if h12 >= 12 then
+        ampm = getText("UI_modinfopanel_PM")
+        if h12 > 12 then h12 = h12 - 12 end
+    else
+        ampm = getText("UI_modinfopanel_AM")
+        if h12 == 0 then h12 = 12 end
+    end
+
+    local res = timeFormat
+    res = res:gsub("{day}", d.day)
+    res = res:gsub("{month}", month)
+    res = res:gsub("{year}", d.year)
+    res = res:gsub("{hour24}", d.hour)
+    res = res:gsub("{hour12}", h12)
+    res = res:gsub("{min}", string.format("%02d", d.min))
+    res = res:gsub("{ampm}", ampm)
+
+    return res
+end
+
 function ModInfoPanel.Param:setModInfo(modInfo)
     self.modInfo = modInfo
 
@@ -136,10 +202,12 @@ function ModInfoPanel.Param:setModInfo(modInfo)
         self.workshopID = modData.workshopIDStr or ""
         self.workshopState = modData.workshopState or ""
         self.isUpdateRequired = (self.workshopState == "NeedsUpdate")
+        self.formattedDate = self:formatDate(modData.timeUpdated)
     else
         self.workshopID = ""
         self.workshopState = ""
         self.isUpdateRequired = false
+        self.formattedDate = ""
     end
 
     self.workshopIDLen = getTextManager():MeasureStringX(UIFont.Small, self.workshopID)

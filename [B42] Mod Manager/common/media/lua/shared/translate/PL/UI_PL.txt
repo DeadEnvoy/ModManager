@@ -15,6 +15,10 @@ UI_PL = {
     UI_modlistpanel_sortBy = "Sortuj według:",
     UI_modlistpanel_sortBy_name = "Nazwa (A-Z)",
     UI_modlistpanel_sortBy_date = "Data dodania",
+    UI_modlistpanel_sortBy_dateUpdated = "Data aktualizacji",
+
+    UI_modselector_status_installed = "Aktualny",
+    UI_modselector_status_needsUpdate = "Wymagana aktualizacja!",
 
     UI_modoptions_title = "OPCJE MODÓW",
 
@@ -26,4 +30,25 @@ UI_PL = {
     UI_modselector_btn_unfavorite = "USUŃ",
     UI_modselector_btn_enable = "WŁĄCZ",
     UI_modselector_btn_disable = "WYŁĄCZ",
+
+    UI_modinfopanel_TimeFormat_Today = "Dzisiaj o {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_Yesterday = "Wczorajo {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_ThisYear = "{day} {month} o {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_OtherYears = "{day} {month} {year} o {hour24}:{min}",
+
+    UI_modinfopanel_AM = "AM",
+    UI_modinfopanel_PM = "PM",
+
+    UI_modinfopanel_Month_Short_1 = "stycznia",
+    UI_modinfopanel_Month_Short_2 = "lutego",
+    UI_modinfopanel_Month_Short_3 = "marca",
+    UI_modinfopanel_Month_Short_4 = "kwietnia",
+    UI_modinfopanel_Month_Short_5 = "maja",
+    UI_modinfopanel_Month_Short_6 = "czerwca",
+    UI_modinfopanel_Month_Short_7 = "lipca",
+    UI_modinfopanel_Month_Short_8 = "sierpnia",
+    UI_modinfopanel_Month_Short_9 = "września",
+    UI_modinfopanel_Month_Short_10 = "października",
+    UI_modinfopanel_Month_Short_11 = "listopada",
+    UI_modinfopanel_Month_Short_12 = "grudnia",
 }

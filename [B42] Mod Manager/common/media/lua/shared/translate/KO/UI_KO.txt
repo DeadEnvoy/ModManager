@@ -15,6 +15,10 @@ UI_KO = {
     UI_modlistpanel_sortBy = "정렬 기준:",
     UI_modlistpanel_sortBy_name = "이름 (A-Z)",
     UI_modlistpanel_sortBy_date = "추가 날짜",
+    UI_modlistpanel_sortBy_dateUpdated = "업데이트 날짜",
+
+    UI_modselector_status_installed = "최신",
+    UI_modselector_status_needsUpdate = "업데이트 필요!",
 
     UI_modoptions_title = "모드 옵션",
 
@@ -26,4 +30,25 @@ UI_KO = {
     UI_modselector_btn_unfavorite = "제거",
     UI_modselector_btn_enable = "활성화",
     UI_modselector_btn_disable = "비활성화",
+
+    UI_modinfopanel_TimeFormat_Today = "오늘 {ampm} {hour12}시 {min}분",
+    UI_modinfopanel_TimeFormat_Yesterday = "어제 {ampm} {hour12}시 {min}분",
+    UI_modinfopanel_TimeFormat_ThisYear = "{month}월 {day}일 {ampm} {hour12}시 {min}분",
+    UI_modinfopanel_TimeFormat_OtherYears = "{year}년 {month}월 {day}일 {ampm} {hour12}시 {min}분",
+
+    UI_modinfopanel_AM = "오전",
+    UI_modinfopanel_PM = "오후",
+
+    UI_modinfopanel_Month_Short_1 = "1",
+    UI_modinfopanel_Month_Short_2 = "2",
+    UI_modinfopanel_Month_Short_3 = "3",
+    UI_modinfopanel_Month_Short_4 = "4",
+    UI_modinfopanel_Month_Short_5 = "5",
+    UI_modinfopanel_Month_Short_6 = "6",
+    UI_modinfopanel_Month_Short_7 = "7",
+    UI_modinfopanel_Month_Short_8 = "8",
+    UI_modinfopanel_Month_Short_9 = "9",
+    UI_modinfopanel_Month_Short_10 = "10",
+    UI_modinfopanel_Month_Short_11 = "11",
+    UI_modinfopanel_Month_Short_12 = "12",
 }

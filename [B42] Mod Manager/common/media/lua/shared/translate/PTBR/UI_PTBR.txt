@@ -15,6 +15,10 @@ UI_PTBR = {
     UI_modlistpanel_sortBy = "Ordenar por:",
     UI_modlistpanel_sortBy_name = "Nome (A-Z)",
     UI_modlistpanel_sortBy_date = "Data de adição",
+    UI_modlistpanel_sortBy_dateUpdated = "Data de atualização",
+
+    UI_modselector_status_installed = "Atualizado",
+    UI_modselector_status_needsUpdate = "Atualização necessária!",
 
     UI_modoptions_title = "OPÇÕES DE MODS",
 
@@ -26,4 +30,25 @@ UI_PTBR = {
     UI_modselector_btn_unfavorite = "REMOVER",
     UI_modselector_btn_enable = "HABILITAR",
     UI_modselector_btn_disable = "DESABILITAR",
+
+    UI_modinfopanel_TimeFormat_Today = "Hoje às {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_Yesterday = "Ontem às {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_ThisYear = "{day} de {month} às {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_OtherYears = "{day}/{month}/{year} às {hour24}:{min}",
+
+    UI_modinfopanel_AM = "AM",
+    UI_modinfopanel_PM = "PM",
+
+    UI_modinfopanel_Month_Short_1 = "jan.",
+    UI_modinfopanel_Month_Short_2 = "fev.",
+    UI_modinfopanel_Month_Short_3 = "mar.",
+    UI_modinfopanel_Month_Short_4 = "abr.",
+    UI_modinfopanel_Month_Short_5 = "maio",
+    UI_modinfopanel_Month_Short_6 = "jun.",
+    UI_modinfopanel_Month_Short_7 = "jul.",
+    UI_modinfopanel_Month_Short_8 = "ago.",
+    UI_modinfopanel_Month_Short_9 = "set.",
+    UI_modinfopanel_Month_Short_10 = "out.",
+    UI_modinfopanel_Month_Short_11 = "nov.",
+    UI_modinfopanel_Month_Short_12 = "dez.",
 }

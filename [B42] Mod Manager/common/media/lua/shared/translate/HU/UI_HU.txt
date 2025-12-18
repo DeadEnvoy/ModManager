@@ -15,6 +15,10 @@ UI_HU = {
     UI_modlistpanel_sortBy = "Rendezés:",
     UI_modlistpanel_sortBy_name = "Név (A-Z)",
     UI_modlistpanel_sortBy_date = "Hozzáadás dátuma",
+    UI_modlistpanel_sortBy_dateUpdated = "Frissítés dátuma",
+
+    UI_modselector_status_installed = "Naprakész",
+    UI_modselector_status_needsUpdate = "Frissítés szükséges!",
 
     UI_modoptions_title = "MOD BEÁLLÍTÁSOK",
 
@@ -26,4 +30,25 @@ UI_HU = {
     UI_modselector_btn_unfavorite = "ELTÁVOLÍTÁS",
     UI_modselector_btn_enable = "ENGEDÉLYEZÉS",
     UI_modselector_btn_disable = "LETILTÁS",
+
+    UI_modinfopanel_TimeFormat_Today = "Ma, {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_Yesterday = "Tegnap, {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_ThisYear = "{month} {day}., {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_OtherYears = "{year}. {month} {day}., {hour24}:{min}",
+
+    UI_modinfopanel_AM = "DE",
+    UI_modinfopanel_PM = "DU",
+
+    UI_modinfopanel_Month_Short_1 = "jan.",
+    UI_modinfopanel_Month_Short_2 = "febr.",
+    UI_modinfopanel_Month_Short_3 = "márc.",
+    UI_modinfopanel_Month_Short_4 = "ápr.",
+    UI_modinfopanel_Month_Short_5 = "máj.",
+    UI_modinfopanel_Month_Short_6 = "jún.",
+    UI_modinfopanel_Month_Short_7 = "júl.",
+    UI_modinfopanel_Month_Short_8 = "aug.",
+    UI_modinfopanel_Month_Short_9 = "szept.",
+    UI_modinfopanel_Month_Short_10 = "okt.",
+    UI_modinfopanel_Month_Short_11 = "nov.",
+    UI_modinfopanel_Month_Short_12 = "dec.",
 }

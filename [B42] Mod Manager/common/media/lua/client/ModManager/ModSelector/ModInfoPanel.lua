@@ -86,7 +86,7 @@ function ModInfoPanel:new(x, y, width, height)
     local o = ISPanelJoypad:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
-    o.modInfoParams = {"Status", "Version", "Author", "ModID", "WorkshopID", "ZomboidVersion"}
+    o.modInfoParams = {"Status", "Version", "Author", "ModID", "WorkshopID", "LastUpdate", "ZomboidVersion"}
     o.thumbnailPreviewImage = nil
     return o
 end

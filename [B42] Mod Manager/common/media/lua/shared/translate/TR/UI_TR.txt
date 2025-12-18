@@ -15,6 +15,10 @@ UI_TR = {
     UI_modlistpanel_sortBy = "Sırala:",
     UI_modlistpanel_sortBy_name = "İsim (A-Z)",
     UI_modlistpanel_sortBy_date = "Eklenme tarihi",
+    UI_modlistpanel_sortBy_dateUpdated = "Güncelleme tarihi",
+
+    UI_modselector_status_installed = "Güncel",
+    UI_modselector_status_needsUpdate = "Güncelleme gerekli!",
 
     UI_modoptions_title = "MOD SEÇENEKLERİ",
 
@@ -26,4 +30,25 @@ UI_TR = {
     UI_modselector_btn_unfavorite = "KALDIR",
     UI_modselector_btn_enable = "ETKİNLEŞTİR",
     UI_modselector_btn_disable = "DEVRE DIŞI",
+
+    UI_modinfopanel_TimeFormat_Today = "Bugün @ {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_Yesterday = "Dün @ {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_ThisYear = "{day} {month} @ {hour24}:{min}",
+    UI_modinfopanel_TimeFormat_OtherYears = "{day} {month} {year} @ {hour24}:{min}",
+
+    UI_modinfopanel_AM = "ÖÖ",
+    UI_modinfopanel_PM = "ÖS",
+
+    UI_modinfopanel_Month_Short_1 = "Oca",
+    UI_modinfopanel_Month_Short_2 = "Şub",
+    UI_modinfopanel_Month_Short_3 = "Mar",
+    UI_modinfopanel_Month_Short_4 = "Nis",
+    UI_modinfopanel_Month_Short_5 = "May",
+    UI_modinfopanel_Month_Short_6 = "Haz",
+    UI_modinfopanel_Month_Short_7 = "Tem",
+    UI_modinfopanel_Month_Short_8 = "Ağu",
+    UI_modinfopanel_Month_Short_9 = "Eyl",
+    UI_modinfopanel_Month_Short_10 = "Eki",
+    UI_modinfopanel_Month_Short_11 = "Kas",
+    UI_modinfopanel_Month_Short_12 = "Ara",
 }
