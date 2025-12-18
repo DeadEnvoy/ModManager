@@ -18,6 +18,16 @@ function ModSelector.Model:sortMods()
         sortFunc = function(a, b) return not string.sort(a.name, b.name) end
     elseif self.currentSort == 'date_added' then
         sortFunc = function(a, b) return a.indexAdded > b.indexAdded end
+    elseif self.currentSort == 'date_updated' then
+        sortFunc = function(a, b)
+            local tA = a.timeUpdated or 0
+            local tB = b.timeUpdated or 0
+            if tA ~= tB then
+                return tA > tB
+            end
+            ---@diagnostic disable-next-line: undefined-field
+            return not string.sort(a.name, b.name)
+        end
     else
         ---@diagnostic disable-next-line: undefined-field
         sortFunc = function(a, b) return not string.sort(a.name, b.name) end
@@ -81,6 +91,7 @@ function ModSelector.Model:reloadMods()
                 data.defaultActive = self:isModActive(modId)
                 data.defaultFav = self.favs[modId]
                 data.indexAdded = self:indexByDateAdded(modId)
+                data.timeUpdated = 0
                 if data.icon == "" then data.icon = ModSelector.Model.categories[data.category] end
 
                 data.lowerName = string.lower(data.name)
@@ -107,6 +118,9 @@ function ModSelector.Model:reloadMods()
     self:buildDependencyGraph()
 
     self:refreshMods()
+    
+    -- Запускаем проверку обновлений сразу после загрузки списка модов
+    self:queryWorkshopItemDetails()
 end
 
 function ModSelector.Model:buildDependencyGraph()
@@ -486,6 +500,41 @@ function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm, s
 
     if not suppressRefresh then
         self:refreshMods()
+    end
+end
+
+function ModSelector.Model:queryWorkshopItemDetails()
+    local workshopIDs = getSteamWorkshopItemIDs()
+
+    if not workshopIDs or workshopIDs:isEmpty() then
+        return
+    end
+
+    querySteamWorkshopItemDetails(workshopIDs, self.onItemQueryFinished, self)
+end
+
+function ModSelector.Model:onItemQueryFinished(status, info)
+    if status == "Completed" then
+        local detailsMap = {}
+        for i = 1, info:size() do
+            local details = info:get(i - 1)
+            detailsMap[details:getIDString()] = details
+        end
+
+        if self.mods then
+            for modId, modData in pairs(self.mods) do
+                if modData.workshopIDStr and modData.workshopIDStr ~= "" then
+                    local details = detailsMap[modData.workshopIDStr]
+                    if details then
+                        modData.timeUpdated = details:getTimeUpdated() or 0
+                    end
+                end
+            end
+        end
+        
+        if self.currentSort == 'date_updated' then
+            self:refreshMods()
+        end
     end
 end
 

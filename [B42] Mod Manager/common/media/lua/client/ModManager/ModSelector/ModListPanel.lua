@@ -82,6 +82,7 @@ function ModListPanel:createChildren()
     self.sortCombo:initialise()
     self.sortCombo:addOptionWithData(getText("UI_modlistpanel_sortBy_name"), "name")
     self.sortCombo:addOptionWithData(getText("UI_modlistpanel_sortBy_date"), "date_added")
+    self.sortCombo:addOptionWithData(getText("UI_modlistpanel_sortBy_dateUpdated"), "date_updated")
     self.sortCombo.selected = 1
     self:addChild(self.sortCombo)
 
