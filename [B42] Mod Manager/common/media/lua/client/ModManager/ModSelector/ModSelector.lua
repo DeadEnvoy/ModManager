@@ -287,7 +287,10 @@ function ModSelector:onKeyRelease(key)
             modList.selected = math.min(#modList.items, modList.selected + step)
         end
 
-        modList:onSelectItem(modList.items[modList.selected].item)
+        local selectedItem = modList.items[modList.selected].item
+        if selectedItem and selectedItem.modInfo then
+             self.modInfoPanel:updateView(selectedItem.modInfo)
+        end
         modList:ensureVisible(modList.selected)
     elseif key == Keyboard.KEY_SPACE then
         local selectedMod = modList.items[modList.selected].item
