@@ -89,6 +89,11 @@ function ModSelector.Model:reloadMods()
                 data.lowerAuthor = string.lower(author)
                 
                 local workshopID = modInfo:getWorkshopID()
+                if not workshopID or workshopID == "" then
+                    local path = modInfo:getDir(); if path then
+                        workshopID = path:match("content[\\/]108600[\\/](%d+)")
+                    end
+                end
                 data.workshopIDStr = workshopID and tostring(workshopID) or ""
 
                 self.mods[modId] = data
