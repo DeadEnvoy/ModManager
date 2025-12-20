@@ -73,3 +73,9 @@ link1 = Workshop = https://steamcommunity.com/id/acrynos/myworkshopfiles/?appid=
 
 Note: While update tracking works correctly, Steam doesn't always return the proper state (Outdated/NeedsUpdate) for mods, so you shouldn't rely solely on the "Up to date" status. Check for mod updates manually using the sort by last update date feature.
 [ ------ ]
+
+[ 1.3.1 ]
+- Added "Better Server Settings" as a dependency (42.13+).
+- Added a rate limit for requests to Steam and a new method for sending/receiving them.
+- ChuckleberryFinnAlertSystem now displays all mods that have been updated in the last two weeks (if they have a Changelog).
+[ ------ ]
