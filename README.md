@@ -2,16 +2,20 @@
 A comprehensive mod manager that adds numerous missing features and fixes existing ones for the in-game modifications menu.
 
 # **Key Features:**
-- Added sorting by installation date.
-- Added ability to hide modifications.
-- Added filter to display only disabled mods.
-- Simplified the incompatible mods list panel.
+- Added sorting by installation & update date.
 - Added display of mod changelog (if provided by the author).
+- Added ability to hide modifications.
+- Added display of the total number of mods.
+- Simplified mod information panel.
 - Added "Reload Lua" and "SORT & ACCEPT" buttons.
+- Added keyboard navigation with arrow keys and spacebar to toggle mods.
+- Added coloring for mods being enabled to distinguish them from those already active.
+- Added display of mod status (Up to date / Update available) and last update date.
 - Added a warning dialog when disabling library mods and those that other mods depend on.
+- Added filter to display only disabled mods.
 - Favorited mods now appear at the top of the list.
 - Completely redesigned the mod settings menu.
-- Added the ability for mod authors to [add images](https://steamcommunity.com/workshop/filedetails/discussion/3567084868/596287646583594599/) in the configuration window.
+- Added the ability for mod authors to [url=https://steamcommunity.com/workshop/filedetails/discussion/3567084868/596287646583594599/]add images[/url] in the configuration window.
 - Added ability to view and search mods by author.
 - Various other interface fixes and improvements.
 
