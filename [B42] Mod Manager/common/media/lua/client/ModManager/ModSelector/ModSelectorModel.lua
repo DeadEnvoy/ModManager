@@ -99,12 +99,20 @@ function ModSelector.Model:reloadMods()
                 data.defaultFav = self.favs[modId]
                 data.indexAdded = self:indexByDateAdded(modId)
 
-                local workshopID = modInfo:getWorkshopID()
+                local workshopID = modInfoFromDir:getWorkshopID()
                 if not workshopID or workshopID == "" then
-                    local path = modInfo:getDir(); if path then
+                    local path = modInfoFromDir:getDir(); if path then
                         workshopID = path:match("content[\\/]108600[\\/](%d+)")
                     end
                 end
+                
+                if not workshopID or workshopID == "" then
+                    local cachedDataForId = ModManagerCache:getModWorkshopInfo(modId)
+                    if cachedDataForId and cachedDataForId.workshopID then
+                        workshopID = cachedDataForId.workshopID
+                    end
+                end
+
                 data.workshopIDStr = workshopID and tostring(workshopID) or ""
 
                 local cachedData = ModManagerCache:getModWorkshopInfo(modId)
