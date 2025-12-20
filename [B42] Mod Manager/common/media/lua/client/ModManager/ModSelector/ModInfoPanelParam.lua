@@ -1,6 +1,8 @@
 require "ISUI/ISPanelJoypad"
 require "OptionScreens/ModSelector/ModInfoPanel"
 
+local ModManagerCache = require "ModManager/Cache"
+
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local BUTTON_HGT = FONT_HGT_SMALL + 6
 local UI_BORDER_SPACING = 10
@@ -24,11 +26,7 @@ function ModInfoPanel.Param:render()
         local finalText = ""
         local r, g, b = 0.9, 0.9, 0.9
         
-        local model = self.parent.parent.model
-        local finishedTime, now = model.queryFinishedTime or 0, getTimestampMs()
-        local isInDelay = (now - finishedTime < 1000)
-        
-        local isQuerying = (model.isQueryingWorkshop or isInDelay) and self.workshopID ~= ""
+        local isQuerying = ModManagerCache.isQuerying and self.workshopID ~= ""
         
         if isQuerying then
             finalText = versionText
@@ -104,10 +102,7 @@ function ModInfoPanel.Param:render()
             activateSteamOverlayToWorkshopItem(self.workshopID)
         end
     elseif self.type == "LastUpdate" then
-        local model = self.parent.parent.model
-        local finishedTime, now = model.queryFinishedTime or 0, getTimestampMs()
-        local isInDelay = (now - finishedTime < 1000)
-        local isQuerying = (model.isQueryingWorkshop or isInDelay) and self.workshopID ~= ""
+        local isQuerying = ModManagerCache.isQuerying and self.workshopID ~= ""
         local textX = self.borderX + UI_BORDER_SPACING
 
         if isQuerying then

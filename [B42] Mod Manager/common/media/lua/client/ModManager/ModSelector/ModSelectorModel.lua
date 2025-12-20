@@ -1,5 +1,7 @@
 require "OptionScreens/ModSelector/ModSelectorModel"
 
+local ModManagerCache = require "ModManager/Cache"
+
 local original_new = ModSelector.Model.new
 function ModSelector.Model:new(view)
     local o = original_new(self, view)
@@ -7,9 +9,6 @@ function ModSelector.Model:new(view)
     o.hidden = {}
     o.incompatibles = {}
     o.requirements = {}
-    o.isQueryingWorkshop = false
-    o.queryFinishedTime = 0
-    o.workshopDetailsCache = {}
     o:trackMods()
     return o
 end
@@ -54,7 +53,8 @@ end
 
 function ModSelector.Model:setHidden(id, isHidden)
     self.hidden[id] = isHidden and true or nil
-    self:saveModManagerFile()
+    ModManagerCache.data.hidden = self.hidden
+    ModManagerCache:save()
     self:refreshMods()
 end
 
@@ -69,10 +69,11 @@ function ModSelector.Model:setFavorite(id, isFavorite)
 end
 
 function ModSelector.Model:reloadMods()
-    self.isQueryingWorkshop = false
-    self.queryFinishedTime = 0
-
     self:loadModDataFromFile()
+    
+    local cacheData = ModManagerCache:load()
+    self.hidden = cacheData.hidden or {}
+    self.modsByDateAdded = cacheData.mods or {}
 
     ---@diagnostic disable-next-line: undefined-field
     table.wipe(self.mods)
@@ -106,9 +107,9 @@ function ModSelector.Model:reloadMods()
                 end
                 data.workshopIDStr = workshopID and tostring(workshopID) or ""
 
-                local cachedData = self.workshopDetailsCache[data.workshopIDStr]
-                data.timeUpdated = (cachedData and cachedData.timeUpdated) or 0
-                data.workshopState = (cachedData and cachedData.workshopState) or ""
+                local cachedData = ModManagerCache:getModWorkshopInfo(modId)
+                data.timeUpdated = (cachedData and cachedData.lastUpdate) or 0
+                data.workshopState = (cachedData and cachedData.state) or ""
                 
                 if data.icon == "" then data.icon = ModSelector.Model.categories[data.category] end
 
@@ -128,8 +129,6 @@ function ModSelector.Model:reloadMods()
     self:buildDependencyGraph()
 
     self:refreshMods()
-    
-    self:queryWorkshopItemDetails()
 end
 
 function ModSelector.Model:buildDependencyGraph()
@@ -255,75 +254,10 @@ function ModSelector.Model:indexByDateAdded(modID)
     return -1
 end
 
-function ModSelector.Model:saveModManagerFile()
-    local FILE_MODS = "modManager.ini"
-    local VERSION_MODS = 1
-
-    local file = getFileWriter(FILE_MODS, true, false)
-    file:write("version = " .. tostring(VERSION_MODS) .. ",\r\n")
-    file:write("mods = {\r\n")
-
-    for i, modID in ipairs(self.modsByDateAdded) do
-        file:write('    "' .. modID .. '",\r\n')
-    end
-
-    file:write("},\r\n")
-
-    file:write("hidden = {\r\n")
-    for modID, _ in pairs(self.hidden) do
-        file:write('    "' .. modID .. '",\r\n')
-    end
-    file:write("},\r\n")
-
-    file:close()
-end
-
 function ModSelector.Model:trackMods()
-    local FILE_MODS = "modManager.ini"
-    local VERSION_MODS = 1
-
-    local version = 0
-    local storedMods = {}
-    self.hidden = {}
-
-    local file = getFileReader(FILE_MODS, true)
-    if file then
-        local line = file:readLine()
-        local inModsSection = false
-        local inHiddenSection = false
-
-        while line ~= nil do
-            line = string.gsub(line, "^%s*(.-)%s*$", "%1")
-
-            if luautils.stringStarts(line, "version") then
-                local versionStr = string.match(line, "version%s*=%s*(%d+)")
-                if versionStr then
-                    -- version = tonumber(versionStr)
-                end
-            elseif line == "mods = {" then
-                inModsSection = true
-                inHiddenSection = false
-            elseif line == "hidden = {" then
-                inHiddenSection = true
-                inModsSection = false
-            elseif (inModsSection or inHiddenSection) and (line == "}" or line == "},") then
-                inModsSection = false
-                inHiddenSection = false
-            elseif (inModsSection or inHiddenSection) and line ~= "" then
-                local modID = string.gsub(line, '[",]', '')
-                modID = string.gsub(modID, "^%s*(.-)%s*$", "%1")
-                if modID ~= "" then
-                    if inModsSection then
-                        table.insert(storedMods, modID)
-                    elseif inHiddenSection then
-                        self.hidden[modID] = true
-                    end
-                end
-            end
-            line = file:readLine()
-        end
-        file:close()
-    end
+    local cacheData = ModManagerCache:load()
+    local storedMods = cacheData.mods or {}
+    self.hidden = cacheData.hidden or {}
 
     local loadedMods = {}
     local directories = getModDirectoryTable()
@@ -372,8 +306,9 @@ function ModSelector.Model:trackMods()
     end
 
     self.modsByDateAdded = newList
-
-    self:saveModManagerFile()
+    ModManagerCache.data.mods = self.modsByDateAdded
+    ModManagerCache.data.hidden = self.hidden
+    ModManagerCache:save()
 end
 
 function ModSelector.Model:loadModDataFromFile()
@@ -509,53 +444,6 @@ function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm, s
 
     if not suppressRefresh then
         self:refreshMods()
-    end
-end
-
-function ModSelector.Model:queryWorkshopItemDetails()
-    if not getSteamModeActive() then return end
-
-    local workshopIDs = getSteamWorkshopItemIDs()
-
-    if not workshopIDs or workshopIDs:isEmpty() then
-        return
-    end
-
-    self.isQueryingWorkshop = true
-    querySteamWorkshopItemDetails(workshopIDs, self.onItemQueryFinished, self)
-end
-
-function ModSelector.Model:onItemQueryFinished(status, info)
-    self.queryFinishedTime = getTimestampMs()
-    self.isQueryingWorkshop = false
-    
-    if status == "Completed" then
-        local detailsMap = {}
-        for i = 1, info:size() do
-            local details = info:get(i - 1)
-            local idStr = details:getIDString()
-            detailsMap[idStr] = details
-            self.workshopDetailsCache[idStr] = {
-                timeUpdated = details:getTimeUpdated() or 0,
-                workshopState = details:getState() or ""
-            }
-        end
-
-        if self.mods then
-            for modId, modData in pairs(self.mods) do
-                if modData.workshopIDStr and modData.workshopIDStr ~= "" then
-                    local details = detailsMap[modData.workshopIDStr]
-                    if details then
-                        modData.timeUpdated = details:getTimeUpdated() or 0
-                        modData.workshopState = details:getState() or ""
-                    end
-                end
-            end
-        end
-        
-        if self.view and self.view.modInfoPanel and self.view.modInfoPanel:getIsVisible() and self.view.modInfoPanel.modInfo then
-            self.view.modInfoPanel:updateView(self.view.modInfoPanel.modInfo)
-        end
     end
 end
 

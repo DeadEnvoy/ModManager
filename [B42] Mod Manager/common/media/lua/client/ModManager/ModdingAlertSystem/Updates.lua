@@ -1,5 +1,8 @@
+require "OptionScreens/ModSelector/ModSelector"
+
 local alertSystem = require "chuckleberryFinnModdingAlertSystem"
 local changelog_handler = require "chuckleberryFinnModding_modChangelog"
+local ModManagerCache = require "ModManager/Cache"
 
 if alertSystem and changelog_handler then
     local original_initialise = alertSystem.initialise
@@ -48,7 +51,12 @@ if alertSystem and changelog_handler then
     end
 
     function alertSystem:onSteamQueryCompleted(status, info)
+        ModManagerCache.isQuerying = false
         if status == "Completed" then
+            ModManagerCache:updateWorkshopData(info, self.modMap)
+            ModManagerCache:updateUsageStats(self.queriedCount or 0)
+            ModManagerCache:save()
+            
             local twoWeeksAgo = os.time() - 14 * 24 * 60 * 60
 
             local sortedItems = {}
@@ -149,6 +157,56 @@ if alertSystem and changelog_handler then
             end
 
             if not workshopIDs:isEmpty() then
+                local cache, now = ModManagerCache:load(), os.time()
+                local usage = cache.workshop and cache.workshop.usage or { time = 0, requests = 0 }
+                
+                if now - (usage.time or 0) > 3600 then
+                    usage.requests = 0
+                end
+                
+                if (usage.requests or 0) + workshopIDs:size() >= 3600 then
+                    local twoWeeksAgo, sortedItems = now - 14 * 24 * 60 * 60, {}
+                    local allMods = ModSelector.Model:new({ updateView = function() end })
+
+                    allMods:reloadMods()
+
+                    for modID, data in pairs(cache.workshop.mods or {}) do
+                        if data.lastUpdate and data.lastUpdate >= twoWeeksAgo then
+                            if allMods.mods[modID] then
+                                table.insert(sortedItems, { modInfo = allMods.mods[modID].modInfo, ts = data.lastUpdate })
+                            end
+                        end
+                    end
+
+                    table.sort(sortedItems, function(a, b) return a.ts > b.ts end)
+
+                    for _, item in ipairs(sortedItems) do
+                        local modInfo = item.modInfo
+                        local modID = modInfo:getId()
+                        local alerts = changelog_handler.fetchMod(modID)
+
+                        if alerts and #alerts > 0 then
+                            local modName = modInfo:getName()
+                            local modIcon = modInfo:getIcon() and getTexture(modInfo:getIcon())
+                            local modAuthor = modInfo:getAuthor()
+
+                            self.latestAlerts[modID] = {
+                                modName = modName, alerts = alerts, icon = modIcon, modAuthor = modAuthor,
+                                alreadyStored = false, ts = item.ts
+                            }
+                            table.insert(self.alertsLoaded, modID)
+                        end
+                    end
+
+                    if #self.alertsLoaded > 0 then
+                        self.alertSelected = 1
+                        self:updateButtons()
+                    end
+                    return
+                end
+
+                ModManagerCache.isQuerying = true
+                self.queriedCount = workshopIDs:size()
                 querySteamWorkshopItemDetails(workshopIDs, self.onSteamQueryCompleted, self)
             end
         end
