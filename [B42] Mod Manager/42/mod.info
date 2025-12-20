@@ -6,4 +6,4 @@ icon=mm_icon.png
 poster=poster.png
 versionMin=42.13.0
 modversion=1.3.0
-require=\ChuckleberryFinnAlertSystem,\ModLoadOrderSorter_b42
+require=\ChuckleberryFinnAlertSystem,\ModLoadOrderSorter_b42,\ClientModsToServer
