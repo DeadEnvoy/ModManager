@@ -12,6 +12,7 @@ function ModManagerCache:load()
         version = 1,
         mods = {},
         hidden = {},
+        alerts = {},
         workshop = {
             usage = {
                 time = 0,
@@ -25,11 +26,15 @@ function ModManagerCache:load()
     if not file then return self.data end
 
     local line, path = file:readLine(), {}
+    local currentAlertModId = nil
 
     while line ~= nil do
         line = trim(line)
 
         if line:match("^%s*%}%s*,?%s*$") then
+            if path[#path] == currentAlertModId then
+                currentAlertModId = nil
+            end
             table.remove(path)
         else
             local sectionName = line:match("^%s*([%w_]+)%s*=%s*%{")
@@ -39,26 +44,35 @@ function ModManagerCache:load()
                 local modIdMatch = line:match('^%s*"([^"]+)":%s*%{')
                 if modIdMatch then
                     table.insert(path, modIdMatch)
+                    if path[1] == 'alerts' then
+                        currentAlertModId = modIdMatch
+                        self.data.alerts[currentAlertModId] = {}
+                    end
                 else
                     if #path > 0 then
-                        -- local currentSection = path[#path]
                         local key, value = line:match('^%s*([%w_]+)%s*=%s*"?([^",]+)"?')
                         
                         if key and value then
-                            local targetTable
                             if path[1] == 'workshop' and path[2] == 'usage' then
-                                targetTable = self.data.workshop.usage
+                                local targetTable = self.data.workshop.usage
+                                local numValue = tonumber(value)
+                                targetTable[key] = numValue or value
                             elseif path[1] == 'workshop' and path[2] == 'mods' and path[3] then
                                 local modId = path[3]
                                 if not self.data.workshop.mods[modId] then
                                     self.data.workshop.mods[modId] = {}
                                 end
-                                targetTable = self.data.workshop.mods[modId]
-                            end
-                            
-                            if targetTable then
+                                local targetTable = self.data.workshop.mods[modId]
                                 local numValue = tonumber(value)
                                 targetTable[key] = numValue or value
+                            elseif path[1] == 'alerts' and currentAlertModId then
+                                local targetTable = self.data.alerts[currentAlertModId]
+                                if key == 'seen' then
+                                    targetTable[key] = (value == "true")
+                                else
+                                    local numValue = tonumber(value)
+                                    targetTable[key] = numValue or value
+                                end
                             end
                         elseif path[1] == 'mods' then
                              local modId = line:match('^"([^"]+)"')
@@ -77,7 +91,6 @@ function ModManagerCache:load()
     return self.data
 end
 
-
 function ModManagerCache:save()
     local file = getFileWriter("modManager.ini", true, false)
     if not file then return end
@@ -93,6 +106,16 @@ function ModManagerCache:save()
     file:write("hidden = {\r\n")
     for modID, _ in pairs(self.data.hidden or {}) do
         file:write('    "' .. modID .. '",\r\n')
+    end
+    file:write("},\r\n")
+
+    file:write("alerts = {\r\n")
+    for modID, data in pairs(self.data.alerts or {}) do
+        file:write('    "' .. modID .. '": {\r\n')
+        file:write('        workshopID = ' .. string.format("%.0f", data.workshopID or 0) .. ',\r\n')
+        file:write('        lastUpdate = ' .. string.format("%.0f", data.lastUpdate or 0) .. ',\r\n')
+        file:write('        seen = ' .. tostring(data.seen or false) .. ',\r\n')
+        file:write('    },\r\n')
     end
     file:write("},\r\n")
 
@@ -120,6 +143,10 @@ end
 
 function ModManagerCache:getWorkshopData()
     return self.data and self.data.workshop
+end
+
+function ModManagerCache:getAlertsData()
+    return self.data and self.data.alerts
 end
 
 function ModManagerCache:getModWorkshopInfo(modID)

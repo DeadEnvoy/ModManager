@@ -50,60 +50,121 @@ if alertSystem and changelog_handler then
         return res
     end
 
+    function alertSystem:markCurrentAlertAsSeen()
+        if self.alertSelected > 0 and self.alertsLoaded and self.alertsLoaded[self.alertSelected] then
+            local modID = self.alertsLoaded[self.alertSelected]; local alertData = self.latestAlerts[modID]
+            if alertData and not alertData.alreadyStored then
+                alertData.alreadyStored = true; self.alertsOld = (self.alertsOld or 0) + 1
+                if ModManagerCache.data.alerts and ModManagerCache.data.alerts[modID] then
+                    ModManagerCache.data.alerts[modID].seen = true
+                    ModManagerCache:save()
+                end
+            end
+        end
+    end
+
+    local original_onMouseDown = alertSystem.onMouseDown
+    function alertSystem:onMouseDown(x, y)
+        if y <= 32 then
+            local click = 0
+            if (x >= self.alertLeftX+8 and x <= self.alertLeftX+24) then click = -1 end
+            if (x >= self.alertRightX+8 and x <= self.alertRightX+24) then click = 1 end
+            if click ~= 0 then
+                self:markCurrentAlertAsSeen()
+            end
+        end
+        return original_onMouseDown(self, x, y)
+    end
+    
+    local original_onMouseWheel = alertSystem.onMouseWheel
+    function alertSystem:onMouseWheel(del)
+        local x, y = self:getMouseX(), self:getMouseY()
+        if x >= self.alertLeftX and x <= self.alertLeftX+self.alertBarSpan and y >= 10 and y <= 10+12 then
+            self:markCurrentAlertAsSeen()
+        end
+        return original_onMouseWheel(self, del)
+    end
+
+    local original_onClickCollapse = alertSystem.onClickCollapse
+    function alertSystem:onClickCollapse(...)
+        original_onClickCollapse(self, ...); if self.collapsed then
+            self:markCurrentAlertAsSeen()
+        end
+    end
+
     function alertSystem:onSteamQueryCompleted(status, info)
-        ModManagerCache.isQuerying = false
-        if status == "Completed" then
+        ModManagerCache.isQuerying = false; if status == "Completed" then
             ModManagerCache:updateWorkshopData(info, self.modMap)
             ModManagerCache:updateUsageStats(self.queriedCount or 0)
-            ModManagerCache:save()
             
             local twoWeeksAgo = os.time() - 14 * 24 * 60 * 60
-
-            local sortedItems = {}
+            local existingAlerts = ModManagerCache:getAlertsData() or {}
+            local newAlerts = {}
 
             for i = 0, info:size() - 1 do
                 local details = info:get(i)
                 local ts = details:getTimeUpdated()
 
                 if ts >= twoWeeksAgo then
-                    table.insert(sortedItems, { details = details, ts = ts })
+                    local wid = details:getIDString()
+                    local mods = self.modMap and self.modMap[wid]
+
+                    if mods then
+                        for _, modInfo in ipairs(mods) do
+                            local modID = modInfo:getId()
+                            local alerts = changelog_handler.fetchMod(modID)
+                            if alerts and #alerts > 0 then
+                                local currentEntry = existingAlerts[modID]
+                                if currentEntry then
+                                    if currentEntry.lastUpdate ~= ts then
+                                        newAlerts[modID] = { workshopID = tonumber(wid), lastUpdate = ts, seen = false }
+                                    else
+                                        newAlerts[modID] = currentEntry
+                                    end
+                                else
+                                    newAlerts[modID] = { workshopID = tonumber(wid), lastUpdate = ts, seen = false }
+                                end
+                            end
+                        end
+                    end
                 end
             end
-
+            
+            ModManagerCache.data.alerts = newAlerts; ModManagerCache:save()
+            
+            local sortedItems = {}
+            for modID, data in pairs(newAlerts) do
+                table.insert(sortedItems, { modID = modID, ts = data.lastUpdate })
+            end
             table.sort(sortedItems, function(a, b) return a.ts > b.ts end)
 
             self.alertsLoaded = {}
             self.latestAlerts = {}
             self.alertsLayout = {}
+            self.alertsOld = 0
 
-            for _, data in ipairs(sortedItems) do
-                local wid = data.details:getIDString()
-                local mods = self.modMap and self.modMap[wid]
+            for _, item in ipairs(sortedItems) do
+                local modID = item.modID
+                local modInfo = getModInfoByID(modID)
 
-                if mods then
-                    for _, modInfo in ipairs(mods) do
-                        local modID = modInfo:getId()
-                        local alerts = changelog_handler.fetchMod(modID)
+                if modInfo then
+                    local alerts = changelog_handler.fetchMod(modID)
+                    local modName = modInfo:getName()
+                    local modIcon = modInfo:getIcon() and getTexture(modInfo:getIcon())
+                    local modAuthor = modInfo:getAuthor()
+                    local seen = newAlerts[modID].seen
 
-                        if alerts and #alerts > 0 then
-                            local modName = modInfo:getName()
-                            local modIconPath = modInfo:getIcon()
-                            local modIcon = nil
-                            if modIconPath and modIconPath ~= "" then
-                                modIcon = getTexture(modIconPath)
-                            end
-                            local modAuthor = modInfo:getAuthor()
-
-                            self.latestAlerts[modID] = {
-                                modName = modName,
-                                alerts = alerts,
-                                icon = modIcon,
-                                modAuthor = modAuthor,
-                                alreadyStored = false,
-                                ts = data.ts
-                            }
-                            table.insert(self.alertsLoaded, modID)
-                        end
+                    self.latestAlerts[modID] = {
+                        modName = modName,
+                        alerts = alerts,
+                        icon = modIcon,
+                        modAuthor = modAuthor,
+                        alreadyStored = seen,
+                        ts = item.ts
+                    }
+                    table.insert(self.alertsLoaded, modID)
+                    if seen then
+                        self.alertsOld = self.alertsOld + 1
                     end
                 end
             end
@@ -165,36 +226,60 @@ if alertSystem and changelog_handler then
                 end
                 
                 if (usage.requests or 0) + workshopIDs:size() >= 3600 then
-                    local twoWeeksAgo, sortedItems = now - 14 * 24 * 60 * 60, {}
-                    local allMods = ModSelector.Model:new({ updateView = function() end })
+                    local twoWeeksAgo = now - 14 * 24 * 60 * 60
+                    local workshopCache = (cache.workshop and cache.workshop.mods) or {}
+                    local existingAlerts = cache.alerts or {}
+                    local newAlerts = {}
 
-                    allMods:reloadMods()
-
-                    for modID, data in pairs(cache.workshop.mods or {}) do
-                        if data.lastUpdate and data.lastUpdate >= twoWeeksAgo then
-                            if allMods.mods[modID] then
-                                table.insert(sortedItems, { modInfo = allMods.mods[modID].modInfo, ts = data.lastUpdate })
+                    for modID, wsData in pairs(workshopCache) do
+                        if wsData.lastUpdate and wsData.lastUpdate >= twoWeeksAgo then
+                            local modInfo = getModInfoByID(modID)
+                            if modInfo then
+                                local alerts = changelog_handler.fetchMod(modID)
+                                if alerts and #alerts > 0 then
+                                    local currentEntry = existingAlerts[modID]
+                                    if currentEntry then
+                                        if currentEntry.lastUpdate ~= wsData.lastUpdate then
+                                            newAlerts[modID] = { workshopID = wsData.workshopID, lastUpdate = wsData.lastUpdate, seen = false }
+                                        else
+                                            newAlerts[modID] = currentEntry
+                                        end
+                                    else
+                                        newAlerts[modID] = { workshopID = wsData.workshopID, lastUpdate = wsData.lastUpdate, seen = false }
+                                    end
+                                end
                             end
                         end
                     end
 
+                    ModManagerCache.data.alerts = newAlerts; ModManagerCache:save()
+
+                    local sortedItems = {}
+                    for modID, data in pairs(newAlerts) do
+                        table.insert(sortedItems, { modID = modID, ts = data.lastUpdate })
+                    end
                     table.sort(sortedItems, function(a, b) return a.ts > b.ts end)
 
                     for _, item in ipairs(sortedItems) do
-                        local modInfo = item.modInfo
-                        local modID = modInfo:getId()
-                        local alerts = changelog_handler.fetchMod(modID)
+                        local modID = item.modID
+                        local modInfo = getModInfoByID(modID)
+                        if modInfo then
+                            local alerts = changelog_handler.fetchMod(modID)
+                            if alerts and #alerts > 0 then
+                                local modName = modInfo:getName()
+                                local modIcon = modInfo:getIcon() and getTexture(modInfo:getIcon())
+                                local modAuthor = modInfo:getAuthor()
+                                local seen = newAlerts[modID].seen
 
-                        if alerts and #alerts > 0 then
-                            local modName = modInfo:getName()
-                            local modIcon = modInfo:getIcon() and getTexture(modInfo:getIcon())
-                            local modAuthor = modInfo:getAuthor()
-
-                            self.latestAlerts[modID] = {
-                                modName = modName, alerts = alerts, icon = modIcon, modAuthor = modAuthor,
-                                alreadyStored = false, ts = item.ts
-                            }
-                            table.insert(self.alertsLoaded, modID)
+                                self.latestAlerts[modID] = {
+                                    modName = modName, alerts = alerts, icon = modIcon, modAuthor = modAuthor,
+                                    alreadyStored = seen, ts = item.ts
+                                }
+                                table.insert(self.alertsLoaded, modID)
+                                if seen then
+                                    self.alertsOld = self.alertsOld + 1
+                                end
+                            end
                         end
                     end
 
@@ -219,9 +304,11 @@ if alertSystem and changelog_handler then
         self:drawRect(0, 0, collapseWidth, self.height, 0.8, 0, 0, 0)
         self:drawRectBorder(0, 0, collapseWidth, self.height, 0.8, 1, 1, 1)
 
-        if not self.collapsed and self.alertSelected > 0 then
+        if not self.collapsed and self.alertSelected > 0 and self.alertsLoaded and #self.alertsLoaded > 0 then
             local alertModID = self.alertsLoaded[self.alertSelected]
             local alertModData = self.latestAlerts[alertModID]
+            if not alertModData then return end
+            
             local modName = alertModData.modName
             local latestAlert = alertModData.alerts[#alertModData.alerts]
             local alertTitle = latestAlert.title ~= "" and latestAlert.title
@@ -268,6 +355,42 @@ if alertSystem and changelog_handler then
         end
     end
 
+    function alertSystem:render()
+        ISPanelJoypad.render(self)
+
+        if not self.collapsed then
+
+            if alertSystem.spiffoTexture and (not self.collapsed) then
+                local textureYOffset = self.height-(alertSystem.spiffoTexture:getHeight())
+                self:drawTexture(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, 1, 1, 1, 1)
+            end
+
+            if self.alertsLoaded and #self.alertsLoaded > 0 then
+                local label = tostring(self.alertSelected).."/"..tostring(#self.alertsLoaded)
+                self:drawText(label, 40, 7, 1, 1, 1, 0.7, UIFont.AutoNormSmall)
+            end
+
+            self:drawTexture(alertSystem.alertLeft, self.alertLeftX, 0, 0.7, 1, 1, 1)
+            self:drawTexture(alertSystem.alertRight, self.alertRightX, 0, 0.7, 1, 1, 1)
+
+            local alertBarX = (self.alertLeftX+32)
+
+            local rectWidth = self.alertBarSpan-32
+            self:drawRectBorder(alertBarX, 10, rectWidth, 12, 0.7, 1, 1, 1)
+
+            if self.alertsLoaded and #self.alertsLoaded > 0 then
+                local selectedAlertWidth = math.max(2, rectWidth/#self.alertsLoaded)
+                self:drawRect(alertBarX+(selectedAlertWidth*(self.alertSelected-1)), 10, selectedAlertWidth, 12, 0.8, 1, 1, 1)
+            end
+
+        end
+
+        if self.alertsLoaded and #self.alertsLoaded > 0 then
+            local alertImage = (#self.alertsLoaded-(self.alertsOld or 0))>0 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
+            self:drawTexture(alertImage, 0, 0, 1, 1, 1, 1)
+        end
+    end
+
     local original_display = alertSystem.display
     function alertSystem.display(visible)
         original_display(visible)
@@ -277,6 +400,7 @@ if alertSystem and changelog_handler then
         if instance and not instance.__forcedCollapseInit then
             instance.collapsed = true; if instance.collapse then
                  instance.collapse.tooltip = getText("IGUI_ChuckAlertTooltip_Open")
+                 instance:markCurrentAlertAsSeen()
             end
             instance:collapseApply(); instance.__forcedCollapseInit = true
         end
