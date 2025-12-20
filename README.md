@@ -15,7 +15,7 @@ A comprehensive mod manager that adds numerous missing features and fixes existi
 - Added filter to display only disabled mods.
 - Favorited mods now appear at the top of the list.
 - Completely redesigned the mod settings menu.
-- Added the ability for mod authors to [url=https://steamcommunity.com/workshop/filedetails/discussion/3567084868/596287646583594599/]add images[/url] in the configuration window.
+- Added the ability for mod authors to add images in the configuration window.
 - Added ability to view and search mods by author.
 - Various other interface fixes and improvements.
 
