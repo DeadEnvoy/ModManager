@@ -224,8 +224,17 @@ function ModListPresets:choosePreset(combo)
     if data == "default" then
         self.delPresetButton:setEnable(false)
         if combo.selected == 2 then
+            local ignored = {}; ignored["\\ModManager"] = true
+            if self.parent.model.mods["\\ModManager"] then
+                local req = self.parent.model.mods["\\ModManager"].modInfo:getRequire()
+                if req then
+                    for i=0, req:size()-1 do
+                        ignored[req:get(i)] = true
+                    end
+                end
+            end
             for _, modData in pairs(self.parent.model.mods) do
-                if modData.isActive then
+                if modData.isActive and not ignored[modData.modId] then
                     self.parent.model:forceActivateMods(modData.modInfo, false, true, true)
                 end
             end
