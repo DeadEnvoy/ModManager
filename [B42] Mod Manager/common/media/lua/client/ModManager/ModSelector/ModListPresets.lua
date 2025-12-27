@@ -241,7 +241,7 @@ function ModListPresets:choosePreset(combo)
             self.parent.model:refreshMods()
         elseif combo.selected == 3 then
             for _, modData in pairs(self.parent.model.mods) do
-                if not modData.isActive and modData.isAvailable and modData.modId ~= "ModTemplate" then
+                if not modData.isActive and modData.isAvailable and modData.modId ~= "ModTemplate" and not modData.isHidden then
                     self.parent.model:forceActivateMods(modData.modInfo, true, true, true)
                 end
             end
