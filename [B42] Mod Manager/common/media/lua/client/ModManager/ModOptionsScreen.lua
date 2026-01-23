@@ -713,7 +713,7 @@ function ModOptionsScreen:apply(closeAfter)
     if PZAPI.ModOptions.load then PZAPI.ModOptions:load() end
 
     self.optionsChanged = false
-    
+
     if closeAfter then self:close() end
 end
 
@@ -828,7 +828,7 @@ function ISSetKeybindDialog:onDefault(...)
     return original_ISSetKeybindDialog_onDefault(self, ...)
 end
 
-Events.OnGameBoot.Add(function()
+Events.OnMainMenuEnter.Add(function()
     if PZAPI and PZAPI.ModOptions and PZAPI.ModOptions.load then
         PZAPI.ModOptions:load()
     end
