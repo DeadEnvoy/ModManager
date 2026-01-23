@@ -7,6 +7,8 @@ require "ISUI/ISSetKeybindDialog"
 require "OptionScreens/MainOptions"
 require "PZAPI/ModOptions"
 
+local ModManagerCache = require "ModManager/Cache"
+
 function PZAPI.ModOptions.Options:addImage(imagePath, secondParam)
     local option = { type = "image", path = imagePath, fit = false, minWidth = nil }
     if type(secondParam) == "boolean" then
@@ -83,31 +85,24 @@ end
 
 function ModOptionsScreen:loadModsByDateAdded()
     self.modsByDateAdded = {}
-    local reader = getFileReader("modManager.ini", true)
-    if not reader then return end
-    local line = reader:readLine()
-    local inModsSection = false
-    while line ~= nil do
-        line = string.trim(line)
-        if line == "mods = {" then
-            inModsSection = true
-        elseif inModsSection and (line == "}" or line == "},") then
-            inModsSection = false
-        elseif inModsSection and line ~= "" then
-            local modID = string.trim(string.gsub(line, '[",]', ''))
-            if modID ~= "" then
-                table.insert(self.modsByDateAdded, modID)
-            end
+    local cacheData = ModManagerCache:load()
+    if cacheData and cacheData.mods then
+        local sorted = {}
+        for modID, data in pairs(cacheData.mods) do
+            table.insert(sorted, { id = modID, index = data.index })
         end
-        line = reader:readLine()
+        table.sort(sorted, function(a, b) return (a.index or 0) < (b.index or 0) end)
+        
+        for _, item in ipairs(sorted) do
+            table.insert(self.modsByDateAdded, item.id)
+        end
     end
-    reader:close()
 end
 
 function ModOptionsScreen:getModIndex(modID)
     if not modID then return -1 end
     for i, id in ipairs(self.modsByDateAdded) do
-        if id == "\\" .. modID then
+        if id == modID then
             return i
         end
     end

@@ -48,14 +48,15 @@ function ModSelector.Model:setSort(sortType)
 end
 
 function ModSelector.Model:isHidden(id)
-    return self.hidden[id] == true
+    return ModManagerCache.data.mods[id] and ModManagerCache.data.mods[id].hidden == true
 end
 
 function ModSelector.Model:setHidden(id, isHidden)
-    self.hidden[id] = isHidden and true or nil
-    ModManagerCache.data.hidden = self.hidden
-    ModManagerCache:save()
-    self:refreshMods()
+    if ModManagerCache.data.mods[id] then
+        ModManagerCache.data.mods[id].hidden = isHidden
+        ModManagerCache:save()
+        self:refreshMods()
+    end
 end
 
 function ModSelector.Model:isFavorite(id)
@@ -72,8 +73,18 @@ function ModSelector.Model:reloadMods()
     self:loadModDataFromFile()
     
     local cacheData = ModManagerCache:load()
-    self.hidden = cacheData.hidden or {}
-    self.modsByDateAdded = cacheData.mods or {}
+    
+    self.modsByDateAdded = {}
+    if cacheData.mods then
+        local sorted = {}
+        for modID, data in pairs(cacheData.mods) do
+            table.insert(sorted, { id = modID, index = data.index })
+        end
+        table.sort(sorted, function(a, b) return (a.index or 0) < (b.index or 0) end)
+        for _, item in ipairs(sorted) do
+            table.insert(self.modsByDateAdded, item.id)
+        end
+    end
 
     ---@diagnostic disable-next-line: undefined-field
     table.wipe(self.mods)
@@ -264,8 +275,18 @@ end
 
 function ModSelector.Model:trackMods()
     local cacheData = ModManagerCache:load()
-    local storedMods = cacheData.mods or {}
-    self.hidden = cacheData.hidden or {}
+    
+    local storedModsList = {}
+    if cacheData.mods then
+        local sorted = {}
+        for modID, data in pairs(cacheData.mods) do
+            table.insert(sorted, { id = modID, index = data.index, hidden = data.hidden })
+        end
+        table.sort(sorted, function(a, b) return (a.index or 0) < (b.index or 0) end)
+        for _, item in ipairs(sorted) do
+            table.insert(storedModsList, { id = item.id, hidden = item.hidden })
+        end
+    end
 
     local loadedMods = {}
     local directories = getModDirectoryTable()
@@ -277,46 +298,52 @@ function ModSelector.Model:trackMods()
         end
     end
 
-    local oldMods, newMods = {}, {}
-    for _, modID in ipairs(storedMods or {}) do
-        oldMods[modID] = true
+    local oldModsSet, newModsSet = {}, {}
+    for _, mod in ipairs(storedModsList) do
+        oldModsSet[mod.id] = true
     end
     for _, modID in ipairs(loadedMods) do
-        newMods[modID] = true
+        newModsSet[modID] = true
     end
 
-    local addMods, delMods = {}, {}
-    for modID, _ in pairs(oldMods) do
-        if not newMods[modID] then
-            delMods[modID] = true
+    local addMods, delModsSet = {}, {}
+    for modID, _ in pairs(oldModsSet) do
+        if not newModsSet[modID] then
+            delModsSet[modID] = true
         end
     end
-    for modID, _ in pairs(newMods) do
-        if not oldMods[modID] then
+    for modID, _ in pairs(newModsSet) do
+        if not oldModsSet[modID] then
             table.insert(addMods, modID)
         end
     end
 
-    for modID, _ in pairs(delMods) do
-        if self.hidden[modID] then
-            self.hidden[modID] = nil
-        end
-    end
+    local newCacheMods = {}
+    local currentIndex = 1
 
-    local newList = {}
-    for _, modID in ipairs(storedMods) do
-        if not delMods[modID] then
-            table.insert(newList, modID)
+    for _, mod in ipairs(storedModsList) do
+        if not delModsSet[mod.id] then
+            newCacheMods[mod.id] = { hidden = mod.hidden, index = currentIndex }
+            currentIndex = currentIndex + 1
         end
     end
     for _, modID in ipairs(addMods) do
-        table.insert(newList, modID)
+        newCacheMods[modID] = { hidden = false, index = currentIndex }
+        currentIndex = currentIndex + 1
     end
 
-    self.modsByDateAdded = newList
-    ModManagerCache.data.mods = self.modsByDateAdded
-    ModManagerCache.data.hidden = self.hidden
+    ModManagerCache.data.mods = newCacheMods
     ModManagerCache:save()
+    
+    self.modsByDateAdded = {}
+    local sorted = {}
+    for modID, data in pairs(newCacheMods) do
+        table.insert(sorted, { id = modID, index = data.index })
+    end
+    table.sort(sorted, function(a, b) return (a.index or 0) < (b.index or 0) end)
+    for _, item in ipairs(sorted) do
+        table.insert(self.modsByDateAdded, item.id)
+    end
 end
 
 function ModSelector.Model:loadModDataFromFile()
