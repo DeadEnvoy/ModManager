@@ -61,10 +61,17 @@ function ModListBox:doDrawItem(y, item, alt)
     local starX = self:getWidth() - UI_BORDER_SPACING - BUTTON_HGT - 1 - starOffset
     local starY = y + UI_BORDER_SPACING + 1
 
+    local showStar = item.item.favorite or isMouseOver
+
     local author = item.item.modInfo:getAuthor()
     local authorText = ""
     local authorWidth = 0
+    
     local authorX = starX - 10
+    if not showStar then
+        authorX = starX + BUTTON_HGT
+    end
+
     if author and author ~= "" then
         authorText = sanitizeString(author)
         authorWidth = getTextManager():MeasureStringX(self.font, authorText)
@@ -109,18 +116,20 @@ function ModListBox:doDrawItem(y, item, alt)
         self:drawTextRight(authorText, authorX, y + itemPadY, 0.7, 0.7, 0.7, 0.9, self.font)
     end
 
-    if item.item.favorite then
-        self:drawTextureScaled(self.starSetTexture, starX, starY, BUTTON_HGT, BUTTON_HGT, 1, 1, 1, 1)
-    else
-        self:drawTextureScaled(self.starUnsetTexture, starX, starY, BUTTON_HGT, BUTTON_HGT, 1, 1, 1, 1)
-    end
+    if showStar then
+        if item.item.favorite then
+            self:drawTextureScaled(self.starSetTexture, starX, starY, BUTTON_HGT, BUTTON_HGT, 1, 1, 1, 1)
+        else
+            self:drawTextureScaled(self.starUnsetTexture, starX, starY, BUTTON_HGT, BUTTON_HGT, 1, 1, 1, 1)
+        end
 
-    if isMouseOver and (
-            (self:getMouseX() > starX) and
-            (self:getMouseX() < starX + BUTTON_HGT) and
-            (self:getMouseY() > starY) and
-            (self:getMouseY() < starY + BUTTON_HGT)) then
-        self.mouseOverFavoriteButton = item
+        if isMouseOver and (
+                (self:getMouseX() > starX) and
+                (self:getMouseX() < starX + BUTTON_HGT) and
+                (self:getMouseY() > starY) and
+                (self:getMouseY() < starY + BUTTON_HGT)) then
+            self.mouseOverFavoriteButton = item
+        end
     end
 
     y = y + height
