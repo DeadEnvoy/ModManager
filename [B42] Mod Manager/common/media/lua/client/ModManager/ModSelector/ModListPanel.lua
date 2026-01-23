@@ -97,9 +97,9 @@ function ModListPanel:createChildren()
     self.searchEntry.font = UIFont.Small
     self.searchEntry.onTextChange = function() self:updateView() end
     self.searchEntry.setText = ModListPanel.setText
-    self.searchEntry:setClearButton(true)
     self.searchEntry:initialise()
     self.searchEntry:instantiate()
+    self.searchEntry:setClearButton(true)
     self:addChild(self.searchEntry)
 
     local tickboxWidth = BUTTON_HGT + UI_BORDER_SPACING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_modselector_showEnabledMods"))
