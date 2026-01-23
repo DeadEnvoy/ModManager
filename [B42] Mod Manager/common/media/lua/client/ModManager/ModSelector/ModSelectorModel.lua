@@ -437,6 +437,10 @@ function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm, s
     if isModActive == activate then return end
 
     if activate then
+        if self:isHidden(modId) then
+            self:setHidden(modId, false)
+        end
+
         if modInfo:isAvailable() and not self.mods[modId].isIncompatible then
             self:setModActive(modId, true)
             self.mods[modId].isActive = true
