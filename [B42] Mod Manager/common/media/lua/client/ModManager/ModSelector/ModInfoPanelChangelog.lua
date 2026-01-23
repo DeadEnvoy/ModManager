@@ -1,9 +1,41 @@
 require "ISUI/ISPanelJoypad"
 require "OptionScreens/ModSelector/ModInfoPanel"
 require "OptionScreens/ModSelector/ModInfoPanelInteractionParam"
-local changelog_handler = require "chuckleberryFinnModding_modChangelog"
 
 local UI_BORDER_SPACING = 10
+
+local function fetchChangelog(modID)
+    local reader = getModFileReader(modID, "ChangeLog.txt", false)
+    local isMarkdown = false
+    if not reader then
+        isMarkdown = true
+        reader = getModFileReader(modID, "ChangeLog.md", false)
+    end
+
+    if not reader then return nil end
+
+    local fileContent = ""
+    local line = reader:readLine()
+    while line do
+        fileContent = fileContent .. line .. "\n"
+        line = reader:readLine()
+    end
+    reader:close()
+
+    local changelogs, pattern = nil, isMarkdown and "###%s*(.-)%s*###%s*(.-)%s*#" or "%[ ([^%]]+)% ](.-)%[ ------ %]"
+
+    for title, contents in string.gmatch(fileContent, pattern) do
+        if title ~= "ALERT_CONFIG" then
+            if not changelogs then
+                changelogs = {}
+            end
+            local cleanedContents = contents:gsub("^%s*\n", "")
+            table.insert(changelogs, {title = title, contents = cleanedContents})
+        end
+    end
+
+    return changelogs
+end
 
 ModInfoPanel.Changelog = ModInfoPanel.InteractionParam:derive("ModInfoPanelChangelog")
 
@@ -43,16 +75,16 @@ end
 
 function ModInfoPanel.Changelog:setModInfo(modInfo)
     local modID = modInfo:getId()
-    local alerts = changelog_handler.fetchMod(modID)
+    local changelogs = fetchChangelog(modID)
 
     local text_parts = {}
     table.insert(text_parts, " <TEXT> ")
 
-    if alerts and #alerts > 0 then
-        for i = #alerts, 1, -1 do
-            local alert = alerts[i]
-            local title = alert.title or ""
-            local contents = alert.contents or ""
+    if changelogs and #changelogs > 0 then
+        for i = #changelogs, 1, -1 do
+            local entry = changelogs[i]
+            local title = entry.title or ""
+            local contents = entry.contents or ""
 
             table.insert(text_parts, " <RGB:0.8,0.8,0.8> " .. title .. " <LINE> ")
             table.insert(text_parts, " <RGB:0.8,0.8,0.8> " .. luautils.trim(contents))
