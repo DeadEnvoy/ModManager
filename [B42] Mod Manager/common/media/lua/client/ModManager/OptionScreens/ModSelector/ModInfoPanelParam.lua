@@ -145,25 +145,35 @@ end
 function ModInfoPanel.Param:formatDate(seconds)
     if not seconds or seconds == 0 then return "" end
     
-    local d, now = os.date("*t", seconds), os.date("*t")
-    local midnight = os.time({year=now.year, month=now.month, day=now.day, hour=0, min=0, sec=0})
-    local isToday, isYesterday = (seconds >= midnight), (seconds >= midnight - 86400 and seconds < midnight)
+    local millis = seconds * 1000.0
+    local nowMillis = getTimestampMs()
+
+    local sdfComponents = SimpleDateFormat.new("d M yyyy H m")
+    local dateStr = sdfComponents:format(millis)
     
+    local values = {}
+    for v in string.gmatch(dateStr, "%S+") do table.insert(values, tonumber(v)) end
+    local day, month, year, hour, min = values[1], values[2], values[3], values[4], values[5]
+
+    local sdfCompare = SimpleDateFormat.new("yyyyMMdd")
+    local dateKey = sdfCompare:format(millis)
+    local nowKey = sdfCompare:format(nowMillis)
+    local yesterdayKey = sdfCompare:format(nowMillis - 86400000.0)
+
     local timeFormat
-    
-    if isToday then
+    if dateKey == nowKey then
         timeFormat = getText("UI_modinfopanel_TimeFormat_Today")
-    elseif isYesterday then
+    elseif dateKey == yesterdayKey then
         timeFormat = getText("UI_modinfopanel_TimeFormat_Yesterday")
-    elseif d.year == now.year then
+    elseif year == tonumber(os.date("%Y")) then
         timeFormat = getText("UI_modinfopanel_TimeFormat_ThisYear")
     else
         timeFormat = getText("UI_modinfopanel_TimeFormat_OtherYears")
     end
 
-    local month = getText("UI_modinfopanel_Month_Short_" .. d.month)
+    local monthStr = getText("UI_modinfopanel_Month_Short_" .. month)
 
-    local h12, ampm = d.hour, ""
+    local h12, ampm = hour, ""
     if h12 >= 12 then
         ampm = getText("UI_modinfopanel_PM")
         if h12 > 12 then h12 = h12 - 12 end
@@ -173,12 +183,12 @@ function ModInfoPanel.Param:formatDate(seconds)
     end
 
     local res = timeFormat
-    res = res:gsub("{day}", d.day)
-    res = res:gsub("{month}", month)
-    res = res:gsub("{year}", d.year)
-    res = res:gsub("{hour24}", d.hour)
+    res = res:gsub("{day}", day)
+    res = res:gsub("{month}", monthStr)
+    res = res:gsub("{year}", year)
+    res = res:gsub("{hour24}", string.format("%02d", hour))
     res = res:gsub("{hour12}", h12)
-    res = res:gsub("{min}", string.format("%02d", d.min))
+    res = res:gsub("{min}", string.format("%02d", min))
     res = res:gsub("{ampm}", ampm)
 
     return res
