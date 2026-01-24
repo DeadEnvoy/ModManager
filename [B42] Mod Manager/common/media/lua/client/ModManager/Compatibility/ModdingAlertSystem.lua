@@ -11,11 +11,11 @@ if alertSystem and changelog_handler then
         if not seconds or seconds == 0 then return "" end
 
         local timeFormat
-        
+
         local d, now = os.date("*t", seconds), os.date("*t")
         local midnight = os.time({year=now.year, month=now.month, day=now.day, hour=0, min=0, sec=0})
         local isToday, isYesterday = (seconds >= midnight), (seconds >= midnight - 86400 and seconds < midnight)
-        
+
         if isToday then
             timeFormat = getText("UI_modinfopanel_TimeFormat_Today")
         elseif isYesterday then
@@ -75,7 +75,7 @@ if alertSystem and changelog_handler then
         end
         return original_onMouseDown(self, x, y)
     end
-    
+
     local original_onMouseWheel = alertSystem.onMouseWheel
     function alertSystem:onMouseWheel(del)
         local x, y = self:getMouseX(), self:getMouseY()
@@ -92,85 +92,76 @@ if alertSystem and changelog_handler then
         end
     end
 
-    function alertSystem:onSteamQueryCompleted(status, info)
-        ModManagerCache.isQuerying = false; if status == "Completed" then
-            ModManagerCache:updateWorkshopData(info, self.modMap)
-            ModManagerCache:updateUsageStats(self.queriedCount or 0)
-            
-            local twoWeeksAgo = os.time() - 14 * 24 * 60 * 60
-            local existingAlerts = ModManagerCache:getAlertsData() or {}
-            local newAlerts = {}
+    function alertSystem:processUpdates()
+        local twoWeeksAgo = os.time() - 14 * 24 * 60 * 60
+        local existingAlerts = ModManagerCache:getAlertsData() or {}
+        local newAlerts = {}
+        local workshopMods = ModManagerCache.data.workshop and ModManagerCache.data.workshop.mods or {}
 
-            for i = 0, info:size() - 1 do
-                local details = info:get(i)
-                local ts = details:getTimeUpdated()
-
-                if ts >= twoWeeksAgo then
-                    local wid = details:getIDString()
-                    local mods = self.modMap and self.modMap[wid]
-
-                    if mods then
-                        for _, modInfo in ipairs(mods) do
-                            local modID = modInfo:getId()
-                            local alerts = changelog_handler.fetchMod(modID)
-                            if alerts and #alerts > 0 then
-                                local currentEntry = existingAlerts[modID]
-                                if currentEntry then
-                                    if currentEntry.lastUpdate ~= ts then
-                                        newAlerts[modID] = { workshopID = tonumber(wid), lastUpdate = ts, seen = false }
-                                    else
-                                        newAlerts[modID] = currentEntry
-                                    end
-                                else
-                                    newAlerts[modID] = { workshopID = tonumber(wid), lastUpdate = ts, seen = false }
-                                end
+        for modID, wsData in pairs(workshopMods) do
+            local ts = wsData.lastUpdate
+            if ts and ts >= twoWeeksAgo then
+                local modInfo = getModInfoByID(modID)
+                if modInfo then
+                    local alerts = changelog_handler.fetchMod(modID)
+                    if alerts and #alerts > 0 then
+                        local currentEntry = existingAlerts[modID]
+                        if currentEntry then
+                            if currentEntry.lastUpdate ~= ts then
+                                newAlerts[modID] = { workshopID = wsData.workshopID, lastUpdate = ts, seen = false }
+                            else
+                                newAlerts[modID] = currentEntry
                             end
+                        else
+                            newAlerts[modID] = { workshopID = wsData.workshopID, lastUpdate = ts, seen = false }
                         end
                     end
                 end
             end
-            
-            ModManagerCache.data.alerts = newAlerts; ModManagerCache:save()
-            
-            local sortedItems = {}
-            for modID, data in pairs(newAlerts) do
-                table.insert(sortedItems, { modID = modID, ts = data.lastUpdate })
-            end
-            table.sort(sortedItems, function(a, b) return a.ts > b.ts end)
+        end
 
-            self.alertsLoaded = {}
-            self.latestAlerts = {}
-            self.alertsLayout = {}
-            self.alertsOld = 0
+        ModManagerCache.data.alerts = newAlerts; ModManagerCache:save()
 
-            for _, item in ipairs(sortedItems) do
-                local modID = item.modID
-                local modInfo = getModInfoByID(modID)
+        local sortedItems = {}
+        for modID, data in pairs(newAlerts) do
+            table.insert(sortedItems, { modID = modID, ts = data.lastUpdate })
+        end
+        table.sort(sortedItems, function(a, b) return a.ts > b.ts end)
 
-                if modInfo then
-                    local alerts = changelog_handler.fetchMod(modID)
-                    local modName = modInfo:getName()
-                    local modIcon = modInfo:getIcon() and getTexture(modInfo:getIcon())
-                    local modAuthor = modInfo:getAuthor()
-                    local seen = newAlerts[modID].seen
+        self.alertsLoaded = {}
+        self.latestAlerts = {}
+        self.alertsLayout = {}
+        self.alertsOld = 0
 
-                    self.latestAlerts[modID] = {
-                        modName = modName,
-                        alerts = alerts,
-                        icon = modIcon,
-                        modAuthor = modAuthor,
-                        alreadyStored = seen,
-                        ts = item.ts
-                    }
-                    table.insert(self.alertsLoaded, modID)
-                    if seen then
-                        self.alertsOld = self.alertsOld + 1
-                    end
+        for _, item in ipairs(sortedItems) do
+            local modID = item.modID
+            local modInfo = getModInfoByID(modID)
+
+            if modInfo then
+                local alerts = changelog_handler.fetchMod(modID)
+                local modName = modInfo:getName()
+                local modIcon = modInfo:getIcon() and getTexture(modInfo:getIcon())
+                local modAuthor = modInfo:getAuthor()
+                local seen = newAlerts[modID].seen
+
+                self.latestAlerts[modID] = {
+                    modName = modName,
+                    alerts = alerts,
+                    icon = modIcon,
+                    modAuthor = modAuthor,
+                    alreadyStored = seen,
+                    ts = item.ts
+                }
+                table.insert(self.alertsLoaded, modID)
+                if seen then
+                    self.alertsOld = self.alertsOld + 1
                 end
             end
+        end
 
-            if #self.alertsLoaded > 0 then
-                self.alertSelected = 1
+        if #self.alertsLoaded > 0 then
+            self.alertSelected = 1
+            if self["linkButton1"] then
                 self:updateButtons()
             end
         end
@@ -186,113 +177,18 @@ if alertSystem and changelog_handler then
         self.alertsLayout = {}
 
         if getSteamModeActive() then
-            self.modMap = {}
-            local workshopIDs = java.util.ArrayList.new()
-            local addedIDs = {}
-
-            local directories = getModDirectoryTable()
-            for _, directory in ipairs(directories) do
-                local modInfo = getModInfo(directory)
-                if modInfo then
-                    local workshopID = modInfo:getWorkshopID()
-                    
-                    if not workshopID or workshopID == "" then
-                        local path = modInfo:getDir()
-                        if path then
-                            workshopID = path:match("content[\\/]108600[\\/](%d+)")
-                        end
-                    end
-
-                    if workshopID and workshopID ~= "" then
-                        if not self.modMap[workshopID] then
-                            self.modMap[workshopID] = {}
-                        end
-                        table.insert(self.modMap[workshopID], modInfo)
-
-                        if not addedIDs[workshopID] then
-                            workshopIDs:add(workshopID)
-                            addedIDs[workshopID] = true
-                        end
-                    end
-                end
+            if not ModManagerCache.data.workshop then
+                ModManagerCache:load()
             end
-
-            if not workshopIDs:isEmpty() then
-                local cache, now = ModManagerCache:load(), os.time()
-                local usage = cache.workshop and cache.workshop.usage or { time = 0, requests = 0 }
-                
-                if now - (usage.time or 0) > 3600 then
-                    usage.requests = 0
-                end
-                
-                if (usage.requests or 0) + workshopIDs:size() >= 3600 then
-                    local twoWeeksAgo = now - 14 * 24 * 60 * 60
-                    local workshopCache = (cache.workshop and cache.workshop.mods) or {}
-                    local existingAlerts = cache.alerts or {}
-                    local newAlerts = {}
-
-                    for modID, wsData in pairs(workshopCache) do
-                        if wsData.lastUpdate and wsData.lastUpdate >= twoWeeksAgo then
-                            local modInfo = getModInfoByID(modID)
-                            if modInfo then
-                                local alerts = changelog_handler.fetchMod(modID)
-                                if alerts and #alerts > 0 then
-                                    local currentEntry = existingAlerts[modID]
-                                    if currentEntry then
-                                        if currentEntry.lastUpdate ~= wsData.lastUpdate then
-                                            newAlerts[modID] = { workshopID = wsData.workshopID, lastUpdate = wsData.lastUpdate, seen = false }
-                                        else
-                                            newAlerts[modID] = currentEntry
-                                        end
-                                    else
-                                        newAlerts[modID] = { workshopID = wsData.workshopID, lastUpdate = wsData.lastUpdate, seen = false }
-                                    end
-                                end
-                            end
-                        end
+            
+            self:processUpdates()
+            
+            if Events.OnModManagerWorkshopUpdate then
+                Events.OnModManagerWorkshopUpdate.Add(function()
+                    if MainScreen.instance and MainScreen.instance.alertSystem then
+                        MainScreen.instance.alertSystem:processUpdates()
                     end
-
-                    ModManagerCache.data.alerts = newAlerts; ModManagerCache:save()
-
-                    local sortedItems = {}
-                    for modID, data in pairs(newAlerts) do
-                        table.insert(sortedItems, { modID = modID, ts = data.lastUpdate })
-                    end
-                    table.sort(sortedItems, function(a, b) return a.ts > b.ts end)
-
-                    for _, item in ipairs(sortedItems) do
-                        local modID = item.modID
-                        local modInfo = getModInfoByID(modID)
-                        if modInfo then
-                            local alerts = changelog_handler.fetchMod(modID)
-                            if alerts and #alerts > 0 then
-                                local modName = modInfo:getName()
-                                local modIcon = modInfo:getIcon() and getTexture(modInfo:getIcon())
-                                local modAuthor = modInfo:getAuthor()
-                                local seen = newAlerts[modID].seen
-
-                                self.latestAlerts[modID] = {
-                                    modName = modName, alerts = alerts, icon = modIcon, modAuthor = modAuthor,
-                                    alreadyStored = seen, ts = item.ts
-                                }
-                                table.insert(self.alertsLoaded, modID)
-                                if seen then
-                                    self.alertsOld = self.alertsOld + 1
-                                end
-                            end
-                        end
-                    end
-
-                    if #self.alertsLoaded > 0 then
-                        self.alertSelected = 1
-                        self:updateButtons()
-                    end
-                    return
-                end
-
-                ModManagerCache.isQuerying = true
-                self.queriedCount = workshopIDs:size()
-                querySteamWorkshopItemDetails(workshopIDs, self.onSteamQueryCompleted, self)
+                end)
             end
         end
     end
@@ -308,21 +204,21 @@ if alertSystem and changelog_handler then
             local alertModID = self.alertsLoaded[self.alertSelected]
             local alertModData = self.latestAlerts[alertModID]
             if not alertModData then return end
-            
+
             local modName = alertModData.modName
             local latestAlert = alertModData.alerts[#alertModData.alerts]
             local alertTitle = latestAlert.title ~= "" and latestAlert.title
             local alertContents = latestAlert.contents
             local alertIcon = alertModData.icon
             local header = modName
-            
+
             local subHeader = ""
             if alertModData.ts then
                 subHeader = " (" .. formatDate(alertModData.ts) .. ")"
             elseif alertModID ~= "" then
                 subHeader = " (" .. alertModID .. ")"
             end
-            
+
             local modAuthor = alertModData.modAuthor
             local layout = self:determineLayout(alertModID, header, subHeader, alertTitle, alertContents, alertIcon)
 
@@ -394,9 +290,9 @@ if alertSystem and changelog_handler then
     local original_display = alertSystem.display
     function alertSystem.display(visible)
         original_display(visible)
-        
+
         local instance = MainScreen.instance and MainScreen.instance.alertSystem
-        
+
         if instance and not instance.__forcedCollapseInit then
             instance.collapsed = true; if instance.collapse then
                  instance.collapse.tooltip = getText("IGUI_ChuckAlertTooltip_Open")
