@@ -1,5 +1,7 @@
 require "ISUI/ISPanelJoypad"
 
+require "ModManager/ModSelector/ModPresetsWindow"
+
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local BUTTON_HGT = FONT_HGT_SMALL + 6
 local UI_BORDER_SPACING = 10
@@ -16,7 +18,15 @@ function ModListPresets:new(x, y, width, height, model)
 end
 
 function ModListPresets:createChildren()
-    self.presetCombo = ISComboBox:new(0, 0, math.min(200, self.width/2.0), BUTTON_HGT, self, self.choosePreset)
+    self.presetsButton = ISButton:new(0, 0, BUTTON_HGT, BUTTON_HGT, "", self, self.onPresetsButton)
+    self.presetsButton.internal = "PRESETS"
+    self.presetsButton:initialise()
+    self.presetsButton:instantiate()
+    self.presetsButton:setImage(getTexture("media/ui/ModManager/Presets.png"))
+    self.presetsButton.borderColor = {r=0.5, g=0.5, b=0.5, a=1}
+    self:addChild(self.presetsButton)
+
+    self.presetCombo = ISComboBox:new(self.presetsButton:getRight() + 5, 0, math.min(200, self.width/2.0), BUTTON_HGT, self, self.choosePreset)
     self.presetCombo:initialise()
     self.presetCombo:addOptionWithData(getText("UI_mods_preset_choose"), "default")
     self.presetCombo:addOptionWithData(getText("UI_mods_preset_disableAll"), "default")
@@ -61,41 +71,9 @@ function ModListPresets:createChildren()
     self.delPresetButton:setWidthToTitle()
     self.delPresetButton:setX(self.savePresetButton:getRight() + UI_BORDER_SPACING)
 
-    self.sharePresetButton = ISButton:new(0, 0, 100, BUTTON_HGT, getText("UI_btn_share"), self, self.onPresetButton);
-    self.sharePresetButton.internal = "SHARE";
-    self.sharePresetButton:initialise();
-    self.sharePresetButton:instantiate();
-    self.sharePresetButton:setAnchorLeft(true);
-    self.sharePresetButton:setAnchorRight(false);
-    self.sharePresetButton:setAnchorTop(false);
-    self.sharePresetButton:setAnchorBottom(true);
-    self.sharePresetButton.borderColor = {r=1, g=1, b=1, a=0.1};
-    self.sharePresetButton:setFont(UIFont.Small);
-    self.sharePresetButton:ignoreWidthChange();
-    self.sharePresetButton:ignoreHeightChange();
-    self:addChild(self.sharePresetButton);
-    self.sharePresetButton:setWidthToTitle()
-    self.sharePresetButton:setX(self.delPresetButton:getRight() + UI_BORDER_SPACING)
-
-    self.addPresetButton = ISButton:new(0, 0, 100, BUTTON_HGT, getText("UI_btn_add"), self, self.onPresetButton);
-    self.addPresetButton.internal = "ADD";
-    self.addPresetButton:initialise();
-    self.addPresetButton:instantiate();
-    self.addPresetButton:setAnchorLeft(true);
-    self.addPresetButton:setAnchorRight(false);
-    self.addPresetButton:setAnchorTop(false);
-    self.addPresetButton:setAnchorBottom(true);
-    self.addPresetButton.borderColor = {r=1, g=1, b=1, a=0.1};
-    self.addPresetButton:setFont(UIFont.Small);
-    self.addPresetButton:ignoreWidthChange();
-    self.addPresetButton:ignoreHeightChange();
-    self:addChild(self.addPresetButton);
-    self.addPresetButton:setWidthToTitle()
-    self.addPresetButton:setX(self.sharePresetButton:getRight() + UI_BORDER_SPACING)
-
     self.joypadIndexY = 1
     self.joypadIndex = 1
-    self:insertNewLineOfButtons(self.presetCombo, self.savePresetButton, self.delPresetButton, self.sharePresetButton, self.addPresetButton)
+    self:insertNewLineOfButtons(self.presetsButton, self.presetCombo, self.savePresetButton, self.delPresetButton)
 end
 
 function ModListPresets:render()
@@ -118,6 +96,101 @@ function ModListPresets:updateView()
 
     for name, data in pairs(self.parent.model.presets) do
         self.presetCombo:addOptionWithData(name, data)
+    end
+end
+
+function ModListPresets:onPresetsButton(button)
+    ModSelector.instance:setVisible(false)
+    
+    local width = 800
+    local height = 600
+    local screenW = getCore():getScreenWidth()
+    local screenH = getCore():getScreenHeight()
+    local x = (screenW - width) / 2
+    local y = (screenH - height) / 2
+    
+    local selectedPresetName = nil
+    local selectedOption = self.presetCombo.options[self.presetCombo.selected]
+    if selectedOption and selectedOption.data ~= "default" then
+        selectedPresetName = selectedOption.text
+    end
+    
+    local window = ModPresetsWindow:new(x, y, width, height, self.model, self, selectedPresetName)
+    window:initialise()
+    window:instantiate()
+    window:addToUIManager()
+    window:bringToTop()
+    window:setCapture(true)
+    window.returnToUI = ModSelector.instance
+    
+    if self.joyfocus then
+        window.prevFocus = self
+        self.joyfocus.focus = window
+        updateJoypadFocus(self.joyfocus)
+    end
+end
+
+function ModListPresets:loadPreset(data, name)
+    local modSet = {}
+    for _, modID in ipairs(data) do
+        modSet[modID] = true
+    end
+
+    local availableMods = {}
+    for modId, modData in pairs(self.parent.model.mods) do
+        if modSet[modId] then
+            if not modData.isActive and modData.isAvailable then
+                self.parent.model:forceActivateMods(modData.modInfo, true, true, true)
+            end
+            availableMods[modId] = true
+        else
+            if modData.isActive then
+                self.parent.model:forceActivateMods(modData.modInfo, false, true, true)
+            end
+        end
+    end
+    self.parent.model:refreshMods()
+
+    local modList = {}
+    for _, id in ipairs(data) do
+        if availableMods[id] then
+            table.insert(modList, id)
+        end
+    end
+    self.model:correctAndSaveModOrder(modList)
+
+    if name then
+        for i, opt in ipairs(self.presetCombo.options) do
+            if opt.text == name then
+                self.presetCombo.selected = i
+                break
+            end
+        end
+    end
+
+    local isMissedMods = false
+    local data2 = {}
+    for _, k in ipairs(data) do
+        if availableMods[k] == nil then
+            isMissedMods = true
+            local t = luautils.split(k, "\\")
+            data2[k] = t[1]
+        end
+    end
+
+    if isMissedMods then
+        ModSelector.instance:setVisible(false)
+
+        local w = 600
+        local h = 600
+        self.missedModsPanel = ModSelector.MissedModsWindow:new(getCore():getScreenWidth()/2 - w/2, getCore():getScreenHeight() / 2 - h/2, w, h, data2)
+        self.missedModsPanel:initialise();
+        self.missedModsPanel:setAnchorRight(true);
+        self.missedModsPanel:setAnchorLeft(true);
+        self.missedModsPanel:setAnchorBottom(true);
+        self.missedModsPanel:setAnchorTop(true);
+        self.missedModsPanel:addToUIManager()
+        self.missedModsPanel:bringToTop()
     end
 end
 
@@ -196,7 +269,7 @@ function ModListPresets:onSavePreset(button)
             local modArray = self.model:getActiveMods():getMods()
             for i = 0, modArray:size()-1 do
                 local mId = modArray:get(i)
-                data[mId] = self.model.mods[mId].modInfo:getWorkshopID() or ""
+                table.insert(data, mId)
             end
             self.parent.model.presets[name] = data
             self.parent.model:saveModDataToFile()
@@ -250,10 +323,15 @@ function ModListPresets:choosePreset(combo)
         return
     end
 
+    local presetSet = {}
+    for _, modID in ipairs(data) do
+        presetSet[modID] = true
+    end
+
     local availableMods = {}
     self.delPresetButton:setEnable(true)
     for modId, modData in pairs(self.parent.model.mods) do
-        if data[modId] then
+        if presetSet[modId] then
             if not modData.isActive and modData.isAvailable then
                 self.parent.model:forceActivateMods(modData.modInfo, true, true, true)
             end
@@ -267,7 +345,7 @@ function ModListPresets:choosePreset(combo)
     self.parent.model:refreshMods()
 
     local modList = {}
-    for id, _ in pairs(data) do
+    for _, id in ipairs(data) do
         if availableMods[id] then
             table.insert(modList, id)
         end
@@ -276,7 +354,7 @@ function ModListPresets:choosePreset(combo)
 
     local isMissedMods = false
     local data2 = {}
-    for k, v in pairs(data) do
+    for _, k in ipairs(data) do
         if availableMods[k] == nil then
             isMissedMods = true
             local t = luautils.split(k, "\\")

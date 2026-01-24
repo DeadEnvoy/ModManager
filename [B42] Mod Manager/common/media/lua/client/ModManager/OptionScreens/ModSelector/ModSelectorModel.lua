@@ -377,7 +377,7 @@ function ModSelector.Model:loadModDataFromFile()
                 self.presets[presetName] = {}
                 for i, val in ipairs(luautils.split(modsString, ";")) do
                     local data = luautils.split(val, "\\")
-                    self.presets[presetName][val] = data[1]
+                    table.insert(self.presets[presetName], val)
                 end
             end
         end
@@ -399,13 +399,43 @@ function ModSelector.Model:saveModDataToFile()
     file:write("!fav!:" .. table.concat(modsStrTable) .. "\n")
     for name, data in pairs(self.presets) do
         modsStrTable = {}
-        for id, wID in pairs(data) do
+        for _, id in ipairs(data) do
             table.insert(modsStrTable, id)
             table.insert(modsStrTable, ";")
         end
         file:write(name .. ":" .. table.concat(modsStrTable) .. "\n")
     end
     file:close()
+end
+
+function ModSelector.Model:getPresetShareText(name)
+    local data = self.presets[name]
+    local modsStrTable = {}
+    for _, id in ipairs(data) do
+        table.insert(modsStrTable, id)
+        table.insert(modsStrTable, ";")
+    end
+    return name .. ":" .. table.concat(modsStrTable) .. "\n"
+end
+
+function ModSelector.Model:addSharedPreset(button)
+    if button.internal == "OK" then
+        local line = button.parent.entry:getText()
+        local sepIndex = string.find(line, ":")
+        local presetName = ""
+        local modsString = ""
+        if sepIndex ~= nil then
+            presetName = string.sub(line, 0, sepIndex - 1)
+            modsString = string.sub(line, sepIndex + 1)
+        end
+        if presetName ~= "" then
+            self.presets[presetName] = {}
+            for i, val in ipairs(luautils.split(modsString, ";")) do
+                local data = luautils.split(val, "\\")
+                table.insert(self.presets[presetName], val)
+            end
+        end
+    end
 end
 
 function ModSelector.Model:getDependentModsToDisable(modInfo, dependents, visited)
