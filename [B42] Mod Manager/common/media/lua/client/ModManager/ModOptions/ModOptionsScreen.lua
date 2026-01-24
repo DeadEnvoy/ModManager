@@ -7,7 +7,7 @@ require "ISUI/ISSetKeybindDialog"
 require "OptionScreens/MainOptions"
 require "PZAPI/ModOptions"
 
-local ModManagerCache = require "ModManager/Cache"
+local ModManagerData = require "ModManager/Utilities/ModListData"
 
 function PZAPI.ModOptions.Options:addImage(imagePath, secondParam)
     local option = { type = "image", path = imagePath, fit = false, minWidth = nil }
@@ -85,10 +85,10 @@ end
 
 function ModOptionsScreen:loadModsByDateAdded()
     self.modsByDateAdded = {}
-    local cacheData = ModManagerCache:load()
-    if cacheData and cacheData.mods then
+    local modListData = ModManagerData:load()
+    if modListData and modListData.mods then
         local sorted = {}
-        for modID, data in pairs(cacheData.mods) do
+        for modID, data in pairs(modListData.mods) do
             table.insert(sorted, { id = modID, index = data.index })
         end
         table.sort(sorted, function(a, b) return (a.index or 0) < (b.index or 0) end)

@@ -2,7 +2,7 @@ require "OptionScreens/ModSelector/ModSelector"
 
 local alertSystem = require "chuckleberryFinnModdingAlertSystem"
 local changelog_handler = require "chuckleberryFinnModding_modChangelog"
-local ModManagerCache = require "ModManager/Cache"
+local ModManagerData = require "ModManager/Utilities/ModListData"
 
 if alertSystem and changelog_handler then
     local original_initialise = alertSystem.initialise
@@ -65,9 +65,9 @@ if alertSystem and changelog_handler then
             local modID = self.alertsLoaded[self.alertSelected]; local alertData = self.latestAlerts[modID]
             if alertData and not alertData.alreadyStored then
                 alertData.alreadyStored = true; self.alertsOld = (self.alertsOld or 0) + 1
-                if ModManagerCache.data.alerts and ModManagerCache.data.alerts[modID] then
-                    ModManagerCache.data.alerts[modID].seen = true
-                    ModManagerCache:save()
+                if ModManagerData.data.alerts and ModManagerData.data.alerts[modID] then
+                    ModManagerData.data.alerts[modID].seen = true
+                    ModManagerData:save()
                 end
             end
         end
@@ -104,9 +104,9 @@ if alertSystem and changelog_handler then
 
     function alertSystem:processUpdates()
         local twoWeeksAgo = os.time() - 14 * 24 * 60 * 60
-        local existingAlerts = ModManagerCache:getAlertsData() or {}
+        local existingAlerts = ModManagerData:getAlertsData() or {}
         local newAlerts = {}
-        local workshopMods = ModManagerCache.data.workshop and ModManagerCache.data.workshop.mods or {}
+        local workshopMods = ModManagerData.data.workshop and ModManagerData.data.workshop.mods or {}
 
         for modID, wsData in pairs(workshopMods) do
             local ts = wsData.lastUpdate
@@ -130,7 +130,7 @@ if alertSystem and changelog_handler then
             end
         end
 
-        ModManagerCache.data.alerts = newAlerts; ModManagerCache:save()
+        ModManagerData.data.alerts = newAlerts; ModManagerData:save()
 
         local sortedItems = {}
         for modID, data in pairs(newAlerts) do
@@ -187,8 +187,8 @@ if alertSystem and changelog_handler then
         self.alertsLayout = {}
 
         if getSteamModeActive() then
-            if not ModManagerCache.data.workshop then
-                ModManagerCache:load()
+            if not ModManagerData.data.workshop then
+                ModManagerData:load()
             end
             
             self:processUpdates()

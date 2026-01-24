@@ -1,6 +1,6 @@
 require "OptionScreens/ModSelector/ModSelectorModel"
 
-local ModManagerCache = require "ModManager/Cache"
+local ModManagerData = require "ModManager/Utilities/ModListData"
 
 local original_new = ModSelector.Model.new
 function ModSelector.Model:new(view)
@@ -48,13 +48,13 @@ function ModSelector.Model:setSort(sortType)
 end
 
 function ModSelector.Model:isHidden(id)
-    return ModManagerCache.data.mods[id] and ModManagerCache.data.mods[id].hidden == true
+    return ModManagerData.data.mods[id] and ModManagerData.data.mods[id].hidden == true
 end
 
 function ModSelector.Model:setHidden(id, isHidden)
-    if ModManagerCache.data.mods[id] then
-        ModManagerCache.data.mods[id].hidden = isHidden
-        ModManagerCache:save()
+    if ModManagerData.data.mods[id] then
+        ModManagerData.data.mods[id].hidden = isHidden
+        ModManagerData:save()
         self:refreshMods()
     end
 end
@@ -72,12 +72,12 @@ end
 function ModSelector.Model:reloadMods()
     self:loadModDataFromFile()
     
-    local cacheData = ModManagerCache:load()
+    local modListData = ModManagerData:load()
     
     self.modsByDateAdded = {}
-    if cacheData.mods then
+    if modListData.mods then
         local sorted = {}
-        for modID, data in pairs(cacheData.mods) do
+        for modID, data in pairs(modListData.mods) do
             table.insert(sorted, { id = modID, index = data.index })
         end
         table.sort(sorted, function(a, b) return (a.index or 0) < (b.index or 0) end)
@@ -118,7 +118,7 @@ function ModSelector.Model:reloadMods()
                 end
                 
                 if not workshopID or workshopID == "" then
-                    local cachedDataForId = ModManagerCache:getModWorkshopInfo(modId)
+                    local cachedDataForId = ModManagerData:getModWorkshopInfo(modId)
                     if cachedDataForId and cachedDataForId.workshopID then
                         workshopID = cachedDataForId.workshopID
                     end
@@ -126,7 +126,7 @@ function ModSelector.Model:reloadMods()
 
                 data.workshopIDStr = workshopID and tostring(workshopID) or ""
 
-                local cachedData = ModManagerCache:getModWorkshopInfo(modId)
+                local cachedData = ModManagerData:getModWorkshopInfo(modId)
                 data.timeUpdated = (cachedData and cachedData.lastUpdate) or 0
                 data.workshopState = (cachedData and cachedData.state) or ""
                 
@@ -274,12 +274,12 @@ function ModSelector.Model:indexByDateAdded(modID)
 end
 
 function ModSelector.Model:trackMods()
-    local cacheData = ModManagerCache:load()
+    local modListData = ModManagerData:load()
     
     local storedModsList = {}
-    if cacheData.mods then
+    if modListData.mods then
         local sorted = {}
-        for modID, data in pairs(cacheData.mods) do
+        for modID, data in pairs(modListData.mods) do
             table.insert(sorted, { id = modID, index = data.index, hidden = data.hidden })
         end
         table.sort(sorted, function(a, b) return (a.index or 0) < (b.index or 0) end)
@@ -332,8 +332,8 @@ function ModSelector.Model:trackMods()
         currentIndex = currentIndex + 1
     end
 
-    ModManagerCache.data.mods = newCacheMods
-    ModManagerCache:save()
+    ModManagerData.data.mods = newCacheMods
+    ModManagerData:save()
     
     self.modsByDateAdded = {}
     local sorted = {}
