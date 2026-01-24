@@ -1,5 +1,5 @@
 require "OptionScreens/MainScreen"
-require "ModManager/ModOptionsScreen"
+require "ModManager/ModOptions/ModOptionsScreen"
 
 local original_instantiate = MainScreen.instantiate
 function MainScreen:instantiate(...)

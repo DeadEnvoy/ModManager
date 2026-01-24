@@ -1,6 +1,6 @@
 require "ISUI/ISPanelJoypad"
 
-require "ModManager/ModSelector/ModPresetsWindow"
+require "ModManager/ModPresets/ModPresetsWindow"
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local BUTTON_HGT = FONT_HGT_SMALL + 6
