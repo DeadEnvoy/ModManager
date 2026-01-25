@@ -114,8 +114,38 @@ function ModOptionsScreen:onSortChanged()
     if self.listbox.selected > 0 and self.listbox.items[self.listbox.selected] then
         selectedModID = self.listbox.items[self.listbox.selected].item.page.modOptionsID
     end
-    self:apply(false)
-    self:sortAndRefillListbox()
+
+    if PZAPI and PZAPI.ModOptions then
+        for _, options in ipairs(PZAPI.ModOptions.Data) do
+            for _, option in ipairs(options.data) do
+                if option.element then
+                    if option.type == "textentry" then
+                         option.value = option.element:getInternalText()
+                    elseif option.type == "tickbox" then
+                         option.value = option.element:isSelected(1)
+                    elseif option.type == "multipletickbox" and option.values then
+                        for i = 1, #option.element.options do
+                            if option.values[i] then option.values[i].value = option.element:isSelected(i) end
+                        end
+                    elseif option.type == "combobox" then
+                        option.selected = option.element.selected
+                    elseif option.type == "slider" then
+                        option.value = option.element:getCurrentValue()
+                    elseif option.type == "colorpicker" and option.element.backgroundColor then
+                        option.color = option.element.backgroundColor
+                    elseif option.type == "keybind" then
+                        option.value = tostring(option.element.keyCode or 0)
+                        option.key = option.element.keyCode or 0
+                    end
+                end
+            end
+        end
+    end
+
+    local wasChanged = self.optionsChanged; self:sortAndRefillListbox(); self.optionsChanged = wasChanged
+    
+    self.applyButton:setEnable(self.optionsChanged)
+
     if selectedModID then
         for i, item in ipairs(self.listbox.items) do
             if item.item.page.modOptionsID == selectedModID then
@@ -565,7 +595,6 @@ function ModOptionsScreen:setModKeybind(keybindName, key)
         keyBinded.element:setTitle(keyName)
     end
     self.optionsChanged = true
-    if PZAPI.ModOptions.save then PZAPI.ModOptions:save() end
     if MainOptions.setKeybindDialog then
         MainOptions.setKeybindDialog:destroy()
         MainOptions.setKeybindDialog = nil
