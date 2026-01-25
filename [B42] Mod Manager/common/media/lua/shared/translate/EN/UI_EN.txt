@@ -52,7 +52,7 @@ UI_EN = {
     UI_modinfopanel_ZomboidVersion = "Game Version",
     UI_modinfopanel_Dependencies = "Dependencies",
     UI_modinfopanel_IncompatibleWith = "Incompatible With",
-    UI_modinfopanel_Changelog = "Change Log",
+    UI_modinfopanel_Changelog = "Change Notes",
 
     UI_modinfopanel_TimeFormat_Today = "Today at {hour12}:{min} {ampm}",
     UI_modinfopanel_TimeFormat_Yesterday = "Yesterday at {hour12}:{min} {ampm}",
