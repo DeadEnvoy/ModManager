@@ -120,22 +120,23 @@ function ModOptionsScreen:onSortChanged()
             for _, option in ipairs(options.data) do
                 if option.element then
                     if option.type == "textentry" then
-                         option.value = option.element:getInternalText()
+                         option.pendingValue = option.element:getInternalText()
                     elseif option.type == "tickbox" then
-                         option.value = option.element:isSelected(1)
+                         option.pendingValue = option.element:isSelected(1)
                     elseif option.type == "multipletickbox" and option.values then
                         for i = 1, #option.element.options do
-                            if option.values[i] then option.values[i].value = option.element:isSelected(i) end
+                            if option.values[i] then 
+                                option.values[i].pendingValue = option.element:isSelected(i)
+                            end
                         end
                     elseif option.type == "combobox" then
-                        option.selected = option.element.selected
+                        option.pendingValue = option.element.selected
                     elseif option.type == "slider" then
-                        option.value = option.element:getCurrentValue()
+                        option.pendingValue = option.element:getCurrentValue()
                     elseif option.type == "colorpicker" and option.element.backgroundColor then
-                        option.color = option.element.backgroundColor
+                        option.pendingColor = option.element.backgroundColor
                     elseif option.type == "keybind" then
-                        option.value = tostring(option.element.keyCode or 0)
-                        option.key = option.element.keyCode or 0
+                        option.pendingValue = tostring(option.element.keyCode or 0)
                     end
                 end
             end
@@ -143,7 +144,7 @@ function ModOptionsScreen:onSortChanged()
     end
 
     local wasChanged = self.optionsChanged; self:sortAndRefillListbox(); self.optionsChanged = wasChanged
-    
+
     self.applyButton:setEnable(self.optionsChanged)
 
     if selectedModID then
@@ -192,7 +193,6 @@ function ModOptionsScreen:sortAndRefillListbox()
         self:onMouseDownListbox(self.listbox.items[1].item)
         self.listbox.selected = 1
     end
-    self:toUI()
     self:doSearch()
 end
 
@@ -367,20 +367,30 @@ function ModOptionsScreen:createOptionControls(option, page)
     if option.type == "tickbox" then
         control = ISTickBox:new(0, 0, entryHgt, entryHgt, "")
         control:addOption("")
+        local val = option.value
+        if option.pendingValue ~= nil then val = option.pendingValue end
+        control:setSelected(1, val)
         option.element = control
         control.changeOptionMethod = function(target, index, selected)
+             option.pendingValue = selected
              self.optionsChanged = true
              if option.onChange then option.onChange(option, selected) end
         end
     elseif option.type == "multipletickbox" then
         control = ISTickBox:new(0, 0, buttonHgt, buttonHgt, "")
         if option.values then
-            for _, value in ipairs(option.values) do
+            for i, value in ipairs(option.values) do
                 control:addOption(value.name and getText(value.name) or "", value.name)
+                local val = value.value
+                if value.pendingValue ~= nil then val = value.pendingValue end
+                control:setSelected(i, val)
             end
         end
         option.element = control
         control.changeOptionMethod = function(target, index, selected)
+            if option.values and option.values[index] then
+                option.values[index].pendingValue = selected
+            end
             self.optionsChanged = true
             if option.onChange then option.onChange(option, index, selected) end
         end
@@ -391,20 +401,23 @@ function ModOptionsScreen:createOptionControls(option, page)
                 control:addOption(getText(v))
             end
         end
+        control.selected = option.pendingValue or option.selected or 1
         option.element = control
         control.onChange = function(target, box)
+            option.pendingValue = box.selected
             self.optionsChanged = true
             if option.onChange then option.onChange(option, box.selected) end
         end
     elseif option.type == "slider" then
         local container = ISPanel:new(0, 0, controlWidth * 2, entryHgt)
         container:noBackground()
-        local valueLabel = ISLabel:new(60, 0, entryHgt, tostring(option.value or 0), 1, 1, 1, 1, UIFont.Small, false)
+        local val = option.pendingValue or option.value or option.min or 0
+        local valueLabel = ISLabel:new(60, 0, entryHgt, tostring(val), 1, 1, 1, 1, UIFont.Small, false)
         valueLabel:initialise()
         container:addChild(valueLabel)
         control = ISSliderPanel:new(70, 0, controlWidth * 2 - 70, entryHgt, self, ModOptionsScreen.onSliderChange)
         control:setValues(option.min or 0, option.max or 100, option.step or 1, (option.step or 1) * 10)
-        control:setCurrentValue(option.value or option.min or 0)
+        control:setCurrentValue(val)
         container:addChild(control)
         control.label = valueLabel
         control.container = container
@@ -413,27 +426,31 @@ function ModOptionsScreen:createOptionControls(option, page)
     elseif option.type == "colorpicker" then
         if not option.modOptionsID then option.modOptionsID = page.modOptionsID end
         control = ISButton:new(0, 0, entryHgt * 2, entryHgt, "", self, self.onModColorPick)
-        control.backgroundColor = option.color or { r = 1, g = 1, b = 1, a = 1 }
+        local initialColor = option.pendingColor or option.color or { r = 1, g = 1, b = 1, a = 1 }
+        control.backgroundColor = { r = initialColor.r, g = initialColor.g, b = initialColor.b, a = initialColor.a }
         control.option = option
         control.colorPicker = ISColorPicker:new(0, 0)
         control.colorPicker:initialise()
         control.colorPicker.pickedTarget = self
         control.colorPicker.resetFocusTo = self
-        local initialColor = option.color or { r = 1, g = 1, b = 1, a = 1 }
         control.colorPicker:setInitialColor(ColorInfo.new(initialColor.r, initialColor.g, initialColor.b, initialColor.a))
         option.element = control
     elseif option.type == "textentry" then
-        control = ISTextEntryBox:new(option.value or "", 0, 0, controlWidth * 2, entryHgt)
+        control = ISTextEntryBox:new(option.pendingValue or option.value or "", 0, 0, controlWidth * 2, entryHgt)
         control.font = UIFont.Medium
         option.element = control
         control.onTextChange = function()
+            option.pendingValue = control:getInternalText()
             self.optionsChanged = true
             if option.onChange then option.onChange(option, control:getInternalText()) end
         end
     elseif option.type == "keybind" then
-        if option.key ~= nil then option.value = tostring(option.key)
-        elseif option.value == nil and option.defaultkey ~= nil then option.value = tostring(option.defaultkey); option.key = option.defaultkey end
-        local keyValue = tonumber(option.value) or 0
+        local val = option.pendingValue or option.value
+        if val == nil then
+            if option.key ~= nil then val = tostring(option.key)
+            elseif option.defaultkey ~= nil then val = tostring(option.defaultkey); option.key = option.defaultkey end
+        end
+        local keyValue = tonumber(val) or 0
         local keyName = (keyValue > 0) and getKeyName(keyValue) or "None"
         control = ISButton:new(0, 0, controlWidth, entryHgt, keyName, self, MainOptions.onKeyBindingBtnPress)
         control.internal = option.name
@@ -586,16 +603,18 @@ end
 function ModOptionsScreen:setModKeybind(keybindName, key)
     local keyBinded = self:getModKeybind(keybindName)
     if not keyBinded then return end
-    keyBinded.value = tostring(key)
-    keyBinded.key = key
-    if keyBinded.element then keyBinded.element.keyCode = key end
+
+    keyBinded.pendingValue = tostring(key)
+
     if keyBinded.element then
-        local keyNum = tonumber(keyBinded.value) or 0
+        keyBinded.element.keyCode = key
+        local keyNum = tonumber(key) or 0
         local keyName = (keyNum > 0) and getKeyName(keyNum) or "None"
         keyBinded.element:setTitle(keyName)
     end
+
     self.optionsChanged = true
-    if PZAPI.ModOptions.save then PZAPI.ModOptions:save() end
+
     if MainOptions.setKeybindDialog then
         MainOptions.setKeybindDialog:destroy()
         MainOptions.setKeybindDialog = nil
@@ -627,7 +646,7 @@ function ModOptionsScreen:keyPressHandler(key, shift, ctrl, alt)
         for _, options in ipairs(PZAPI.ModOptions.Data) do
             if options and options.data then
                 for _, option in ipairs(options.data) do
-                    if option.type == "keybind" and option.name ~= keybindName and (tonumber(option.value) or 0) == key then
+                    if option.type == "keybind" and option.name ~= keybindName and (tonumber(option.pendingValue or option.value) or 0) == key then
                         self:showKeybindConflictDialog(key, keybindName, option.name)
                         return
                     end
@@ -668,6 +687,9 @@ function ModOptionsScreen:onSliderChange(_value, _slider)
     if _slider.label then
         _slider.label:setName(tostring(_value))
     end
+    if _slider.option then
+        _slider.option.pendingValue = _value
+    end
     self.optionsChanged = true
     if _slider.option and _slider.option.onChange then
         _slider.option.onChange(_slider.option, _value)
@@ -677,7 +699,7 @@ end
 function ModOptionsScreen:pickedModColor(button, color, mouseUp)
     if not button or not button.option or not color then return end
     button.backgroundColor = { r = color.r, g = color.g, b = color.b, a = 1 }
-    button.option.color = button.backgroundColor
+    button.option.pendingColor = button.backgroundColor
     self.optionsChanged = true
     if button.option.onChange then button.option.onChange(button.option, button.backgroundColor) end
 end
@@ -718,24 +740,34 @@ function ModOptionsScreen:apply(closeAfter)
 
     for _, options in ipairs(PZAPI.ModOptions.Data) do
         for _, option in ipairs(options.data) do
-            if option.element then
+            if option.pendingValue ~= nil then
+                option.value = option.pendingValue
+                if option.type == "keybind" then
+                    option.key = tonumber(option.pendingValue)
+                end
+                option.pendingValue = nil
+            end
+            if option.pendingColor ~= nil then
+                option.color = option.pendingColor
+                option.pendingColor = nil
+            end
+            
+            if option.type == "multipletickbox" and option.values then
+                for i, val in ipairs(option.values) do
+                    if val.pendingValue ~= nil then
+                        val.value = val.pendingValue
+                        val.pendingValue = nil
+                    end
+                end
+            end
+            
+            if option.element and option.type ~= "keybind" and option.type ~= "colorpicker" and option.type ~= "slider" then
                 if option.type == "textentry" then
                      option.value = option.element:getInternalText()
                 elseif option.type == "tickbox" then
                      option.value = option.element:isSelected(1)
-                elseif option.type == "multipletickbox" and option.values then
-                    for i = 1, #option.element.options do
-                        if option.values[i] then option.values[i].value = option.element:isSelected(i) end
-                    end
                 elseif option.type == "combobox" then
                     option.selected = option.element.selected
-                elseif option.type == "slider" then
-                    option.value = option.element:getCurrentValue()
-                elseif option.type == "colorpicker" and option.element.backgroundColor then
-                    option.color = option.element.backgroundColor
-                elseif option.type == "keybind" then
-                    option.value = tostring(option.element.keyCode or 0)
-                    option.key = option.element.keyCode or 0
                 end
             end
         end
@@ -753,6 +785,9 @@ function ModOptionsScreen:toUI()
     if not PZAPI or not PZAPI.ModOptions then return end
     for _, options in ipairs(PZAPI.ModOptions.Data) do
         for _, option in ipairs(options.data) do
+            option.pendingValue = nil
+            option.pendingColor = nil
+
             if option.element then
                 if option.type == "textentry" then
                      option.element:setText(option.value or "")
@@ -760,8 +795,11 @@ function ModOptionsScreen:toUI()
                      option.element:setSelected(1, option.value or false)
                 elseif option.type == "multipletickbox" and option.values then
                     for i = 1, #option.element.options do
-                        if option.values[i] and option.values[i].value ~= nil then
-                            option.element:setSelected(i, option.values[i].value)
+                        if option.values[i] then
+                            option.values[i].pendingValue = nil 
+                            if option.values[i].value ~= nil then
+                                option.element:setSelected(i, option.values[i].value)
+                            end
                         end
                     end
                 elseif option.type == "combobox" then
