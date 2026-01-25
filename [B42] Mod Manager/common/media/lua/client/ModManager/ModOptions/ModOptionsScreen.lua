@@ -595,6 +595,7 @@ function ModOptionsScreen:setModKeybind(keybindName, key)
         keyBinded.element:setTitle(keyName)
     end
     self.optionsChanged = true
+    if PZAPI.ModOptions.save then PZAPI.ModOptions:save() end
     if MainOptions.setKeybindDialog then
         MainOptions.setKeybindDialog:destroy()
         MainOptions.setKeybindDialog = nil
@@ -812,21 +813,20 @@ function ModOptionsScreen:new(x, y, width, height)
 end
 
 local original_onKeep = ISDuplicateKeybindDialog.onKeep
-local original_onClear = ISDuplicateKeybindDialog.onClear
-local original_new = ISDuplicateKeybindDialog.new
-
 function ISDuplicateKeybindDialog:onKeep(...)
     original_onKeep(self, ...)
     if self.onKeepCallback then self:onKeepCallback() end
     self:destroy()
 end
 
+local original_onClear = ISDuplicateKeybindDialog.onClear
 function ISDuplicateKeybindDialog:onClear(...)
     original_onClear(self, ...)
     if self.onKeepCallback then self:onKeepCallback() end
     self:destroy()
 end
 
+local original_new = ISDuplicateKeybindDialog.new
 function ISDuplicateKeybindDialog:new(key, keybindName, keybind2Name, shift, ctrl, alt, onKeepCallback)
     local o = original_new(self, key, keybindName, keybind2Name, shift, ctrl, alt)
     o.onKeepCallback = onKeepCallback
@@ -834,8 +834,6 @@ function ISDuplicateKeybindDialog:new(key, keybindName, keybind2Name, shift, ctr
 end
 
 local original_ISSetKeybindDialog_onClear = ISSetKeybindDialog.onClear
-local original_ISSetKeybindDialog_onDefault = ISSetKeybindDialog.onDefault
-
 function ISSetKeybindDialog:onClear(...)
     if self.isModBind and ModOptionsScreen.instance then
         ModOptionsScreen.instance:setModKeybind(self.keybindName, 0)
@@ -845,6 +843,7 @@ function ISSetKeybindDialog:onClear(...)
     return original_ISSetKeybindDialog_onClear(self, ...)
 end
 
+local original_ISSetKeybindDialog_onDefault = ISSetKeybindDialog.onDefault
 function ISSetKeybindDialog:onDefault(...)
     if self.isModBind and ModOptionsScreen.instance then
         local keyBinded = ModOptionsScreen.instance:getModKeybind(self.keybindName)
