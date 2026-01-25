@@ -372,17 +372,14 @@ function ModOptionsScreen:createOptionControls(option, page)
         local valueLabel = ISLabel:new(60, 0, entryHgt, tostring(option.value or 0), 1, 1, 1, 1, UIFont.Small, false)
         valueLabel:initialise()
         container:addChild(valueLabel)
-        control = ISSliderPanel:new(70, 0, controlWidth * 2 - 70, entryHgt)
+        control = ISSliderPanel:new(70, 0, controlWidth * 2 - 70, entryHgt, self, ModOptionsScreen.onSliderChange)
         control:setValues(option.min or 0, option.max or 100, option.step or 1, (option.step or 1) * 10)
+        control:setCurrentValue(option.value or option.min or 0)
         container:addChild(control)
         control.label = valueLabel
         control.container = container
+        control.option = option
         option.element = control
-        control.onValueChange = function(c, v)
-             c.label:setName(tostring(v))
-             self.optionsChanged = true
-             if option.onChange then option.onChange(option, v) end
-        end
     elseif option.type == "colorpicker" then
         if not option.modOptionsID then option.modOptionsID = page.modOptionsID end
         control = ISButton:new(0, 0, entryHgt * 2, entryHgt, "", self, self.onModColorPick)
@@ -635,6 +632,16 @@ function ModOptionsScreen:onModColorPick(button)
     self:addChild(button.colorPicker)
     button.colorPicker:setVisible(true)
     button.colorPicker:bringToTop()
+end
+
+function ModOptionsScreen:onSliderChange(_value, _slider)
+    if _slider.label then
+        _slider.label:setName(tostring(_value))
+    end
+    self.optionsChanged = true
+    if _slider.option and _slider.option.onChange then
+        _slider.option.onChange(_slider.option, _value)
+    end
 end
 
 function ModOptionsScreen:pickedModColor(button, color, mouseUp)
