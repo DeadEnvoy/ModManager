@@ -24,6 +24,18 @@ UI_PTBR = {
 
     UI_btn_sort_apply = "ORDENAR E ACEITAR",
 
+    UI_modpresets_title = "LISTA DE PRESETS",
+
+    UI_modpresets_presetsTab = "PRESETS",
+    UI_modpresets_historyTab = "HISTÓRICO",
+
+    UI_modpresets_copy = "COPIAR",
+
+    UI_btn_select = "SELECIONAR",
+    UI_btn_deleteAll = "EXCLUIR TUDO",
+
+    UI_modpresets_deleteAll_dialog = "Excluir todo o histórico?",
+
     UI_modselector_btn_hide = "OCULTAR",
     UI_modselector_btn_show = "MOSTRAR",
     UI_modselector_btn_favorite = "FAVORITO",

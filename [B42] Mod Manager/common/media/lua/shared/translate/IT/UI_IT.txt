@@ -24,6 +24,18 @@ UI_IT = {
 
     UI_btn_sort_apply = "ORDINA E ACCETTA",
 
+    UI_modpresets_title = "LISTA PRESET",
+
+    UI_modpresets_presetsTab = "PRESET",
+    UI_modpresets_historyTab = "CRONOLOGIA",
+
+    UI_modpresets_copy = "COPIA",
+
+    UI_btn_select = "SELEZIONA",
+    UI_btn_deleteAll = "CANCELLA TUTTO",
+
+    UI_modpresets_deleteAll_dialog = "Cancellare l'intera cronologia?",
+
     UI_modselector_btn_hide = "NASCONDI",
     UI_modselector_btn_show = "MOSTRA",
     UI_modselector_btn_favorite = "PREFERITO",

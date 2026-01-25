@@ -24,6 +24,18 @@ UI_TR = {
 
     UI_btn_sort_apply = "SIRALA VE KABUL ET",
 
+    UI_modpresets_title = "ÖNAYAR LİSTESİ",
+
+    UI_modpresets_presetsTab = "ÖNAYARLAR",
+    UI_modpresets_historyTab = "GEÇMİŞ",
+
+    UI_modpresets_copy = "KOPYALA",
+
+    UI_btn_select = "SEÇ",
+    UI_btn_deleteAll = "TÜMÜNÜ SİL",
+
+    UI_modpresets_deleteAll_dialog = "Tüm geçmiş silinsin mi?",
+
     UI_modselector_btn_hide = "GİZLE",
     UI_modselector_btn_show = "GÖSTER",
     UI_modselector_btn_favorite = "FAVORİ",

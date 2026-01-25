@@ -24,6 +24,18 @@ UI_ES = {
 
     UI_btn_sort_apply = "ORDENAR Y ACEPTAR",
 
+    UI_modpresets_title = "LISTA DE PREAJUSTES",
+
+    UI_modpresets_presetsTab = "PREAJUSTES",
+    UI_modpresets_historyTab = "HISTORIAL",
+
+    UI_modpresets_copy = "COPIAR",
+
+    UI_btn_select = "SELECCIONAR",
+    UI_btn_deleteAll = "BORRAR TODO",
+
+    UI_modpresets_deleteAll_dialog = "¿Borrar todo el historial?",
+
     UI_modselector_btn_hide = "OCULTAR",
     UI_modselector_btn_show = "MOSTRAR",
     UI_modselector_btn_favorite = "FAVORITO",

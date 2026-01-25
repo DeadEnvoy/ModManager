@@ -1,5 +1,5 @@
 UI_RU = {
-    UI_mainscreen_btn_configs = "КОНФИГИ",
+    UI_mainscreen_btn_configs = "КОНФИГУРАЦИИ",
 
     UI_modselector_separator = "из",
 
@@ -23,6 +23,18 @@ UI_RU = {
     UI_modoptions_title = "НАСТРОЙКИ МОДИФИКАЦИЙ",
 
     UI_btn_sort_apply = "СОРТИРОВАТЬ И ПРИНЯТЬ",
+
+    UI_modpresets_title = "СПИСОК ПРЕСЕТОВ",
+
+    UI_modpresets_presetsTab = "ПРЕСЕТЫ",
+    UI_modpresets_historyTab = "ИСТОРИЯ",
+
+    UI_modpresets_copy = "КОПИРОВАТЬ",
+
+    UI_btn_select = "ВЫБРАТЬ",
+    UI_btn_deleteAll = "УДАЛИТЬ ВСЁ",
+
+    UI_modpresets_deleteAll_dialog = "Удалить всю историю?",
 
     UI_modselector_btn_hide = "СКРЫТЬ",
     UI_modselector_btn_show = "ПОКАЗАТЬ",

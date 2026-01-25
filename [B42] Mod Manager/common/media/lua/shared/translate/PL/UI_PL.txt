@@ -24,6 +24,18 @@ UI_PL = {
 
     UI_btn_sort_apply = "SORTUJ I ZASTOSUJ",
 
+    UI_modpresets_title = "LISTA PRESETÓW",
+
+    UI_modpresets_presetsTab = "PRESETY",
+    UI_modpresets_historyTab = "HISTORIA",
+
+    UI_modpresets_copy = "KOPIUJ",
+
+    UI_btn_select = "WYBIERZ",
+    UI_btn_deleteAll = "USUŃ WSZYSTKO",
+
+    UI_modpresets_deleteAll_dialog = "Usunąć całą historię?",
+
     UI_modselector_btn_hide = "UKRYJ",
     UI_modselector_btn_show = "POKAŻ",
     UI_modselector_btn_favorite = "ULUBIONE",

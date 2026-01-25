@@ -24,6 +24,18 @@ UI_FR = {
 
     UI_btn_sort_apply = "TRIER ET ACCEPTER",
 
+    UI_modpresets_title = "LISTE DES PRÉRÉGLAGES",
+
+    UI_modpresets_presetsTab = "PRÉRÉGLAGES",
+    UI_modpresets_historyTab = "HISTORIQUE",
+
+    UI_modpresets_copy = "COPIER",
+
+    UI_btn_select = "SÉLECTIONNER",
+    UI_btn_deleteAll = "TOUT SUPPRIMER",
+
+    UI_modpresets_deleteAll_dialog = "Supprimer tout l'historique ?",
+
     UI_modselector_btn_hide = "MASQUER",
     UI_modselector_btn_show = "AFFICHER",
     UI_modselector_btn_favorite = "FAVORI",

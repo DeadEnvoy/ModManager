@@ -24,6 +24,18 @@ UI_KO = {
 
     UI_btn_sort_apply = "정렬 및 적용",
 
+    UI_modpresets_title = "프리셋 목록",
+
+    UI_modpresets_presetsTab = "프리셋",
+    UI_modpresets_historyTab = "기록",
+
+    UI_modpresets_copy = "복사",
+
+    UI_btn_select = "선택",
+    UI_btn_deleteAll = "모두 삭제",
+
+    UI_modpresets_deleteAll_dialog = "전체 기록을 삭제하시겠습니까?",
+
     UI_modselector_btn_hide = "숨기기",
     UI_modselector_btn_show = "보이기",
     UI_modselector_btn_favorite = "즐겨찾기",

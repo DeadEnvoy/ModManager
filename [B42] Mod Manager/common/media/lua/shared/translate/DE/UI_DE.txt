@@ -24,6 +24,18 @@ UI_DE = {
 
     UI_btn_sort_apply = "SORTIEREN & ÜBERNEHMEN",
 
+    UI_modpresets_title = "PRESET-LISTE",
+
+    UI_modpresets_presetsTab = "PRESETS",
+    UI_modpresets_historyTab = "VERLAUF",
+
+    UI_modpresets_copy = "KOPIEREN",
+
+    UI_btn_select = "AUSWÄHLEN",
+    UI_btn_deleteAll = "ALLES LÖSCHEN",
+
+    UI_modpresets_deleteAll_dialog = "Gesamten Verlauf löschen?",
+
     UI_modselector_btn_hide = "VERSTECKEN",
     UI_modselector_btn_show = "ANZEIGEN",
     UI_modselector_btn_favorite = "FAVORIT",

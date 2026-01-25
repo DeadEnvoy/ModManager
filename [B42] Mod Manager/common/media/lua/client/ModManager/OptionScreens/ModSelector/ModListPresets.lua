@@ -159,6 +159,7 @@ function ModListPresets:loadPreset(data, name)
     end
     self.model:correctAndSaveModOrder(modList)
 
+    self.presetCombo.selected = 1
     if name then
         for i, opt in ipairs(self.presetCombo.options) do
             if opt.text == name then

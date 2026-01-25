@@ -646,3 +646,142 @@ function DisableConfirmWindow:closeAndSelect(modId)
         end
     end
 end
+
+function ModSelector.Model:acceptChanges()
+    self:saveModDataToFile()
+
+    local activeMods = self:getActiveMods()
+
+    activeMods:checkMissingMods()
+    activeMods:checkMissingMaps()
+
+    if self.loadGameFolder then
+        local saveFolder = self.loadGameFolder
+        self.loadGameFolder = nil
+        manipulateSavefile(saveFolder, "WriteModsDotTxt")
+
+        local defaultMods = ActiveMods.getById("default")
+        local currentMods = ActiveMods.getById("currentGame")
+        currentMods:copyFrom(defaultMods)
+
+        LoadGameScreen.instance:onSavefileModsChanged(saveFolder)
+        LoadGameScreen.instance:setVisible(true, self.joyfocus)
+        return
+    end
+
+    if self.isNewGame then
+        NewGameScreen.instance:setVisible(true, self.joyfocus)
+    elseif self.isServerSettingsMods then
+        local result = {}
+        local mods = activeMods:getMods()
+        for i = 0, mods:size()-1 do
+            local id = mods:get(i)
+            local info = self.mods[id].modInfo
+            table.insert(result, {modID = id, modInfo = info})
+        end
+        self.serverSettingsFinishFunc(result)
+        self.isServerSettingsMods = false
+        return
+    else
+        saveModsFile()
+
+        local defaultMods = ActiveMods.getById("default")
+        local currentMods = ActiveMods.getById("currentGame")
+        currentMods:copyFrom(defaultMods)
+
+        MainScreen.instance.bottomPanel:setVisible(true)
+    end
+
+    local reset = self.ModsEnabled ~= getCore():getOptionModsEnabled()
+    if ActiveMods.requiresResetLua(activeMods) then
+        reset = true
+    end
+    if reset then
+        local activeModList = activeMods:getMods()
+        local currentIds = {}
+        local currentCount = 0
+        for i=0, activeModList:size()-1 do
+            currentIds[activeModList:get(i)] = true
+            currentCount = currentCount + 1
+        end
+
+        local isDuplicate = false
+
+        for _, data in pairs(self.presets) do
+            if #data == currentCount then
+                local match = true
+                for _, id in ipairs(data) do
+                    if not currentIds[id] then match = false break end
+                end
+                if match then isDuplicate = true break end
+            end
+        end
+
+        local HISTORY_LIMIT = 30
+        local historyLines = {}
+        local file = getFileReader("ModManager/HistoryData.cfg", false)
+        
+        if file then
+            local line = file:readLine()
+            while line ~= nil do
+                if not isDuplicate then
+                    local sepIndex = string.find(line, ":")
+                    if sepIndex then
+                        local modsStr = string.sub(line, sepIndex + 1)
+                        local historyIds = {}
+                        local historyCount = 0
+                        for modId in string.gmatch(modsStr, "([^;]+)") do
+                            historyIds[modId] = true
+                            historyCount = historyCount + 1
+                        end
+                        
+                        if historyCount == currentCount then
+                            local match = true
+                            for id, _ in pairs(currentIds) do
+                                if not historyIds[id] then match = false break end
+                            end
+                            if match then isDuplicate = true end
+                        end
+                    end
+                end
+                table.insert(historyLines, line)
+                line = file:readLine()
+            end
+            file:close()
+        end
+
+        if not isDuplicate then
+            table.sort(historyLines, function(a, b) return a > b end)
+            
+            while #historyLines >= HISTORY_LIMIT do
+                table.remove(historyLines)
+            end
+
+            local sdf = SimpleDateFormat.new("yyyy-MM-dd_HH-mm-ss", Locale.ENGLISH)
+            local dateStr = sdf:format(getTimestampMs())
+            local modsStrTable = {}
+            for i = 0, activeModList:size() - 1 do
+                table.insert(modsStrTable, activeModList:get(i))
+                table.insert(modsStrTable, ";")
+            end
+            local newLine = dateStr .. ":" .. table.concat(modsStrTable)
+            
+            table.insert(historyLines, 1, newLine)
+
+            local writer = getFileWriter("ModManager/HistoryData.cfg", true, false)
+            if writer then
+                for _, str in ipairs(historyLines) do
+                    writer:write(str .. "\r\n")
+                end
+                writer:close()
+            end
+        end
+
+        if self.isNewGame then
+            getCore():ResetLua("currentGame", "NewGameMods")
+        else
+            MainScreen.instance.bottomPanel:setVisible(false)
+            getCore():ResetLua("default", "modsChanged")
+        end
+    end
+end

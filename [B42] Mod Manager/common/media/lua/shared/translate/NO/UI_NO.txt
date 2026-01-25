@@ -24,6 +24,18 @@ UI_NO = {
 
     UI_btn_sort_apply = "SORTER OG GODTA",
 
+    UI_modpresets_title = "PRESET-LISTE",
+
+    UI_modpresets_presetsTab = "PRESETS",
+    UI_modpresets_historyTab = "HISTORIKK",
+
+    UI_modpresets_copy = "KOPIER",
+
+    UI_btn_select = "VELG",
+    UI_btn_deleteAll = "SLETT ALT",
+
+    UI_modpresets_deleteAll_dialog = "Slette hele historikken?",
+
     UI_modselector_btn_hide = "SKJUL",
     UI_modselector_btn_show = "VIS",
     UI_modselector_btn_favorite = "FAVORITT",

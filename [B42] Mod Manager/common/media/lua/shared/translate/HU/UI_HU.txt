@@ -24,6 +24,18 @@ UI_HU = {
 
     UI_btn_sort_apply = "RENDEZÉS ÉS ELFOGADÁS",
 
+    UI_modpresets_title = "PRESET LISTA",
+
+    UI_modpresets_presetsTab = "PRESETEK",
+    UI_modpresets_historyTab = "ELŐZMÉNYEK",
+
+    UI_modpresets_copy = "MÁSOLÁS",
+
+    UI_btn_select = "KIVÁLASZTÁS",
+    UI_btn_deleteAll = "ÖSSZES TÖRLÉSE",
+
+    UI_modpresets_deleteAll_dialog = "Törlöd a teljes előzményt?",
+
     UI_modselector_btn_hide = "ELREJTÉS",
     UI_modselector_btn_show = "MEGJELENÍTÉS",
     UI_modselector_btn_favorite = "KEDVENC",
