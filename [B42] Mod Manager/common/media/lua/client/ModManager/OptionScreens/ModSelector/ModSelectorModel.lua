@@ -350,7 +350,8 @@ function ModSelector.Model:loadModDataFromFile()
                 modsString = string.sub(line, sepIndex + 1)
             end
             for i, val in ipairs(luautils.split(modsString, ";")) do
-                if val ~= "" then self.favs[val] = true end
+                local modId = val:match("^\\?(.+)") or val
+                if modId ~= "" then self.favs[modId] = true end
             end
         else
             local sepIndex = string.find(line, ":")
@@ -363,8 +364,9 @@ function ModSelector.Model:loadModDataFromFile()
             if presetName ~= "" then
                 self.presets[presetName] = {}
                 for i, val in ipairs(luautils.split(modsString, ";")) do
-                    if val ~= "" then
-                        table.insert(self.presets[presetName], val)
+                    local modId = val:match("^\\?(.+)") or val
+                    if modId ~= "" then
+                        table.insert(self.presets[presetName], modId)
                     end
                 end
             end
