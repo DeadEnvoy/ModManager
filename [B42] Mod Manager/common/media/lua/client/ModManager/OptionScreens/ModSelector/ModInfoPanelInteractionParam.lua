@@ -22,9 +22,10 @@ function ModInfoPanel.InteractionParam:render()
                 if val.available then
                     self.parent.parent:selectModByInfo(val.modInfo)
                 else
-                    local t = luautils.split(val.id, "\\")
-                    if t[1] ~= "" then
-                        activateSteamOverlayToWorkshopItem(t[1])
+                    local modData = self.parent.parent.model.mods[val.id]
+                    local workshopID = modData and modData.workshopIDStr
+                    if workshopID and workshopID ~= "" then
+                        activateSteamOverlayToWorkshopItem(workshopID)
                     end
                 end
             end

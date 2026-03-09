@@ -24,13 +24,6 @@ function SteamWorkshopQuery.query()
         if modInfo then
             local workshopID = modInfo:getWorkshopID()
 
-            if not workshopID or workshopID == "" then
-                local path = modInfo:getDir()
-                if path then
-                    workshopID = path:match("content[\\/]108600[\\/](%d+)")
-                end
-            end
-
             if workshopID and workshopID ~= "" then
                 if not SteamWorkshopQuery.modMap[workshopID] then
                     SteamWorkshopQuery.modMap[workshopID] = {}

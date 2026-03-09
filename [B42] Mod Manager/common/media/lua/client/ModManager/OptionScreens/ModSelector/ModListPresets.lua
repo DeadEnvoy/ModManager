@@ -174,8 +174,7 @@ function ModListPresets:loadPreset(data, name)
     for _, k in ipairs(data) do
         if availableMods[k] == nil then
             isMissedMods = true
-            local t = luautils.split(k, "\\")
-            data2[k] = t[1]
+            data2[k] = k
         end
     end
 
@@ -298,9 +297,9 @@ function ModListPresets:choosePreset(combo)
     if data == "default" then
         self.delPresetButton:setEnable(false)
         if combo.selected == 2 then
-            local ignored = {}; ignored["\\ModManager"] = true
-            if self.parent.model.mods["\\ModManager"] then
-                local req = self.parent.model.mods["\\ModManager"].modInfo:getRequire()
+            local ignored = {}; ignored["ModManager"] = true
+            if self.parent.model.mods["ModManager"] then
+                local req = self.parent.model.mods["ModManager"].modInfo:getRequire()
                 if req then
                     for i=0, req:size()-1 do
                         ignored[req:get(i)] = true
@@ -358,8 +357,7 @@ function ModListPresets:choosePreset(combo)
     for _, k in ipairs(data) do
         if availableMods[k] == nil then
             isMissedMods = true
-            local t = luautils.split(k, "\\")
-            data2[k] = t[1]
+            data2[k] = k
         end
     end
 

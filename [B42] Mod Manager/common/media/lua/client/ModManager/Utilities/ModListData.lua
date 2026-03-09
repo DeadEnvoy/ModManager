@@ -146,7 +146,7 @@ function ModManagerData:save()
     table.sort(sortedMods, function(a, b) return (a.data.index or 0) < (b.data.index or 0) end)
     
     for _, item in ipairs(sortedMods) do
-        file:write('        ["' .. item.id:gsub("\\", "\\\\") .. '"] = {\r\n')
+        file:write('        ["' .. item.id .. '"] = {\r\n')
         file:write('            hidden = ' .. tostring(item.data.hidden) .. ',\r\n')
         file:write('            index = ' .. tostring(item.data.index) .. ',\r\n')
         file:write('        },\r\n')
@@ -159,7 +159,7 @@ function ModManagerData:save()
     table.sort(alertKeys)
     for _, modID in ipairs(alertKeys) do
         local data = self.data.alerts[modID]
-        file:write('        ["' .. modID:gsub("\\", "\\\\") .. '"] = {\r\n')
+        file:write('        ["' .. modID .. '"] = {\r\n')
         file:write('            workshopID = ' .. string.format("%.0f", data.workshopID or 0) .. ',\r\n')
         file:write('            lastUpdate = ' .. string.format("%.0f", data.lastUpdate or 0) .. ',\r\n')
         file:write('            seen = ' .. tostring(data.seen or false) .. ',\r\n')
@@ -181,7 +181,7 @@ function ModManagerData:save()
     table.sort(wsKeys)
     for _, modID in ipairs(wsKeys) do
         local data = wsMods[modID]
-        file:write('            ["' .. modID:gsub("\\", "\\\\") .. '"] = {\r\n')
+        file:write('            ["' .. modID .. '"] = {\r\n')
         file:write('                workshopID = ' .. string.format("%.0f", data.workshopID or 0) .. ',\r\n')
         file:write('                lastUpdate = ' .. string.format("%.0f", data.lastUpdate or 0) .. ',\r\n')
         file:write('                state = "' .. tostring(data.state or "") .. '",\r\n')

@@ -33,9 +33,9 @@ local function formatChangelog(version, content)
 end
 
 local function getLatestChangelog(modID)
-    local reader = getModFileReader("\\" .. modID, "ChangeLog.txt", false)
+    local reader = getModFileReader(modID, "ChangeLog.txt", false)
     if not reader then
-        reader = getModFileReader("\\" .. modID, "ChangeLog.md", false)
+        reader = getModFileReader(modID, "ChangeLog.md", false)
     end
 
     if not reader then return nil end

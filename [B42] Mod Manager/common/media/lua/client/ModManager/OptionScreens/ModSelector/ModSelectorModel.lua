@@ -111,20 +111,7 @@ function ModSelector.Model:reloadMods()
                 data.indexAdded = self:indexByDateAdded(modId)
 
                 local workshopID = modInfoFromDir:getWorkshopID()
-                if not workshopID or workshopID == "" then
-                    local path = modInfoFromDir:getDir(); if path then
-                        workshopID = path:match("content[\\/]108600[\\/](%d+)")
-                    end
-                end
-                
-                if not workshopID or workshopID == "" then
-                    local cachedDataForId = ModManagerData:getModWorkshopInfo(modId)
-                    if cachedDataForId and cachedDataForId.workshopID then
-                        workshopID = cachedDataForId.workshopID
-                    end
-                end
-
-                data.workshopIDStr = workshopID and tostring(workshopID) or ""
+                data.workshopIDStr = (workshopID and workshopID ~= "") and tostring(workshopID) or ""
 
                 local cachedData = ModManagerData:getModWorkshopInfo(modId)
                 data.timeUpdated = (cachedData and cachedData.lastUpdate) or 0
@@ -376,8 +363,9 @@ function ModSelector.Model:loadModDataFromFile()
             if presetName ~= "" then
                 self.presets[presetName] = {}
                 for i, val in ipairs(luautils.split(modsString, ";")) do
-                    local data = luautils.split(val, "\\")
-                    table.insert(self.presets[presetName], val)
+                    if val ~= "" then
+                        table.insert(self.presets[presetName], val)
+                    end
                 end
             end
         end
