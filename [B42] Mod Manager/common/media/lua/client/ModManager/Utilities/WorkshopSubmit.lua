@@ -32,7 +32,7 @@ local function formatChangelog(version, content)
     return result
 end
 
-local function getLatestChangelog(modID)
+local function getLatestChangelog(modID, shouldFormat)
     local reader = getModFileReader(modID, "ChangeLog.txt", false)
     if not reader then
         reader = getModFileReader(modID, "ChangeLog.md", false)
@@ -88,14 +88,18 @@ local function getLatestChangelog(modID)
     if #entries > 0 then
         local lastEntry = entries[#entries]
         if lastEntry.content ~= "" then
-            return formatChangelog(lastEntry.version, lastEntry.content)
+            if shouldFormat then
+                return formatChangelog(lastEntry.version, lastEntry.content)
+            else
+                return lastEntry.version .. "\n" .. lastEntry.content
+            end
         end
     end
 
     return nil
 end
 
-local function updateChangeNotes(workshopItem)
+local function updateChangeNotes(workshopItem, formatIndex)
     if not workshopItem then return end
 
     local modID, desc = nil, workshopItem:getSubmitDescription()
@@ -107,7 +111,8 @@ local function updateChangeNotes(workshopItem)
 
     if not modID then return end
 
-    local changeLog = getLatestChangelog(modID)
+    local shouldFormat = (formatIndex == 2)
+    local changeLog = getLatestChangelog(modID, shouldFormat)
     if changeLog then
         workshopItem:setChangeNote(changeLog)
     end
@@ -116,9 +121,25 @@ end
 local original_create = WorkshopSubmitScreen.create
 function WorkshopSubmitScreen:create()
     original_create(self)
+
+    local screen = self
+    local page2 = self.page2
+    local labelHgt = getTextManager():getFontFromEnum(UIFont.Medium):getLineHeight()
+    local padX = page2.visibility:getX()
+
+    page2.labelFormatting = ISLabel:new(padX, page2.visibility:getBottom() + 12, labelHgt, getText("UI_modmanager_changelogFormatting"), 1, 1, 1, 1, UIFont.Medium, true)
+    page2:addChild(page2.labelFormatting)
+
+    page2.comboFormatting = ISComboBox:new(padX, page2.labelFormatting:getBottom() + 2, 200, labelHgt, page2, function(target, box)
+        updateChangeNotes(screen.item, box.selected)
+    end)
+    page2.comboFormatting:addOption(getText("UI_optionscreen_None"))
+    page2.comboFormatting:addOption("Steam")
+    page2:addChild(page2.comboFormatting)
     
     local original_setWorkshopItem = self.page2.setWorkshopItem
     function self.page2:setWorkshopItem(item)
-        original_setWorkshopItem(self, item); updateChangeNotes(self.parent.item)
+        original_setWorkshopItem(self, item)
+        updateChangeNotes(self.parent.item, self.comboFormatting.selected)
     end
 end

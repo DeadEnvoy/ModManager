@@ -88,3 +88,11 @@ Note: While update tracking works correctly, Steam doesn't always return the pro
 - Favorite icon now only appears on hover.
 - Removed unnecessary dependencies.
 [ ------ ]
+
+[ 1.4.1 ]
+- Updated mod Workshop ID detection logic.
+- All localization files migrated to the new format.
+- Added an option to select changelog formatting when publishing mods to the Steam Workshop.
+- Added automatic conversion of old format presets.
+- Fixed a bug where mod settings might not apply.
+[ ------ ]
