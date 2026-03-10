@@ -101,7 +101,7 @@ function ModInfoPanel.Param:render()
         elseif self.workshopID ~= "" and self.pressed then
             local source = self.modInfo:getSource()
             if source == "Workshop" or source == "Mods" then
-                openUrl(self.modInfo:getDir())
+                showFolderInDesktop(self.modInfo:getDir())
             else
                 activateSteamOverlayToWorkshopItem(self.workshopID)
             end
