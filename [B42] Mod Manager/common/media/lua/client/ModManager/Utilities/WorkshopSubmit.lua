@@ -29,7 +29,7 @@ local function formatChangelog(version, content)
         result = result .. "[/list]\n"
     end
 
-    return result
+    return string.trim(result)
 end
 
 local function getLatestChangelog(modID, shouldFormat)
@@ -91,7 +91,7 @@ local function getLatestChangelog(modID, shouldFormat)
             if shouldFormat then
                 return formatChangelog(lastEntry.version, lastEntry.content)
             else
-                return lastEntry.version .. "\n" .. lastEntry.content
+                return string.trim(lastEntry.version .. "\n" .. lastEntry.content)
             end
         end
     end
