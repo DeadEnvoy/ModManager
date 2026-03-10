@@ -48,6 +48,7 @@
     "UI_modinfopanel_Author": "제작자",
     "UI_modinfopanel_ModID": "Mod ID",
     "UI_modinfopanel_WorkshopID": "Workshop ID",
+    "UI_modinfopanel_LocalPath": "로컬 경로",
     "UI_modinfopanel_LastUpdate": "마지막 업데이트",
     "UI_modinfopanel_ZomboidVersion": "게임 버전",
     "UI_modinfopanel_Dependencies": "선행 모드",

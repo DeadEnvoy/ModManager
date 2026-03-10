@@ -48,6 +48,7 @@
     "UI_modinfopanel_Author": "Yazar",
     "UI_modinfopanel_ModID": "Mod ID",
     "UI_modinfopanel_WorkshopID": "Workshop ID",
+    "UI_modinfopanel_LocalPath": "Yerel yol",
     "UI_modinfopanel_LastUpdate": "Son Güncelleme",
     "UI_modinfopanel_ZomboidVersion": "Oyun Sürümü",
     "UI_modinfopanel_Dependencies": "Gereksinimler",

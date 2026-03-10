@@ -48,6 +48,7 @@
     "UI_modinfopanel_Author": "Autor",
     "UI_modinfopanel_ModID": "Mod ID",
     "UI_modinfopanel_WorkshopID": "Workshop ID",
+    "UI_modinfopanel_LocalPath": "Caminho local",
     "UI_modinfopanel_LastUpdate": "Última atualização",
     "UI_modinfopanel_ZomboidVersion": "Versão do jogo",
     "UI_modinfopanel_Dependencies": "Dependências",

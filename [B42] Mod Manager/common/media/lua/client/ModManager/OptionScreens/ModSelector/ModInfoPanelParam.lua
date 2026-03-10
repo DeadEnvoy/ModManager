@@ -99,7 +99,12 @@ function ModInfoPanel.Param:render()
                 and self:getMouseY() > 2 and self:getMouseY() < 2 + FONT_HGT_SMALL + 1) then
             self:drawRectBorder(self.borderX+UI_BORDER_SPACING, 1+FONT_HGT_SMALL, self.workshopIDLen, 1, 0.9, 0.2, 0.6, 1.0)
         elseif self.workshopID ~= "" and self.pressed then
-            activateSteamOverlayToWorkshopItem(self.workshopID)
+            local source = self.modInfo:getSource()
+            if source == "Workshop" or source == "Mods" then
+                openUrl(self.modInfo:getDir())
+            else
+                activateSteamOverlayToWorkshopItem(self.workshopID)
+            end
         end
     elseif self.type == "LastUpdate" then
         local isQuerying = ModManagerData.isQuerying and self.workshopID ~= ""
@@ -213,6 +218,26 @@ function ModInfoPanel.Param:setModInfo(modInfo)
         self.workshopState = ""
         self.isUpdateRequired = false
         self.formattedDate = ""
+    end
+
+    if self.type == "WorkshopID" then
+        local source = self.modInfo:getSource()
+        if source == "Workshop" or source == "Mods" then
+            self.name = getText("UI_modinfopanel_LocalPath")
+            self.workshopID = self.modInfo:getDir()
+        else
+            self.name = getText("UI_modinfopanel_WorkshopID")
+        end
+        self.labelWidth = getTextManager():MeasureStringX(UIFont.Small, self.name)
+    end
+
+    local availableWidth = self.width - self.borderX - UI_BORDER_SPACING * 2
+    if getTextManager():MeasureStringX(UIFont.Small, self.workshopID) > availableWidth then
+        local dotWidth = getTextManager():MeasureStringX(UIFont.Small, "...")
+        while self.workshopID ~= "" and getTextManager():MeasureStringX(UIFont.Small, self.workshopID) > (availableWidth - dotWidth) do
+            self.workshopID = string.sub(self.workshopID, 1, #self.workshopID - 1)
+        end
+        self.workshopID = self.workshopID .. "..."
     end
 
     self.workshopIDLen = getTextManager():MeasureStringX(UIFont.Small, self.workshopID)
