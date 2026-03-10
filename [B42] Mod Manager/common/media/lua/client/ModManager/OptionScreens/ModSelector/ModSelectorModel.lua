@@ -425,7 +425,6 @@ function ModSelector.Model:addSharedPreset(button)
         if presetName ~= "" then
             self.presets[presetName] = {}
             for i, val in ipairs(luautils.split(modsString, ";")) do
-                local data = luautils.split(val, "\\")
                 table.insert(self.presets[presetName], val)
             end
         end
