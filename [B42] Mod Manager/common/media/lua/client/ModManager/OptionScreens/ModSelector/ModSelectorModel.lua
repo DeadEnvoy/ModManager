@@ -114,6 +114,10 @@ function ModSelector.Model:reloadMods()
                 data.workshopIDStr = (workshopID and workshopID ~= "") and tostring(workshopID) or ""
 
                 local cachedData = ModManagerData:getModWorkshopInfo(modId)
+                if data.workshopIDStr == "" and cachedData and cachedData.workshopID then
+                    data.workshopIDStr = tostring(cachedData.workshopID)
+                end
+
                 data.timeUpdated = (cachedData and cachedData.lastUpdate) or 0
                 data.workshopState = (cachedData and cachedData.state) or ""
                 
