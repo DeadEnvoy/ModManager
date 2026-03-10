@@ -773,10 +773,13 @@ function ModOptionsScreen:apply(closeAfter)
         end
     end
     
-    if PZAPI.ModOptions.save then PZAPI.ModOptions:save() end
-    if PZAPI.ModOptions.load then PZAPI.ModOptions:load() end
+    PZAPI.ModOptions:save(); PZAPI.ModOptions:load()
 
-    self.optionsChanged = false
+    for _, options in ipairs(PZAPI.ModOptions.Data) do
+        if options.apply then options:apply() end
+    end
+
+    self:toUI(); self.optionsChanged = false
 
     if closeAfter then self:close() end
 end
