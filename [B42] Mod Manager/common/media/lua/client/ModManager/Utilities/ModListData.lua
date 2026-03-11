@@ -7,6 +7,11 @@ local function trim(s)
     return s:match'^%s*(.-)%s*$'
 end
 
+local function cleanModId(id)
+    if not id then return "" end
+    return id:match("^\\?(.+)") or id
+end
+
 function ModManagerData:load()
     self.data = {
         version = 1,
@@ -45,7 +50,7 @@ function ModManagerData:load()
             local line, path = reader:readLine(), {}
             local currentAlertModId = nil
             local migrated = false
-            
+
             local oldModsList = {}
             local oldHiddenMap = {}
 
@@ -73,7 +78,7 @@ function ModManagerData:load()
                         else
                             if #path > 0 then
                                 local key, value = line:match('^%s*([%w_]+)%s*=%s*"?([^",]+)"?')
-                                
+
                                 if key and value then
                                     if path[1] == 'workshop' and path[2] == 'usage' then
                                         local targetTable = self.data.workshop.usage
@@ -113,7 +118,8 @@ function ModManagerData:load()
 
             if migrated then
                 for i, modID in ipairs(oldModsList) do
-                    self.data.mods[modID] = {
+                    local cleanId = cleanModId(modID)
+                    self.data.mods[cleanId] = {
                         hidden = (oldHiddenMap[modID] == true),
                         index = i
                     }
@@ -126,6 +132,30 @@ function ModManagerData:load()
                 if writer then writer:close() end
             end
         end
+    end
+
+    if self.data.mods then
+        local cleaned = {}
+        for id, data in pairs(self.data.mods) do
+            cleaned[cleanModId(id)] = data
+        end
+        self.data.mods = cleaned
+    end
+
+    if self.data.alerts then
+        local cleaned = {}
+        for id, data in pairs(self.data.alerts) do
+            cleaned[cleanModId(id)] = data
+        end
+        self.data.alerts = cleaned
+    end
+
+    if self.data.workshop and self.data.workshop.mods then
+        local cleaned = {}
+        for id, data in pairs(self.data.workshop.mods) do
+            cleaned[cleanModId(id)] = data
+        end
+        self.data.workshop.mods = cleaned
     end
 
     return self.data

@@ -7,6 +7,14 @@ local function trim(s)
     return s:match'^%s*(.-)%s*$'
 end
 
+local function ensureBackslash(id)
+    if not id or id == "" then return id end
+    if id:sub(1,1) ~= "\\" then
+        return "\\" .. id
+    end
+    return id
+end
+
 function ModManagerData:load()
     self.data = {
         version = 1,
@@ -113,7 +121,8 @@ function ModManagerData:load()
 
             if migrated then
                 for i, modID in ipairs(oldModsList) do
-                    self.data.mods[modID] = {
+                    local fixedId = ensureBackslash(modID)
+                    self.data.mods[fixedId] = {
                         hidden = (oldHiddenMap[modID] == true),
                         index = i
                     }
@@ -126,6 +135,30 @@ function ModManagerData:load()
                 if writer then writer:close() end
             end
         end
+    end
+
+    if self.data.mods then
+        local fixed = {}
+        for id, data in pairs(self.data.mods) do
+            fixed[ensureBackslash(id)] = data
+        end
+        self.data.mods = fixed
+    end
+
+    if self.data.alerts then
+        local fixed = {}
+        for id, data in pairs(self.data.alerts) do
+            fixed[ensureBackslash(id)] = data
+        end
+        self.data.alerts = fixed
+    end
+
+    if self.data.workshop and self.data.workshop.mods then
+        local fixed = {}
+        for id, data in pairs(self.data.workshop.mods) do
+            fixed[ensureBackslash(id)] = data
+        end
+        self.data.workshop.mods = fixed
     end
 
     return self.data

@@ -93,7 +93,7 @@ Note: While update tracking works correctly, Steam doesn't always return the pro
 - Updated mod Workshop ID detection logic.
 - All localization files migrated to the new format.
 - Added an option to select changelog formatting when publishing mods to the Steam Workshop.
+- Added automatic conversion of the old preset format (including backward compatibility).
 - Added path display for local modifications (Workshop, Mods).
-- Added automatic conversion of old format presets.
 - Fixed a bug where mod settings might not apply.
 [ ------ ]

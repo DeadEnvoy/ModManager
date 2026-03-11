@@ -363,7 +363,10 @@ function ModSelector.Model:loadModDataFromFile()
                 modsString = string.sub(line, sepIndex + 1)
             end
             for i, val in ipairs(luautils.split(modsString, ";")) do
-                if val ~= "" then self.favs[val] = true end
+                if val ~= "" then
+                    if not luautils.stringStarts(val, "\\") then val = "\\" .. val end
+                    self.favs[val] = true
+                end
             end
         else
             local sepIndex = string.find(line, ":")
@@ -376,8 +379,10 @@ function ModSelector.Model:loadModDataFromFile()
             if presetName ~= "" then
                 self.presets[presetName] = {}
                 for i, val in ipairs(luautils.split(modsString, ";")) do
-                    local data = luautils.split(val, "\\")
-                    table.insert(self.presets[presetName], val)
+                    if val ~= "" then
+                        if not luautils.stringStarts(val, "\\") then val = "\\" .. val end
+                        table.insert(self.presets[presetName], val)
+                    end
                 end
             end
         end
@@ -431,8 +436,10 @@ function ModSelector.Model:addSharedPreset(button)
         if presetName ~= "" then
             self.presets[presetName] = {}
             for i, val in ipairs(luautils.split(modsString, ";")) do
-                local data = luautils.split(val, "\\")
-                table.insert(self.presets[presetName], val)
+                if val ~= "" then
+                    if not luautils.stringStarts(val, "\\") then val = "\\" .. val end
+                    table.insert(self.presets[presetName], val)
+                end
             end
         end
     end
