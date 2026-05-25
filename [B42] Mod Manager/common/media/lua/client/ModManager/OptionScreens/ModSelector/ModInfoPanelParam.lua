@@ -1,7 +1,7 @@
 require "ISUI/ISPanelJoypad"
 require "OptionScreens/ModSelector/ModInfoPanel"
 
-local ModManagerData = require "ModManager/Utilities/ModListData"
+local ModManagerData = require("ModManager/Utils/ModListData")
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local BUTTON_HGT = FONT_HGT_SMALL + 6
@@ -25,9 +25,9 @@ function ModInfoPanel.Param:render()
         local versionText = self.modInfo:getModVersion() or ""
         local finalText = ""
         local r, g, b = 0.9, 0.9, 0.9
-        
+
         local isQuerying = ModManagerData.isQuerying and self.workshopID ~= ""
-        
+
         if isQuerying then
             finalText = versionText
         else
@@ -57,12 +57,12 @@ function ModInfoPanel.Param:render()
         if isQuerying then
             local time = getTimestampMs()
             local activeDotIndex = math.floor(time / 300) % 3 + 1
-            
+
             local textLen = 0
             if finalText ~= "" then
                 textLen = getTextManager():MeasureStringX(UIFont.Small, finalText) + 4
             end
-            
+
             local dotX = textX + textLen
             local dotWidth = getTextManager():MeasureStringX(UIFont.Small, ".") + 1
 
@@ -71,7 +71,7 @@ function ModInfoPanel.Param:render()
                 if i == activeDotIndex then
                     dr, dg, db = 0.9, 0.9, 0.9
                 end
-                
+
                 self:drawText(".", dotX, 2, dr, dg, db, 0.9, UIFont.Small)
                 dotX = dotX + dotWidth
             end
@@ -80,7 +80,7 @@ function ModInfoPanel.Param:render()
         if self.isUpdateRequired and not isQuerying then
             local textLen = getTextManager():MeasureStringX(UIFont.Small, finalText)
             local lineY = 1 + FONT_HGT_SMALL
-            
+
             local isMouseOverText = self:isMouseOver() and self:getMouseX() > textX and self:getMouseX() < textX + textLen and self:getMouseY() > 2 and self:getMouseY() < 2 + FONT_HGT_SMALL + 1
             if not isMouseOverText then
                 self:drawRectBorder(textX, lineY, textLen, 1, 0.9, r, g, b)
@@ -149,13 +149,13 @@ end
 
 function ModInfoPanel.Param:formatDate(seconds)
     if not seconds or seconds == 0 then return "" end
-    
+
     local millis = seconds * 1000.0
     local nowMillis = getTimestampMs()
 
     local sdfComponents = SimpleDateFormat.new("d M yyyy H m")
     local dateStr = sdfComponents:format(millis)
-    
+
     local values = {}
     for v in string.gmatch(dateStr, "%S+") do table.insert(values, tonumber(v)) end
     local day, month, year, hour, min = values[1], values[2], values[3], values[4], values[5]
@@ -203,7 +203,7 @@ function ModInfoPanel.Param:setModInfo(modInfo)
     self.modInfo = modInfo
 
     self.zomboidVersion = (self.modInfo:getVersionMin() and self.modInfo:getVersionMin():toString() or "**") .. " - " .. (self.modInfo:getVersionMax() and self.modInfo:getVersionMax():toString() or "**")
-    
+
     local model = self.parent.parent.model
     local modId = modInfo:getId()
     local modData = model.mods[modId]

@@ -5,30 +5,20 @@ require "ISUI/ISVolumeControl"
 require "ISUI/ISDuplicateKeybindDialog"
 require "ISUI/ISSetKeybindDialog"
 require "OptionScreens/MainOptions"
-require "PZAPI/ModOptions"
+require "ModManager/PZAPI"
 
-local ModManagerData = require "ModManager/Utilities/ModListData"
+local ModManagerData = require("ModManager/Utils/ModListData")
 
-function PZAPI.ModOptions.Options:addImage(imagePath, secondParam)
-    local option = { type = "image", path = imagePath, fit = false, minWidth = nil }
-    if type(secondParam) == "boolean" then
-        option.fit = secondParam
-    elseif type(secondParam) == "number" then
-        option.fit = false
-        option.minWidth = secondParam
-    end
-    table.insert(self.data, option)
-    return option
+function MainOptions:addModOptionsPanel()
+    PZAPI.ModOptions:load()
 end
-
-function MainOptions:addModOptionsPanel() end
 
 ModOptionsScreen = ISPanelJoypad:derive("ModOptionsScreen")
 
 local ModOptionsScreenListBox = ISScrollingListBox:derive("ModOptionsScreenListBox")
 local ModOptionsScreenPanel = ISPanelJoypad:derive("ModOptionsScreenPanel")
 
-function ModOptionsScreenListBox:doDrawItem(y, item, alt)
+function ModOptionsScreenListBox:doDrawItem(y, item)
     self:drawRectBorder(0, y, self:getWidth(), self.itemheight - 1, 0.5, self.borderColor.r, self.borderColor.g, self.borderColor.b)
     if self.selected == item.index then
         self:drawRect(0, y, self:getWidth(), self.itemheight - 1, 0.3, 0.7, 0.35, 0.15)
@@ -49,7 +39,7 @@ function ModOptionsScreenPanel:prerender()
     self:doRightJoystickScrolling(20, 20)
     ISPanelJoypad.prerender(self)
     if self.labels then
-        for settingName, label in pairs(self.labels) do
+        for _, label in pairs(self.labels) do
             if label and label.searchFound then
                 label:setColor(0, 1, 0)
             elseif label then
@@ -81,6 +71,12 @@ function ModOptionsScreen:initialise()
     self:createChildren()
     self.originalKeyPressHandler = MainOptions.keyPressHandler
     MainOptions.keyPressHandler = function(...) self:keyPressHandler(...) end
+    self.resolutionChangeHandler = function(...)
+        local neww = select(3, ...)
+        local newh = select(4, ...)
+        self:onResolutionChange(neww, newh)
+    end
+    Events.OnResolutionChange.Add(self.resolutionChangeHandler)
 end
 
 function ModOptionsScreen:loadModsByDateAdded()
@@ -92,7 +88,7 @@ function ModOptionsScreen:loadModsByDateAdded()
             table.insert(sorted, { id = modID, index = data.index })
         end
         table.sort(sorted, function(a, b) return (a.index or 0) < (b.index or 0) end)
-        
+
         for _, item in ipairs(sorted) do
             table.insert(self.modsByDateAdded, item.id)
         end
@@ -109,11 +105,35 @@ function ModOptionsScreen:getModIndex(modID)
     return -1
 end
 
-function ModOptionsScreen:onSortChanged()
-    local selectedModID = nil
+function ModOptionsScreen:getSelectedModID()
     if self.listbox.selected > 0 and self.listbox.items[self.listbox.selected] then
-        selectedModID = self.listbox.items[self.listbox.selected].item.page.modOptionsID
+        return self.listbox.items[self.listbox.selected].item.page.modOptionsID
     end
+    return nil
+end
+
+function ModOptionsScreen:selectModByID(modID)
+    if not modID then return end
+    for i, item in ipairs(self.listbox.items) do
+        if item.item.page.modOptionsID == modID then
+            self.listbox.selected = i
+            self:onMouseDownListbox(item.item)
+            return
+        end
+    end
+end
+
+function ModOptionsScreen:getOptionTooltip(option)
+    if not option.tooltip then return nil end
+    local tooltipText = getText(option.tooltip)
+    if tooltipText and string.trim(tooltipText) ~= "" then
+        return tooltipText
+    end
+    return nil
+end
+
+function ModOptionsScreen:onSortChanged()
+    local selectedModID = self:getSelectedModID()
 
     if PZAPI and PZAPI.ModOptions then
         for _, options in ipairs(PZAPI.ModOptions.Data) do
@@ -125,7 +145,7 @@ function ModOptionsScreen:onSortChanged()
                          option.pendingValue = option.element:isSelected(1)
                     elseif option.type == "multipletickbox" and option.values then
                         for i = 1, #option.element.options do
-                            if option.values[i] then 
+                            if option.values[i] then
                                 option.values[i].pendingValue = option.element:isSelected(i)
                             end
                         end
@@ -143,19 +163,12 @@ function ModOptionsScreen:onSortChanged()
         end
     end
 
-    local wasChanged = self.optionsChanged; self:sortAndRefillListbox(); self.optionsChanged = wasChanged
+    local wasChanged = self.optionsChanged
+    self:sortAndRefillListbox()
+    self.optionsChanged = wasChanged
 
     self.applyButton:setEnable(self.optionsChanged)
-
-    if selectedModID then
-        for i, item in ipairs(self.listbox.items) do
-            if item.item.page.modOptionsID == selectedModID then
-                self.listbox.selected = i
-                self:onMouseDownListbox(item.item)
-                break
-            end
-        end
-    end
+    self:selectModByID(selectedModID)
 end
 
 function ModOptionsScreen:sortAndRefillListbox()
@@ -196,63 +209,50 @@ function ModOptionsScreen:sortAndRefillListbox()
     self:doSearch()
 end
 
+function ModOptionsScreen:getListboxWidth()
+    return self.width * 0.2
+end
+
 function ModOptionsScreen:createChildren()
-    if PZAPI and PZAPI.ModOptions and PZAPI.ModOptions.load then
-        PZAPI.ModOptions:load()
-    end
-    
+    PZAPI.ModOptions:load()
+
     local btnPadding = 32 + 10 * 2
     local btnWidthBack = btnPadding + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_back"))
-    local btnWidthAccept = btnPadding + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_accept"))
-    local btnWidthApply = btnPadding + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_apply"))
-    local totalBtnWidth = btnWidthBack + btnWidthAccept + btnWidthApply + 10 * 2
-    local startX = (self.width - totalBtnWidth) / 2
     local buttonHgt = getTextManager():getFontHeight(UIFont.Small) + 6
-    
-    self.backButton = ISButton:new(startX, self.height - 10 - buttonHgt - 1, btnWidthBack, buttonHgt, getText("UI_btn_back"), self, self.onOptionMouseDown)
+
+    self.backButton = ISButton:new(0, 0, btnWidthBack, buttonHgt, getText("UI_btn_back"), self, self.onOptionMouseDown)
     self.backButton.internal = "BACK"
     self.backButton:initialise()
     self.backButton:instantiate()
     self.backButton:enableCancelColor()
     self:addChild(self.backButton)
 
-    self.acceptButton = ISButton:new(self.backButton:getRight() + 10, self.backButton.y, btnWidthAccept, buttonHgt, getText("UI_btn_accept"), self, self.onOptionMouseDown)
+    local btnWidthAccept = btnPadding + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_accept"))
+    self.acceptButton = ISButton:new(0, 0, btnWidthAccept, buttonHgt, getText("UI_btn_accept"), self, self.onOptionMouseDown)
     self.acceptButton.internal = "ACCEPT"
     self.acceptButton:initialise()
     self.acceptButton:instantiate()
     self.acceptButton:enableAcceptColor()
     self:addChild(self.acceptButton)
 
-    self.applyButton = ISButton:new(self.acceptButton:getRight() + 10, self.backButton.y, btnWidthApply, buttonHgt, getText("UI_btn_apply"), self, self.onOptionMouseDown)
+    local btnWidthApply = btnPadding + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_apply"))
+    self.applyButton = ISButton:new(0, 0, btnWidthApply, buttonHgt, getText("UI_btn_apply"), self, self.onOptionMouseDown)
     self.applyButton.internal = "APPLY"
     self.applyButton:initialise()
     self.applyButton:instantiate()
     self:addChild(self.applyButton)
 
-    local listboxWidth = 200
-    if PZAPI and PZAPI.ModOptions and PZAPI.ModOptions.Data then
-        for _, options in ipairs(PZAPI.ModOptions.Data) do
-            if options and options.name then
-                local displayName = options.name and getText(options.name) or options.name
-                local nameWidth = getTextManager():MeasureStringX(UIFont.Large, displayName)
-                listboxWidth = math.max(nameWidth, listboxWidth)
-            end
-        end
-    end
-    listboxWidth = math.min(listboxWidth + 10 * 2, 300)
-
+    local listboxWidth = self:getListboxWidth()
     local entryHgt = getTextManager():getFontFromEnum(UIFont.Medium):getLineHeight() + 6
-    local searchEntryY = 10 * 2 + getTextManager():getFontHeight(UIFont.Large) + 1
 
-    self.sortCombo = ISComboBox:new(10 + 1, searchEntryY, listboxWidth, entryHgt, self, self.onSortChanged)
+    self.sortCombo = ISComboBox:new(0, 0, listboxWidth, entryHgt, self, self.onSortChanged)
     self.sortCombo:initialise()
     self.sortCombo:addOptionWithData(getText("UI_modlistpanel_sortBy_name"), "name")
     self.sortCombo:addOptionWithData(getText("UI_modlistpanel_sortBy_date"), "date_added")
     self.sortCombo.selected = 1
     self:addChild(self.sortCombo)
 
-    local searchX = self.sortCombo:getRight() + 10
-    self.searchEntry = ISTextEntryBox:new("", searchX, searchEntryY, self.width - searchX - 10 - 1, entryHgt)
+    self.searchEntry = ISTextEntryBox:new("", 0, 0, self.width, entryHgt)
     self.searchEntry.font = UIFont.Medium
     self.searchEntry.onTextChange = function() self:doSearch() end
     self.searchEntry:initialise()
@@ -262,17 +262,76 @@ function ModOptionsScreen:createChildren()
     end
     self:addChild(self.searchEntry)
 
-    local listY = self.searchEntry:getBottom() + 10
-    local listHeight = self.height - listY - 10 * 2 - buttonHgt - 1
-    self.listbox = ModOptionsScreenListBox:new(10 + 1, listY, listboxWidth, listHeight)
+    self.listbox = ModOptionsScreenListBox:new(0, 0, listboxWidth, self.height)
     self.listbox:initialise()
     self.listbox:setFont("Medium", 4)
     self.listbox.drawBorder = true
     self.listbox:setOnMouseDownFunction(self, self.onMouseDownListbox)
     self:addChild(self.listbox)
 
+    self:layoutChildren()
     self:sortAndRefillListbox()
     self:toUI()
+end
+
+function ModOptionsScreen:layoutChildren()
+    if not self.backButton or not self.acceptButton or not self.applyButton or not self.sortCombo or not self.searchEntry or not self.listbox then
+        return
+    end
+
+    local btnPadding = 32 + 10 * 2
+    local btnWidthBack = btnPadding + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_back"))
+    local btnWidthAccept = btnPadding + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_accept"))
+    local btnWidthApply = btnPadding + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_apply"))
+    local totalBtnWidth = btnWidthBack + btnWidthAccept + btnWidthApply + 10 * 2
+    local startX = (self.width - totalBtnWidth) / 2
+    local buttonHgt = getTextManager():getFontHeight(UIFont.Small) + 6
+    local listboxWidth = self:getListboxWidth()
+    local entryHgt = getTextManager():getFontFromEnum(UIFont.Medium):getLineHeight() + 6
+    local searchEntryY = 10 * 2 + getTextManager():getFontHeight(UIFont.Large) + 1
+
+    self.backButton:setX(startX)
+    self.backButton:setY(self.height - 10 - buttonHgt - 1)
+    self.backButton:setWidth(btnWidthBack)
+    self.backButton:setHeight(buttonHgt)
+
+    self.acceptButton:setX(self.backButton:getRight() + 10)
+    self.acceptButton:setY(self.backButton.y)
+    self.acceptButton:setWidth(btnWidthAccept)
+    self.acceptButton:setHeight(buttonHgt)
+
+    self.applyButton:setX(self.acceptButton:getRight() + 10)
+    self.applyButton:setY(self.backButton.y)
+    self.applyButton:setWidth(btnWidthApply)
+    self.applyButton:setHeight(buttonHgt)
+
+    self.sortCombo:setX(10 + 1)
+    self.sortCombo:setY(searchEntryY)
+    self.sortCombo:setWidth(listboxWidth)
+    self.sortCombo:setHeight(entryHgt)
+
+    local searchX = self.sortCombo:getRight() + 10
+    self.searchEntry:setX(searchX)
+    self.searchEntry:setY(searchEntryY)
+    self.searchEntry:setWidth(self.width - searchX - 10 - 1)
+    self.searchEntry:setHeight(entryHgt)
+
+    local listY = self.searchEntry:getBottom() + 10
+    local listHeight = self.height - listY - 10 * 2 - buttonHgt - 1
+    self.listbox:setX(10 + 1)
+    self.listbox:setY(listY)
+    self.listbox:setWidth(listboxWidth)
+    self.listbox:setHeight(listHeight)
+
+    for _, item in ipairs(self.listbox.items) do
+        local panel = item.item and item.item.panel
+        if panel then
+            panel:setX(self.listbox:getRight() + 10)
+            panel:setY(self.listbox:getY())
+            panel:setWidth(self.width - self.listbox:getRight() - 10 * 2 - 1)
+            panel:setHeight(self.listbox:getHeight())
+        end
+    end
 end
 
 function ModOptionsScreen:doSearch()
@@ -283,13 +342,13 @@ function ModOptionsScreen:doSearch()
         item.searchFound = false
         if item.item.panel and item.item.panel.labels then
             local panelHasMatch = false
+            local modNameMatches = false
             if searchWord ~= "" then
                 local modName = item.item.page.name and getText(item.item.page.name) or item.item.page.name or ""
-                if string.find(string.lower(modName), searchWord, 1, true) then
-                    panelHasMatch = true
-                end
+                modNameMatches = string.find(string.lower(modName), searchWord, 1, true) ~= nil
+                panelHasMatch = modNameMatches
             end
-            for settingName, label in pairs(item.item.panel.labels) do
+            for _, label in pairs(item.item.panel.labels) do
                 if label then
                     label.searchFound = false
                     if searchWord ~= "" then
@@ -297,9 +356,7 @@ function ModOptionsScreen:doSearch()
                         if string.find(string.lower(labelName), searchWord, 1, true) then
                             label.searchFound = true
                             panelHasMatch = true
-                        end
-                        local modName = item.item.page.name and getText(item.item.page.name) or item.item.page.name or ""
-                        if string.find(string.lower(modName), searchWord, 1, true) then
+                        elseif modNameMatches then
                             label.searchFound = true
                         end
                     end
@@ -324,7 +381,7 @@ function ModOptionsScreen:createPanel(page)
     panel._instance = self
     panel:initialise()
     panel:instantiate()
-    
+
     local addControlsTo = panel
     addControlsTo:setScrollChildren(true)
     addControlsTo:addScrollBars()
@@ -332,22 +389,20 @@ function ModOptionsScreen:createPanel(page)
 
     local labels = {}
     local controls = {}
-    
+
     for _, option in ipairs(page.data) do
         local label, control = self:createOptionControls(option, page)
         if label and control then
-            if option.tooltip then
-                local tooltipText = getText(option.tooltip)
-                if tooltipText and string.trim(tooltipText) ~= "" then
-                    control.tooltip = tooltipText
-                    label.tooltip = tooltipText
-                end
+            local tooltipText = self:getOptionTooltip(option)
+            if tooltipText then
+                control.tooltip = tooltipText
+                label.tooltip = tooltipText
             end
             table.insert(labels, label)
             table.insert(controls, control)
         end
     end
-    
+
     self:layoutControlsOnPanel(panel, addControlsTo, page, labels, controls)
     return panel
 end
@@ -356,28 +411,31 @@ function ModOptionsScreen:createOptionControls(option, page)
     local entryHgt = getTextManager():getFontFromEnum(UIFont.Medium):getLineHeight() + 6
     local buttonHgt = getTextManager():getFontHeight(UIFont.Small) + 6
     local controlWidth = 150 + ((getCore():getOptionFontSizeReal() - 1) * 50)
-    
+
     if option.type == "title" or option.type == "separator" or option.type == "description" or option.type == "button" or option.type == "image" then
         return nil, nil
     end
 
     local label = ISLabel:new(0, 0, entryHgt, option.name and getText(option.name) or "", 1, 1, 1, 1, UIFont.Medium)
+    label:initialise()
     local control = nil
 
     if option.type == "tickbox" then
         control = ISTickBox:new(0, 0, entryHgt, entryHgt, "")
+        control:initialise()
         control:addOption("")
         local val = option.value
         if option.pendingValue ~= nil then val = option.pendingValue end
         control:setSelected(1, val)
         option.element = control
-        control.changeOptionMethod = function(target, index, selected)
+        control.changeOptionMethod = function(_, _, selected)
              option.pendingValue = selected
              self.optionsChanged = true
              if option.onChange then option.onChange(option, selected) end
         end
     elseif option.type == "multipletickbox" then
         control = ISTickBox:new(0, 0, buttonHgt, buttonHgt, "")
+        control:initialise()
         if option.values then
             for i, value in ipairs(option.values) do
                 control:addOption(value.name and getText(value.name) or "", value.name)
@@ -387,7 +445,7 @@ function ModOptionsScreen:createOptionControls(option, page)
             end
         end
         option.element = control
-        control.changeOptionMethod = function(target, index, selected)
+        control.changeOptionMethod = function(_, index, selected)
             if option.values and option.values[index] then
                 option.values[index].pendingValue = selected
             end
@@ -396,6 +454,7 @@ function ModOptionsScreen:createOptionControls(option, page)
         end
     elseif option.type == "combobox" then
         control = ISComboBox:new(0, 0, controlWidth, entryHgt, self, nil)
+        control:initialise()
         if option.values then
             for _, v in ipairs(option.values) do
                 control:addOption(getText(v))
@@ -403,19 +462,21 @@ function ModOptionsScreen:createOptionControls(option, page)
         end
         control.selected = option.pendingValue or option.selected or 1
         option.element = control
-        control.onChange = function(target, box)
+        control.onChange = function(_, box)
             option.pendingValue = box.selected
             self.optionsChanged = true
             if option.onChange then option.onChange(option, box.selected) end
         end
     elseif option.type == "slider" then
         local container = ISPanel:new(0, 0, controlWidth * 2, entryHgt)
+        container:initialise()
         container:noBackground()
         local val = option.pendingValue or option.value or option.min or 0
         local valueLabel = ISLabel:new(60, 0, entryHgt, tostring(val), 1, 1, 1, 1, UIFont.Small, false)
         valueLabel:initialise()
         container:addChild(valueLabel)
         control = ISSliderPanel:new(70, 0, controlWidth * 2 - 70, entryHgt, self, ModOptionsScreen.onSliderChange)
+        control:initialise()
         control:setValues(option.min or 0, option.max or 100, option.step or 1, (option.step or 1) * 10)
         control:setCurrentValue(val)
         container:addChild(control)
@@ -426,8 +487,9 @@ function ModOptionsScreen:createOptionControls(option, page)
     elseif option.type == "colorpicker" then
         if not option.modOptionsID then option.modOptionsID = page.modOptionsID end
         control = ISButton:new(0, 0, entryHgt * 2, entryHgt, "", self, self.onModColorPick)
-        local initialColor = option.pendingColor or option.color or { r = 1, g = 1, b = 1, a = 1 }
-        control.backgroundColor = { r = initialColor.r, g = initialColor.g, b = initialColor.b, a = initialColor.a }
+        control:initialise()
+        local initialColor = option.pendingColor or option.color or {r=1, g=1, b=1, a=1}
+        control.backgroundColor = {r=initialColor.r, g=initialColor.g, b=initialColor.b, a=initialColor.a}
         control.option = option
         control.colorPicker = ISColorPicker:new(0, 0)
         control.colorPicker:initialise()
@@ -438,6 +500,7 @@ function ModOptionsScreen:createOptionControls(option, page)
     elseif option.type == "textentry" then
         control = ISTextEntryBox:new(option.pendingValue or option.value or "", 0, 0, controlWidth * 2, entryHgt)
         control.font = UIFont.Medium
+        control:initialise()
         option.element = control
         control.onTextChange = function()
             option.pendingValue = control:getInternalText()
@@ -453,6 +516,7 @@ function ModOptionsScreen:createOptionControls(option, page)
         local keyValue = tonumber(val) or 0
         local keyName = (keyValue > 0) and getKeyName(keyValue) or "None"
         control = ISButton:new(0, 0, controlWidth, entryHgt, keyName, self, MainOptions.onKeyBindingBtnPress)
+        control:initialise()
         control.internal = option.name
         control.isModBind = true
         control.keyCode = keyValue
@@ -461,7 +525,7 @@ function ModOptionsScreen:createOptionControls(option, page)
     return label, control
 end
 
-function ModOptionsScreen:addImageToPanel(addControlsTo, option, currentY, panelWidth, labelWidth, maxControlWidth)
+function ModOptionsScreen:addImageToPanel(addControlsTo, option, currentY, panelWidth)
     local texture = getTexture(option.path)
     if not texture then return currentY end
     local scrollbarWidth = addControlsTo.vscroll and addControlsTo.vscroll:getWidth() or 17
@@ -469,23 +533,12 @@ function ModOptionsScreen:addImageToPanel(addControlsTo, option, currentY, panel
     local imgWidth = texture:getWidthOrig()
     local imgHeight = texture:getHeightOrig()
     local finalWidth, finalHeight
-    if option.fit then
-        finalWidth = fullContentWidth - 20
-        finalHeight = (imgHeight / imgWidth) * finalWidth
-    else
-        if option.minWidth then
-            finalWidth = math.min(option.minWidth, fullContentWidth - 20)
-            finalHeight = (imgHeight / imgWidth) * finalWidth
-        else
-            local controlsAreaWidth = labelWidth + maxControlWidth + 10
-            finalWidth = imgWidth
-            finalHeight = imgHeight
-            if finalWidth > controlsAreaWidth then
-                finalWidth = controlsAreaWidth
-                finalHeight = (imgHeight / imgWidth) * finalWidth
-            end
-        end
-    end
+    local availableWidth = fullContentWidth - 20
+    local widthRatio = option.width or 1.0
+
+    finalWidth = availableWidth * widthRatio
+    finalHeight = (imgHeight / imgWidth) * finalWidth
+
     local imageX = (fullContentWidth - finalWidth) / 2
     local image = ISImage:new(imageX, currentY, finalWidth, finalHeight, texture)
     image.autoScale = true
@@ -521,8 +574,9 @@ function ModOptionsScreen:layoutControlsOnPanel(panel, addControlsTo, page, labe
             title:setX((panel.width - title:getWidth()) / 2)
             currentY = currentY + title:getHeight() + 20
         elseif option.type == "separator" then
-            local hLine = ISPanel:new(10, currentY, panel.width - 20 - 13, 2)
-            hLine:drawRect(0, 0, hLine.width, 1, 1.0, 0.5, 0.5, 0.5)
+            local hLine = ISPanel:new(10, currentY, panel.width - 20 - 13, 1)
+            hLine:initialise()
+            hLine.backgroundColor = {r=0.5, g=0.5, b=0.5, a=1.0}
             addControlsTo:addChild(hLine)
             currentY = currentY + hLine:getHeight() + 10
         elseif option.type == "description" then
@@ -534,7 +588,7 @@ function ModOptionsScreen:layoutControlsOnPanel(panel, addControlsTo, page, labe
             addControlsTo:addChild(richText)
             richText:setText("<RGB:0.8,0.8,0.8>" .. (option.text and getText(option.text) or ""))
             richText:paginate()
-            richText.onMouseWheel = function(self, del) return false end
+            richText.onMouseWheel = function() return false end
             currentY = currentY + richText:getHeight() + 10
         elseif option.type == "button" then
             local button = ISButton:new(0, currentY, controlWidth, entryHgt, option.name and getText(option.name) or "")
@@ -544,13 +598,11 @@ function ModOptionsScreen:layoutControlsOnPanel(panel, addControlsTo, page, labe
             if option.onclick and option.args then
                 button:setOnClick(option.onclick, option.args[1], option.args[2], option.args[3], option.args[4])
             end
-            if option.tooltip then
-                local tooltipText = getText(option.tooltip)
-                if tooltipText and string.trim(tooltipText) ~= "" then button:setTooltip(tooltipText) end
-            end
+            local tooltipText = self:getOptionTooltip(option)
+            if tooltipText then button:setTooltip(tooltipText) end
             currentY = currentY + button:getHeight() + 10
         elseif option.type == "image" then
-            currentY = self:addImageToPanel(addControlsTo, option, currentY, panel.width, labelWidth, maxControlWidth)
+            currentY = self:addImageToPanel(addControlsTo, option, currentY, panel.width)
         else
             optionIndex = optionIndex + 1
             local label = labels[optionIndex]
@@ -628,8 +680,47 @@ function ModOptionsScreen:showKeybindConflictDialog(key, keybindName, conflictin
     end
     local modal = ISDuplicateKeybindDialog:new(key, keybindName, conflictingKeybindName, false, false, false, function() self:setModKeybind(keybindName, key) end)
     modal:initialise()
+    modal:instantiate()
     modal:addToUIManager()
     modal:setAlwaysOnTop(true)
+end
+
+function ModOptionsScreen:onResolutionChange(neww, newh)
+    if not neww or not newh then return end
+
+    self:setWidth(neww * 0.7)
+    self:setHeight(newh * 0.8)
+    self:setX((neww - self.width) / 2)
+    self:setY((newh - self.height) / 2)
+
+    local selectedModID = self:getSelectedModID()
+
+    self:layoutChildren()
+
+    for _, item in ipairs(self.listbox.items) do
+        local oldPanel = item.item and item.item.panel
+        if oldPanel then
+            if oldPanel == self.currentPanel then
+                self:removeChild(oldPanel)
+                self.currentPanel = nil
+            end
+            item.item.panel = self:createPanel(item.item.page)
+        end
+    end
+
+    self:doSearch()
+
+    self:selectModByID(selectedModID)
+end
+
+function ModOptionsScreen:onKeyRelease(key)
+    if MainOptions.setKeybindDialog then return end
+
+    if key == Keyboard.KEY_ESCAPE then
+        self:close()
+    elseif key == Keyboard.KEY_RETURN then
+        self.acceptButton:forceClick()
+    end
 end
 
 function ModOptionsScreen:keyPressHandler(key, shift, ctrl, alt)
@@ -655,7 +746,7 @@ function ModOptionsScreen:keyPressHandler(key, shift, ctrl, alt)
         end
     end
     if MainOptions.keyText then
-        for i, v in ipairs(MainOptions.keyText) do
+        for _, v in ipairs(MainOptions.keyText) do
             if not v.value and v.keyCode == key then
                 self:showKeybindConflictDialog(key, keybindName, v.txt:getName())
                 return
@@ -674,8 +765,8 @@ function ModOptionsScreen:onModColorPick(button)
     end
     button.colorPicker:setX(x)
     button.colorPicker:setY(y)
-    button.colorPicker.pickedFunc = function(target, color, mouseUp, ...)
-        self:pickedModColor(target, color, mouseUp)
+    button.colorPicker.pickedFunc = function(target, color)
+        self:pickedModColor(target, color)
     end
     button.colorPicker.pickedTarget = button
     self:addChild(button.colorPicker)
@@ -696,12 +787,14 @@ function ModOptionsScreen:onSliderChange(_value, _slider)
     end
 end
 
-function ModOptionsScreen:pickedModColor(button, color, mouseUp)
+function ModOptionsScreen:pickedModColor(button, color)
     if not button or not button.option or not color then return end
-    button.backgroundColor = { r = color.r, g = color.g, b = color.b, a = 1 }
+    button.backgroundColor = {r=color.r, g=color.g, b=color.b, a=1}
     button.option.pendingColor = button.backgroundColor
     self.optionsChanged = true
-    if button.option.onChange then button.option.onChange(button.option, button.backgroundColor) end
+    if button.option.onChange then
+        button.option.onChange(button.option, button.backgroundColor)
+    end
 end
 
 function ModOptionsScreen:onMouseDownListbox(item)
@@ -718,7 +811,7 @@ end
 
 function ModOptionsScreen:prerender()
     ISPanelJoypad.prerender(self)
-    self:drawTextCentre(getText("UI_modoptions_title") or "Mod Options", self.width / 2, 11, 1, 1, 1, 1, UIFont.Title)
+    self:drawTextCentre(getText("UI_modoptions_title") or "Mod Options", self.width / 2, 11, 1, 1, 1, 1, UIFont.Large)
     if self.applyButton then
         self.applyButton:setEnable(self.optionsChanged or false)
     end
@@ -751,16 +844,16 @@ function ModOptionsScreen:apply(closeAfter)
                 option.color = option.pendingColor
                 option.pendingColor = nil
             end
-            
+
             if option.type == "multipletickbox" and option.values then
-                for i, val in ipairs(option.values) do
+                for _, val in ipairs(option.values) do
                     if val.pendingValue ~= nil then
                         val.value = val.pendingValue
                         val.pendingValue = nil
                     end
                 end
             end
-            
+
             if option.element and option.type ~= "keybind" and option.type ~= "colorpicker" and option.type ~= "slider" then
                 if option.type == "textentry" then
                      option.value = option.element:getInternalText()
@@ -772,16 +865,22 @@ function ModOptionsScreen:apply(closeAfter)
             end
         end
     end
-    
-    PZAPI.ModOptions:save(); PZAPI.ModOptions:load()
+
+    PZAPI.ModOptions:save()
+    PZAPI.ModOptions:load()
 
     for _, options in ipairs(PZAPI.ModOptions.Data) do
-        if options.apply then options:apply() end
+        if options.apply then
+            options:apply()
+        end
     end
 
-    self:toUI(); self.optionsChanged = false
+    self:toUI()
+    self.optionsChanged = false
 
-    if closeAfter then self:close() end
+    if closeAfter then
+        self:close()
+    end
 end
 
 function ModOptionsScreen:toUI()
@@ -799,7 +898,7 @@ function ModOptionsScreen:toUI()
                 elseif option.type == "multipletickbox" and option.values then
                     for i = 1, #option.element.options do
                         if option.values[i] then
-                            option.values[i].pendingValue = nil 
+                            option.values[i].pendingValue = nil
                             if option.values[i].value ~= nil then
                                 option.element:setSelected(i, option.values[i].value)
                             end
@@ -827,6 +926,10 @@ function ModOptionsScreen:toUI()
 end
 
 function ModOptionsScreen:close()
+    if self.resolutionChangeHandler then
+        Events.OnResolutionChange.Remove(self.resolutionChangeHandler)
+        self.resolutionChangeHandler = nil
+    end
     if self.originalKeyPressHandler then
         MainOptions.keyPressHandler = self.originalKeyPressHandler
         self.originalKeyPressHandler = nil
@@ -843,14 +946,6 @@ function ModOptionsScreen:close()
     end
     self:removeFromUIManager()
     ModOptionsScreen.instance = nil
-end
-
-function ModOptionsScreen:new(x, y, width, height)
-    local o = ISPanelJoypad.new(self, x, y, width, height)
-    o.backgroundColor = { r = 0, g = 0, b = 0, a = 0.8 }
-    o.borderColor = { r = 1, g = 1, b = 1, a = 0.2 }
-    o.modsByDateAdded = {}
-    return o
 end
 
 local original_onKeep = ISDuplicateKeybindDialog.onKeep
@@ -899,8 +994,10 @@ function ISSetKeybindDialog:onDefault(...)
     return original_ISSetKeybindDialog_onDefault(self, ...)
 end
 
-Events.OnMainMenuEnter.Add(function()
-    if PZAPI and PZAPI.ModOptions and PZAPI.ModOptions.load then
-        PZAPI.ModOptions:load()
-    end
-end)
+function ModOptionsScreen:new(x, y, width, height)
+    local o = ISPanelJoypad.new(self, x, y, width, height)
+    o.backgroundColor = {r=0, g=0, b=0, a=0.8}
+    o.borderColor = {r=1, g=1, b=1, a=0.2}
+    o.modsByDateAdded = {}
+    return o
+end

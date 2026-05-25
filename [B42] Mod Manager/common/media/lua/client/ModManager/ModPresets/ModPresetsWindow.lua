@@ -10,12 +10,12 @@ require "ModManager/ModPresets/ModPresetsShare"
 ModPresetsWindow = ISPanelJoypad:derive("ModPresetsWindow")
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
+local FONT_LINE_HGT_SMALL = getTextManager():getFontFromEnum(UIFont.Small):getLineHeight()
 local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
 local BUTTON_HGT, UI_BORDER_SPACING = FONT_HGT_SMALL + 6, 10
-local ICON_SIZE = 10
 
 function ModPresetsWindow:createChildren()
-    local listWidth = self.width / 3 - UI_BORDER_SPACING * 2
+    local listWidth = self.width * 0.25
     local tabsHeight = self.height - (UI_BORDER_SPACING * 3 + BUTTON_HGT)
     local tabsY = UI_BORDER_SPACING * 3 + FONT_HGT_MEDIUM
     
@@ -46,7 +46,7 @@ function ModPresetsWindow:createChildren()
     self.presetsList:setOnMouseDownFunction(self, self.onSelectPreset)
     self.presetsList.drawBorder = true
     self.presetsList.parent = self
-    self.presetsList.deletePresetTexture = getTexture("media/ui/ModManager/Trash.png")
+    self.presetsList.deletePresetTexture = getTexture("media/ui/ModManager/Icons/Trash_" .. FONT_HGT_SMALL .. ".png")
     
     self.presetsList.onMouseDown = function(list, x, y)
         if self:onPresetListMouseDown(list, x, y) then return end
@@ -60,7 +60,7 @@ function ModPresetsWindow:createChildren()
         if row ~= -1 then
             local iconX = 10
             local mx = list:getMouseX()
-            if mx >= iconX and mx <= iconX + 16 then
+            if mx >= iconX and mx <= iconX + FONT_HGT_SMALL then
                 showTooltip = true
             end
         end
@@ -115,7 +115,7 @@ function ModPresetsWindow:createChildren()
     self.historyList:setOnMouseDownFunction(self, self.onSelectPreset)
     self.historyList.drawBorder = true
     self.historyList.parent = self
-    self.historyList.deletePresetTexture = getTexture("media/ui/ModManager/Trash.png")
+    self.historyList.deletePresetTexture = getTexture("media/ui/ModManager/Icons/Trash_" .. FONT_HGT_SMALL .. ".png")
 
     self.historyList.onMouseDown = function(list, x, y)
         if self:onPresetListMouseDown(list, x, y) then return end
@@ -161,20 +161,34 @@ function ModPresetsWindow:createChildren()
     self.modsList.itemheight = BUTTON_HGT
     self.modsList.doDrawItem = self.drawModItem
     self.modsList.drawBorder = true
-    self.modsList.deleteModTexture = getTexture("media/ui/ModManager/Close.png")
+    self.modsList:setFont("Medium", 4)
+    self.modsList.mouseOverButtonIndex = nil
     self.modsList.onMouseDown = function(list, x, y)
         if self:onModListMouseDown(list, x, y) then return end
         ISScrollingListBox.onMouseDown(list, x, y)
     end
     self.modsList.onMouseMove = function(list, dx, dy)
         ISScrollingListBox.onMouseMove(list, dx, dy)
-        self:onModListMouseMove(list)
     end
     self.modsList.onMouseMoveOutside = function(list, dx, dy)
         ISScrollingListBox.onMouseMoveOutside(list, dx, dy)
         self.hoveredDeleteRow = -1
+        list.mouseOverButtonIndex = nil
     end
     self.modsList.prerender = function(list)
+        self.hoveredDeleteRow = -1
+        list.mouseOverButtonIndex = nil
+        if list.mouseoverselected and list.mouseoverselected > 0 and not list:isMouseOverScrollBar() then
+            local textRemove = getText("UI_btn_remove")
+            local textRemoveWid = getTextManager():MeasureStringX(UIFont.Small, textRemove)
+            local btnWid = 8 + textRemoveWid + 8
+            local scrollBarWid = (list:isVScrollBarVisible() and 13 or 0)
+            local btnX = list.width - 4 - scrollBarWid - btnWid
+            if list:getMouseX() > btnX - 8 then
+                list.mouseOverButtonIndex = list.mouseoverselected
+                self.hoveredDeleteRow = list.mouseoverselected
+            end
+        end
         ISScrollingListBox.prerender(list)
         if list.vscroll then
             list.vscroll:setVisible(list:isVScrollBarVisible())
@@ -223,7 +237,11 @@ function ModPresetsWindow:createChildren()
     self.addPresetButton.borderColor = {r=1, g=1, b=1, a=0.1}
     self:addChild(self.addPresetButton)
 
-    self.exportButton = ISButton:new(self.addPresetButton:getRight() + btnGap, self.height - UI_BORDER_SPACING - BUTTON_HGT, 100, BUTTON_HGT, getText("UI_btn_share"), self, self.onOptionMouseDown)
+    local JOYPAD_TEX_SIZE = 32
+    local BUTTON_PADDING = JOYPAD_TEX_SIZE + UI_BORDER_SPACING * 2
+
+    local exportBtnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_share"))
+    self.exportButton = ISButton:new(self.addPresetButton:getRight() + btnGap, self.height - UI_BORDER_SPACING - BUTTON_HGT, exportBtnWidth, BUTTON_HGT, getText("UI_btn_share"), self, self.onOptionMouseDown)
     self.exportButton.internal = "EXPORT"
     self.exportButton:initialise()
     self.exportButton:instantiate()
@@ -232,10 +250,14 @@ function ModPresetsWindow:createChildren()
     self.exportButton:setAnchorTop(false)
     self.exportButton:setAnchorBottom(true)
     self.exportButton.borderColor = {r=1, g=1, b=1, a=0.1}
+    self.exportButton:setFont(UIFont.Small)
+    self.exportButton:ignoreWidthChange()
+    self.exportButton:ignoreHeightChange()
     self.exportButton:setEnable(false)
     self:addChild(self.exportButton)
 
-    self.acceptButton = ISButton:new(self.width - UI_BORDER_SPACING - 100, self.height - UI_BORDER_SPACING - BUTTON_HGT, 100, BUTTON_HGT, getText("UI_btn_select"), self, self.onOptionMouseDown)
+    local acceptBtnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_select"))
+    self.acceptButton = ISButton:new(self.width - UI_BORDER_SPACING - acceptBtnWidth - 1, self.height - UI_BORDER_SPACING - BUTTON_HGT, acceptBtnWidth, BUTTON_HGT, getText("UI_btn_select"), self, self.onOptionMouseDown)
     self.acceptButton.internal = "ACCEPT"
     self.acceptButton:initialise()
     self.acceptButton:instantiate()
@@ -244,10 +266,13 @@ function ModPresetsWindow:createChildren()
     self.acceptButton:setAnchorTop(false)
     self.acceptButton:setAnchorBottom(true)
     self.acceptButton:enableAcceptColor()
+    self.acceptButton:setFont(UIFont.Small)
+    self.acceptButton:ignoreWidthChange()
+    self.acceptButton:ignoreHeightChange()
     self.acceptButton:setEnable(false)
     self:addChild(self.acceptButton)
 
-    local modOrderBtnWidth = getTextManager():MeasureStringX(UIFont.Small, getText("UI_mods_ModsOrder")) + 20
+    local modOrderBtnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_mods_ModsOrder"))
     self.modOrderBtn = ISButton:new(self.acceptButton:getX() - modOrderBtnWidth - UI_BORDER_SPACING, self.height - UI_BORDER_SPACING - BUTTON_HGT, modOrderBtnWidth, BUTTON_HGT, getText("UI_mods_ModsOrder"), self, self.onOptionMouseDown)
     self.modOrderBtn.internal = "MODSORDER"
     self.modOrderBtn:initialise()
@@ -257,6 +282,9 @@ function ModPresetsWindow:createChildren()
     self.modOrderBtn:setAnchorTop(false)
     self.modOrderBtn:setAnchorBottom(true)
     self.modOrderBtn.borderColor = {r=1, g=1, b=1, a=0.1}
+    self.modOrderBtn:setFont(UIFont.Small)
+    self.modOrderBtn:ignoreWidthChange()
+    self.modOrderBtn:ignoreHeightChange()
     self.modOrderBtn:setEnable(false)
     self:addChild(self.modOrderBtn)
 
@@ -275,22 +303,13 @@ function ModPresetsWindow:createChildren()
     if self.presetsList.items and #self.presetsList.items > 0 then
         self.presetsList.selected = 1; self:onSelectPreset(self.presetsList.items[1].item)
     end
-end
 
-function ModPresetsWindow:onModListMouseMove(list)
-    self.hoveredDeleteRow = -1
-    local mx = list:getMouseX()
-    local my = list:getMouseY()
-    local row = list:rowAt(mx, my)
-    if row == -1 then return end
-
-    local scrollBarWid = (list:isVScrollBarVisible() and list.vscroll and list.vscroll:getWidth() or 0)
-    local margin = scrollBarWid > 0 and 2 or 8
-    local iconX = list:getWidth() - margin - ICON_SIZE - scrollBarWid
-
-    if mx >= iconX and mx <= iconX + ICON_SIZE then
-        self.hoveredDeleteRow = row
+    self.onResolutionChangeEvent = function(oldw, oldh, neww, newh)
+        if self:isReallyVisible() then
+            self:onResolutionChange(oldw, oldh, neww, newh)
+        end
     end
+    Events.OnResolutionChange.Add(self.onResolutionChangeEvent)
 end
 
 function ModPresetsWindow:updateDeleteAllButtonText()
@@ -369,7 +388,7 @@ function ModPresetsWindow:onPresetListMouseDown(list, x, y)
     if row == -1 then return false end
     
     local iconX = 10
-    if x >= iconX and x <= iconX + 16 then
+    if x >= iconX and x <= iconX + FONT_HGT_SMALL then
         local presetName = list.items[row].text
         
         local modal = ISModalDialog:new(getCore():getScreenWidth() / 2 - 175, getCore():getScreenHeight() / 2 - 75, 350, 150, getText("UI_btn_del") .. ": " .. presetName .. "?", true, self, self.onConfirmDeletePreset)
@@ -390,16 +409,11 @@ function ModPresetsWindow:onPresetListMouseDown(list, x, y)
 end
 
 function ModPresetsWindow:onModListMouseDown(list, x, y)
-    local row = list:rowAt(x, y)
-    if row == -1 then return false end
-    
-    local scrollBarWid = (list:isVScrollBarVisible() and list.vscroll and list.vscroll:getWidth() or 0)
-    local margin = scrollBarWid > 0 and 2 or 8
-    
-    local iconX = list:getWidth() - margin - ICON_SIZE - scrollBarWid
-    if x >= iconX and x <= iconX + ICON_SIZE then
-        local item = list.items[row]
-        self:removeModFromPreset(item.item)
+    if list.mouseOverButtonIndex then
+        local item = list.items[list.mouseOverButtonIndex]
+        if item then
+            self:removeModFromPreset(item.item)
+        end
         return true
     end
     return false
@@ -449,7 +463,6 @@ function ModPresetsWindow:removeModFromPreset(modID)
     end
     
     self:fillMods(self.selectedPresetData)
-    self:onModListMouseMove(self.modsList)
 end
 
 function ModPresetsWindow:onConfirmDeletePreset(button)
@@ -581,9 +594,9 @@ function ModPresetsWindow:drawPresetItem(y, item, alt)
 
     local textX = 10
     if isMouseOver then
-        local iconY = y + (item.height - 16) / 2
-        self:drawTexture(self.deletePresetTexture, textX, iconY, 1, 1, 1, 1)
-        textX = textX + 16 + 6
+        local iconY = y + (item.height - FONT_HGT_SMALL) / 2
+        self:drawTextureScaled(self.deletePresetTexture, textX, iconY, FONT_HGT_SMALL, FONT_HGT_SMALL, 1, 1, 1, 1)
+        textX = textX + FONT_HGT_SMALL + 6
     end
 
     self:drawText(item.text, textX, y + (item.height - FONT_HGT_MEDIUM) / 2, 0.9, 0.9, 0.9, 0.9, UIFont.Medium)
@@ -601,9 +614,9 @@ function ModPresetsWindow:drawHistoryItem(y, item, alt)
     
     local textX = 10
     if isMouseOver then
-        local iconY = y + (item.height - 16) / 2
-        self:drawTexture(self.deletePresetTexture, textX, iconY, 1, 1, 1, 1)
-        textX = textX + 16 + 6
+        local iconY = y + (item.height - FONT_HGT_SMALL) / 2
+        self:drawTextureScaled(self.deletePresetTexture, textX, iconY, FONT_HGT_SMALL, FONT_HGT_SMALL, 1, 1, 1, 1)
+        textX = textX + FONT_HGT_SMALL + 6
     end
 
     self:drawText(item.text, textX, y + (item.height - FONT_HGT_MEDIUM) / 2, 0.9, 0.9, 0.9, 0.9, UIFont.Medium)
@@ -656,9 +669,12 @@ function ModPresetsWindow:fillMods(data)
 end
 
 function ModPresetsWindow:drawModItem(y, item, alt)
-    local isMouseOver = self.mouseoverselected == item.index
+    self:drawRectBorder(0, y, self:getWidth(), self.itemheight - 1, 0.5, self.borderColor.r, self.borderColor.g, self.borderColor.b)
+
     if self.selected == item.index then
-        self:drawRect(0, y, self:getWidth(), item.height - 1, 0.3, 0.7, 0.35, 0.15)
+        self:drawRect(0, y, self:getWidth(), self.itemheight - 1, 0.3, 0.7, 0.35, 0.15)
+    elseif self.mouseoverselected == item.index and not self:isMouseOverScrollBar() then
+        self:drawRect(1, y + 1, self:getWidth() - 2, item.height - 4, 0.95, 0.05, 0.05, 0.05)
     end
 
     local r, g, b = 0.9, 0.9, 0.9
@@ -671,41 +687,57 @@ function ModPresetsWindow:drawModItem(y, item, alt)
         textAlpha = 0.5
     end
 
-    self:drawText(item.text, 10, y + (item.height - FONT_HGT_SMALL) / 2, r, g, b, textAlpha, UIFont.Small)
-    
-    if isMouseOver then
-        local scrollBarWid = (self:isVScrollBarVisible() and self.vscroll and self.vscroll:getWidth() or 0)
-        local margin = scrollBarWid > 0 and 2 or 8
+    local dy = (self.itemheight - getTextManager():getFontFromEnum(self.font):getLineHeight()) / 2
+    self:drawText(item.text, 8, y + dy, r, g, b, textAlpha, self.font)
 
-        local x = self:getWidth() - margin - ICON_SIZE - scrollBarWid
-        local yIcon = y + (item.height - ICON_SIZE) / 2
-        local alpha = 0.5
-        local mx = self:getMouseX()
-        local my = self:getMouseY()
-        if mx >= x and mx <= x + ICON_SIZE and my >= yIcon and my <= yIcon + ICON_SIZE then
-            alpha = 1.0
+    if self.mouseoverselected == item.index and not self:isMouseOverScrollBar() then
+        local textRemove = getText("UI_btn_remove")
+        local textRemoveWid = getTextManager():MeasureStringX(UIFont.Small, textRemove)
+        local btnWid = 8 + textRemoveWid + 8
+        local btnHgt = FONT_LINE_HGT_SMALL + 4
+        local scrollBarWid = (self:isVScrollBarVisible() and 13 or 0)
+        local btnX = self.width - 4 - scrollBarWid - btnWid
+        local btnY = y + (item.height - btnHgt) / 2
+        local isMouseOverButton = self.mouseOverButtonIndex == item.index
+        if isMouseOverButton then
+            self:drawRect(btnX, btnY, btnWid, btnHgt, 1, 0.85, 0, 0)
+        else
+            self:drawRect(btnX, btnY, btnWid, btnHgt, 1, 0.50, 0.50, 0.50)
         end
-        self:drawTextureScaled(self.deleteModTexture, x, yIcon, ICON_SIZE, ICON_SIZE, alpha, 1, 1, 1)
+        self:drawTextCentre(textRemove, btnX + btnWid / 2, y + (item.height - FONT_LINE_HGT_SMALL) / 2, 0, 0, 0, 1, UIFont.Small)
     end
-    
+
     return y + item.height
+end
+
+function ModPresetsWindow:onKeyRelease(key)
+    if key == Keyboard.KEY_ESCAPE then
+        self:close()
+    elseif key == Keyboard.KEY_RETURN then
+        self.acceptButton:forceClick()
+    end
+end
+
+function ModPresetsWindow:close()
+    if self.onResolutionChange then
+        Events.OnResolutionChange.Remove(self.onResolutionChange)
+        self.onResolutionChange = nil
+    end
+    ModPresetsWindow.instance = nil
+    self:setVisible(false)
+    self:removeFromUIManager()
+    if self.returnToUI then
+        self.returnToUI:setVisible(true)
+    end
 end
 
 function ModPresetsWindow:onOptionMouseDown(button)
     if button.internal == "BACK" then
-        self:setVisible(false)
-        self:removeFromUIManager()
-        if self.returnToUI then
-            self.returnToUI:setVisible(true)
-        end
+        self:close()
     elseif button.internal == "ACCEPT" then
         if self.selectedPresetData then
             self.parent:loadPreset(self.selectedPresetData, self.selectedPresetName)
-            self:setVisible(false)
-            self:removeFromUIManager()
-            if self.returnToUI then
-                self.returnToUI:setVisible(true)
-            end
+            self:close()
         end
     elseif button.internal == "ADD" then
         local modal = ISTextBox:new(getCore():getScreenWidth()/2 - 280/2, getCore():getScreenHeight() / 2 - 180/2, 280, 180, "Paste here mods preset text:", "", self, self.onAddSharedPreset)
@@ -719,10 +751,10 @@ function ModPresetsWindow:onOptionMouseDown(button)
         end
     elseif button.internal == "EXPORT" then
         if self.selectedPresetData and self.selectedPresetName then
-            local width = 500
-            local height = 400
             local screenW = getCore():getScreenWidth()
             local screenH = getCore():getScreenHeight()
+            local width = math.max(420, screenW * 0.35)
+            local height = math.max(350, screenH * 0.4)
             local x = (screenW - width) / 2
             local y = (screenH - height) / 2
             
@@ -855,6 +887,72 @@ function ModPresetsWindow:onAddSharedPreset(button)
     end
 end
 
+function ModPresetsWindow:onResolutionChange(oldw, oldh, neww, newh)
+    self:setX((neww - self.width) / 2)
+    self:setY((newh - self.height) / 2)
+
+    local listWidth = self.width * 0.25
+    local tabsHeight = self.height - (UI_BORDER_SPACING * 3 + BUTTON_HGT)
+    local tabsY = UI_BORDER_SPACING * 3 + FONT_HGT_MEDIUM
+
+    self.tabs:setWidth(listWidth)
+    self.tabs:setHeight(tabsHeight - (tabsY - (UI_BORDER_SPACING + 1)) + 4)
+    self.tabs.maxLength = (listWidth - 2) / 2 - 1
+
+    self.presetsList:setWidth(self.tabs.width)
+    self.presetsList:setHeight(self.tabs.height - self.tabs.tabHeight - 4)
+
+    self.historyPanel:setWidth(self.tabs.width)
+    self.historyPanel:setHeight(self.tabs.height - self.tabs.tabHeight - 4)
+    self.historyList:setWidth(self.historyPanel.width)
+    self.historyList:setHeight(self.historyPanel.height - BUTTON_HGT - UI_BORDER_SPACING)
+    self.deleteAllHistoryBtn:setWidth(self.historyPanel.width)
+    self.deleteAllHistoryBtn:setY(self.historyList:getBottom() + UI_BORDER_SPACING)
+
+    local modsX = self.tabs:getRight() + UI_BORDER_SPACING
+    local modsW = self.width - modsX - UI_BORDER_SPACING - 1
+    local modsH = self.presetsList.height
+    self.modsList:setX(modsX)
+    self.modsList:setWidth(modsW)
+    self.modsList:setHeight(modsH)
+
+    self.searchEntry:setX(modsX)
+    self.searchEntry:setWidth(modsW)
+    self.searchEntry:setY(self.modsList.y - BUTTON_HGT - 5)
+
+    local btnGap = UI_BORDER_SPACING
+    local splitBtnWidth = (listWidth - (2 - 1) * btnGap) / 2
+
+    self.backButton:setY(self.height - UI_BORDER_SPACING - BUTTON_HGT)
+    self.backButton:setWidth(splitBtnWidth)
+
+    self.addPresetButton:setX(self.backButton:getRight() + btnGap)
+    self.addPresetButton:setY(self.height - UI_BORDER_SPACING - BUTTON_HGT)
+    self.addPresetButton:setWidth(splitBtnWidth)
+
+    local JOYPAD_TEX_SIZE = 32
+    local BUTTON_PADDING = JOYPAD_TEX_SIZE + UI_BORDER_SPACING * 2
+
+    local exportBtnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_share"))
+    self.exportButton:setX(self.addPresetButton:getRight() + btnGap)
+    self.exportButton:setY(self.height - UI_BORDER_SPACING - BUTTON_HGT)
+    self.exportButton:setWidth(exportBtnWidth)
+
+    local acceptBtnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_select"))
+    self.acceptButton:setX(self.width - UI_BORDER_SPACING - acceptBtnWidth - 1)
+    self.acceptButton:setY(self.height - UI_BORDER_SPACING - BUTTON_HGT)
+    self.acceptButton:setWidth(acceptBtnWidth)
+
+    local modOrderBtnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_mods_ModsOrder"))
+    self.modOrderBtn:setX(self.acceptButton:getX() - modOrderBtnWidth - UI_BORDER_SPACING)
+    self.modOrderBtn:setY(self.height - UI_BORDER_SPACING - BUTTON_HGT)
+    self.modOrderBtn:setWidth(modOrderBtnWidth)
+
+    if self.exportWindow and self.exportWindow.onResolutionChange then
+        self.exportWindow:onResolutionChange(oldw, oldh, neww, newh)
+    end
+end
+
 function ModPresetsWindow:prerender()
     ISPanelJoypad.prerender(self); self:drawTextCentre(getText("UI_modpresets_title"), self.width / 2, UI_BORDER_SPACING + 1, 1, 1, 1, 1, UIFont.Medium)
 end
@@ -871,6 +969,7 @@ function ModPresetsWindow:new(x, y, width, height, model, parent, selectedPreset
     local o = ISPanelJoypad:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
+    ModPresetsWindow.instance = o
     o.borderColor = {r=1, g=1, b=1, a=0.2}
     o.backgroundColor = {r=0, g=0, b=0, a=0.9}
     o.model = model

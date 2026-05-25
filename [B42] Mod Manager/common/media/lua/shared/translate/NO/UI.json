@@ -1,5 +1,5 @@
 {
-    "UI_mainscreen_btn_configs": "KONFIGS",
+    "UI_mainscreen_btn_configs": "INNSTILLINGER",
 
     "UI_modselector_separator": "av",
 
@@ -8,21 +8,19 @@
     "UI_modselector_showHiddenMods": "Vis skjulte mods",
 
     "UI_modselector_disableWarningTitle": "ADVARSEL!",
-    "UI_modselector_disableWarningText": "Deaktivering av denne modifikasjonen vil også deaktivere følgende:",
-
-    "UI_modselector_modOptions": "KONFIGURASJON",
+    "UI_modselector_disableWarningText": "Å deaktivere denne modden vil også deaktivere:",
 
     "UI_modlistpanel_sortBy": "Sorter etter:",
     "UI_modlistpanel_sortBy_name": "Navn (A-Z)",
-    "UI_modlistpanel_sortBy_date": "Dato lagt til",
-    "UI_modlistpanel_sortBy_dateUpdated": "Oppdatert dato",
+    "UI_modlistpanel_sortBy_date": "Nyeste først",
+    "UI_modlistpanel_sortBy_dateUpdated": "Sist oppdatert",
 
     "UI_modselector_status_installed": "Oppdatert",
     "UI_modselector_status_needsUpdate": "Oppdatering tilgjengelig!",
 
-    "UI_modoptions_title": "MOD-ALTERNATIVER",
+    "UI_modoptions_title": "MOD-INNSTILLINGER",
 
-    "UI_btn_sort_apply": "SORTER OG GODTA",
+    "UI_btn_sort_apply": "SORTER OG BRUK",
 
     "UI_modpresets_title": "PRESET-LISTE",
 
@@ -39,26 +37,68 @@
     "UI_modselector_btn_hide": "SKJUL",
     "UI_modselector_btn_show": "VIS",
     "UI_modselector_btn_favorite": "FAVORITT",
-    "UI_modselector_btn_unfavorite": "FJERN",
+    "UI_modselector_btn_unfavorite": "FJERN FAVORITT",
     "UI_modselector_btn_enable": "AKTIVER",
     "UI_modselector_btn_disable": "DEAKTIVER",
 
+    "UI_modselector_LocalMod_tooltip": "Denne modden vil ikke bli lastet ned på klientsiden.\n\nÅrsak: Workshop ID ikke funnet (lokal mod).\n\nHvis du er forfatteren av denne modden, må du publisere den på Workshop og abonnere på den.",
+
+    "UI_ServerSettings_SpawnRegions": "Spawn-regioner brukt av denne serveren:",
+    "UI_ServerSettings_AddSpawnRegion": "Legg til en tilgjengelig spawn-region til listen:",
+    "UI_ServerOption_SpawnPoint": "Spawn-punkt:",
+
     "UI_modinfopanel_Status": "Status",
     "UI_modinfopanel_Version": "Versjon",
-    "UI_modinfopanel_Author": "Forfatter",
+    "UI_modinfopanel_Category": "Kategori",
+    "UI_modinfopanel_Author": "Utvikler",
     "UI_modinfopanel_ModID": "Mod ID",
     "UI_modinfopanel_WorkshopID": "Workshop ID",
-    "UI_modinfopanel_LocalPath": "Lokal bane",
+    "UI_modinfopanel_LocalPath": "Lokal sti",
     "UI_modinfopanel_LastUpdate": "Sist oppdatert",
     "UI_modinfopanel_ZomboidVersion": "Spillversjon",
     "UI_modinfopanel_Dependencies": "Avhengigheter",
     "UI_modinfopanel_IncompatibleWith": "Inkompatibel med",
     "UI_modinfopanel_Changelog": "Endringslogg",
+    "UI_modinfopanel_SetCategory": "Tildel...",
+    "UI_modinfopanel_SelectCategory": "Velg kategori",
 
-    "UI_modinfopanel_TimeFormat_Today": "I dag kl. {hour24}.{min}",
-    "UI_modinfopanel_TimeFormat_Yesterday": "I går kl. {hour24}.{min}",
-    "UI_modinfopanel_TimeFormat_ThisYear": "{day}. {month} kl. {hour24}.{min}",
-    "UI_modinfopanel_TimeFormat_OtherYears": "{day}. {month} {year} kl. {hour24}.{min}",
+    "UI_modinfopanel_Category_None": "Ingen",
+    "UI_modinfopanel_Category_Animals": "Dyr",
+    "UI_modinfopanel_Category_Armor": "Rustning",
+    "UI_modinfopanel_Category_Audio": "Lyd",
+    "UI_modinfopanel_Category_Balance": "Balanse",
+    "UI_modinfopanel_Category_Building": "Bygging",
+    "UI_modinfopanel_Category_Crafting": "Håndverk",
+    "UI_modinfopanel_Category_Clothing": "Klær",
+    "UI_modinfopanel_Category_Farming": "Jordbruk",
+    "UI_modinfopanel_Category_Food": "Mat",
+    "UI_modinfopanel_Category_Framework": "Rammeverk",
+    "UI_modinfopanel_Category_Hardmode": "Hardmode",
+    "UI_modinfopanel_Category_Interface": "Grensesnitt",
+    "UI_modinfopanel_Category_Items": "Gjenstander",
+    "UI_modinfopanel_Category_Localization": "Lokalisering",
+    "UI_modinfopanel_Category_Literature": "Litteratur",
+    "UI_modinfopanel_Category_Map": "Kart",
+    "UI_modinfopanel_Category_Military": "Militær",
+    "UI_modinfopanel_Category_Misc": "Diverse",
+    "UI_modinfopanel_Category_Models": "Modeller",
+    "UI_modinfopanel_Category_Modpack": "Modpakke",
+    "UI_modinfopanel_Category_Multiplayer": "Flerspiller",
+    "UI_modinfopanel_Category_QoL": "QoL",
+    "UI_modinfopanel_Category_Quests": "Oppdrag",
+    "UI_modinfopanel_Category_Realistic": "Realistisk",
+    "UI_modinfopanel_Category_Scenario": "Scenario",
+    "UI_modinfopanel_Category_Silly/Fun": "Tull/Moro",
+    "UI_modinfopanel_Category_Skills": "Ferdigheter",
+    "UI_modinfopanel_Category_Textures": "Teksturer",
+    "UI_modinfopanel_Category_Traits": "Egenskaper",
+    "UI_modinfopanel_Category_Vehicles": "Kjøretøy",
+    "UI_modinfopanel_Category_Weapons": "Våpen",
+
+    "UI_modinfopanel_TimeFormat_Today": "I dag kl. {hour24}:{min}",
+    "UI_modinfopanel_TimeFormat_Yesterday": "I går kl. {hour24}:{min}",
+    "UI_modinfopanel_TimeFormat_ThisYear": "{day}. {month} kl. {hour24}:{min}",
+    "UI_modinfopanel_TimeFormat_OtherYears": "{day}. {month} {year} kl. {hour24}:{min}",
 
     "UI_modinfopanel_AM": "AM",
     "UI_modinfopanel_PM": "PM",
@@ -74,7 +114,5 @@
     "UI_modinfopanel_Month_Short_9": "sep.",
     "UI_modinfopanel_Month_Short_10": "okt.",
     "UI_modinfopanel_Month_Short_11": "nov.",
-    "UI_modinfopanel_Month_Short_12": "des.",
-
-    "UI_modmanager_changelogFormatting": "Tekstformatering:"
+    "UI_modinfopanel_Month_Short_12": "des."
 }

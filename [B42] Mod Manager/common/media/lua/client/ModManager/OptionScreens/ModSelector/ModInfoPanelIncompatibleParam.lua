@@ -1,14 +1,10 @@
+require "ISUI/ISToolTip"
 require "OptionScreens/ModSelector/ModInfoPanelParam"
 
+local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local UI_BORDER_SPACING = 10
 
-ModInfoPanel.IncompatibleParam = ModInfoPanel.Param:derive("IncompatibleParam")
-
-function ModInfoPanel.IncompatibleParam:new(x, y, width, type)
-    local o = ModInfoPanel.Param.new(self, x, y, width, type)
-    o.displayParts = {}
-    return o
-end
+ModInfoPanel.IncompatibleParam = ModInfoPanel.Param:derive("ModInfoPanelIncompatibleParam")
 
 function ModInfoPanel.IncompatibleParam:initialise()
     ModInfoPanel.Param.initialise(self)
@@ -18,21 +14,16 @@ function ModInfoPanel.IncompatibleParam:initialise()
 end
 
 function ModInfoPanel.IncompatibleParam:onMouseUp(x, y)
-    if self.tooltipUI and self.tooltipUI:getIsVisible() and self:isMouseOver() and self.tooltip and self.tooltip ~= "" then
-        local url = self.tooltip:match("https://steamcommunity.com/sharedfiles/filedetails/%?id=(%d+)")
-        if url then
-            if isSteamOverlayEnabled() then
-                activateSteamOverlayToWebPage("https://steamcommunity.com/sharedfiles/filedetails/?id=" .. url)
-            else
-                openUrl("https://steamcommunity.com/sharedfiles/filedetails/?id=" .. url)
-            end
-        end
-    end
+    return false
+end
+
+function ModInfoPanel.IncompatibleParam:onMouseDown(x, y)
+    self.pressed = true
 end
 
 function ModInfoPanel.IncompatibleParam:update()
     ModInfoPanel.Param.update(self)
-    if self:isMouseOver() and self.tooltip and self.tooltip ~= "" then
+    if self:isMouseOver() and self:isReallyVisible() and self.tooltip and self.tooltip ~= "" then
         if not self.tooltipUI:getIsVisible() then
             self.tooltipUI:addToUIManager()
             self.tooltipUI:setVisible(true)
@@ -71,6 +62,8 @@ function ModInfoPanel.IncompatibleParam:setModInfo(modInfo)
         local partText = incompatibleID
         local incompatibleModData = model.mods[incompatibleID]
         local color = { r = 0.9, g = 0.9, b = 0.9 }
+        local available = false
+        local modInfo2
 
         if currentModData.isActive then
             if incompatibleModData and not incompatibleModData.isActive then
@@ -82,6 +75,11 @@ function ModInfoPanel.IncompatibleParam:setModInfo(modInfo)
             end
         end
 
+        if incompatibleModData then
+            available = true
+            modInfo2 = incompatibleModData.modInfo
+        end
+
         if i > 1 then
             fullText_tooltip = fullText_tooltip .. ", "
             fullText_display = fullText_display .. ", "
@@ -89,7 +87,7 @@ function ModInfoPanel.IncompatibleParam:setModInfo(modInfo)
         fullText_tooltip = fullText_tooltip .. partText
         fullText_display = fullText_display .. partText
 
-        table.insert(self.displayParts, { text = partText, color = color })
+        table.insert(self.displayParts, { text = partText, color = color, available = available, modInfo = modInfo2, id = incompatibleID })
     end
 
     if getTextManager():MeasureStringX(UIFont.Small, fullText_display) > availableWidth then
@@ -121,12 +119,37 @@ function ModInfoPanel.IncompatibleParam:render()
     if self.modInfo == nil then return end
 
     local currentX = self.borderX + UI_BORDER_SPACING
+    local mouseX = self:getMouseX()
+    local mouseY = self:getMouseY()
+    local isMouseOver = self:isMouseOver()
+
     for i, part in ipairs(self.displayParts) do
+        local textWidth = getTextManager():MeasureStringX(UIFont.Small, part.text)
+        local isHovered = isMouseOver and mouseX >= currentX and mouseX < currentX + textWidth and mouseY >= 2 and mouseY < 2 + FONT_HGT_SMALL + 1
+
         self:drawText(part.text, currentX, 2, part.color.r, part.color.g, part.color.b, 0.9, UIFont.Small)
-        currentX = currentX + getTextManager():MeasureStringX(UIFont.Small, part.text)
+
+        if part.available then
+            if not isHovered then
+                self:drawRectBorder(currentX, 2 + FONT_HGT_SMALL, textWidth, 1, 0.9, part.color.r, part.color.g, part.color.b)
+            else
+                if self.pressed then
+                    self.parent.parent:selectModByInfo(part.modInfo)
+                end
+            end
+        end
+
+        currentX = currentX + textWidth
         if i < #self.displayParts then
             self:drawText(", ", currentX, 2, 0.9, 0.9, 0.9, 0.9, UIFont.Small)
             currentX = currentX + getTextManager():MeasureStringX(UIFont.Small, ", ")
         end
     end
+    self.pressed = false
+end
+
+function ModInfoPanel.IncompatibleParam:new(x, y, width, type)
+    local o = ModInfoPanel.Param.new(self, x, y, width, type)
+    o.displayParts = {}
+    return o
 end

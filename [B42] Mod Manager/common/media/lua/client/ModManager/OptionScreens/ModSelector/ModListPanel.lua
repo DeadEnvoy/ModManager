@@ -12,12 +12,44 @@ local UI_BORDER_SPACING = 10
 local JOYPAD_TEX_SIZE = 32
 local BUTTON_PADDING = JOYPAD_TEX_SIZE + UI_BORDER_SPACING*2
 
+function ModListPanel:updateCategoryFilter()
+    local selectedData = self.filterCombo:getOptionData(self.filterCombo.selected)
+    self.filterCombo:clear()
+    self.filterCombo:addOptionWithData(getText("UI_All"), "")
+    local categories = {}
+    for _, modData in ipairs(self.model.sortedMods) do
+        if modData.category and modData.category ~= "" and not categories[modData.category] then
+            categories[modData.category] = true
+        end
+    end
+    local sortedCategories = {}
+    for _, catName in ipairs(ModSelector.Model.CATEGORIES) do
+        if categories[catName] then
+            table.insert(sortedCategories, {name = catName, text = getText("UI_modinfopanel_Category_" .. catName)})
+        end
+    end
+    table.sort(sortedCategories, function(a, b) return a.text < b.text end)
+    for _, cat in ipairs(sortedCategories) do
+        self.filterCombo:addOptionWithData(cat.text, cat.name)
+    end
+    self.filterCombo.selected = 1
+    if selectedData ~= "" then
+        for i = 2, #self.filterCombo.options do
+            if self.filterCombo:getOptionData(i) == selectedData then
+                self.filterCombo.selected = i
+                break
+            end
+        end
+    end
+end
+
 function ModListPanel:updateView()
     local selectedModId = nil
     if self.modList:getSelectedModData() then
         selectedModId = self.modList:getSelectedModData().modId
     end
 
+    self:updateCategoryFilter()
     self:applyFilters()
     self.modList:clear()
 
@@ -68,9 +100,7 @@ function ModListPanel:createChildren()
 
     self.filterCombo = ISComboBox:new(label:getRight() + UI_BORDER_SPACING, UI_BORDER_SPACING+1, math.min(200, self.width/2.0 - label:getRight()) * 0.55, BUTTON_HGT, self, self.updateView)
     self.filterCombo:initialise()
-    for type, iconName in pairs(ModSelector.Model.categories) do
-        self.filterCombo:addOption(getText(type))
-    end
+    self.filterCombo:addOptionWithData(getText("UI_All"), "")
     self.filterCombo.selected = 1
     self:addChild(self.filterCombo)
 
@@ -123,8 +153,8 @@ function ModListPanel:createChildren()
     self.hiddenModsTickbox:addOption(getText("UI_modselector_showHiddenMods"));
     self:addChild(self.hiddenModsTickbox);
 
-    local btnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_modselector_modOptions"))
-    self.modOptionsButton = ISButton:new(self.width - UI_BORDER_SPACING - btnWidth - 1, self.enabledModsTickbox.y, btnWidth, BUTTON_HGT, getText("UI_modselector_modOptions"), self, ModListPanel.onOptionMouseDown)
+    local btnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_mainscreen_btn_configs"))
+    self.modOptionsButton = ISButton:new(self.width - UI_BORDER_SPACING - btnWidth - 1, self.enabledModsTickbox.y, btnWidth, BUTTON_HGT, getText("UI_mainscreen_btn_configs"), self, ModListPanel.onOptionMouseDown)
     self.modOptionsButton.internal = "ModOptions"
     self.modOptionsButton:initialise()
     self.modOptionsButton:instantiate()
@@ -171,7 +201,7 @@ function ModListPanel:recalcSize()
 end
 
 function ModListPanel:applyFilters()
-    local category = self.filterCombo.options[self.filterCombo.selected]
+    local category = self.filterCombo:getOptionData(self.filterCombo.selected)
     local searchWord = string.lower(self.searchEntry:getInternalText())
     self.model:filterMods(category, searchWord, self.isFavoriteMode, self.enabledModsTickbox.selected[1], self.disabledModsTickbox.selected[1], self.hiddenModsTickbox.selected[1])
 end

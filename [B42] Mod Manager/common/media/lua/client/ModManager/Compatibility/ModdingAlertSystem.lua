@@ -1,11 +1,41 @@
+---@diagnostic disable: inject-field
 require "OptionScreens/ModSelector/ModSelector"
+require "ISUI/ISRichTextPanel"
 
-local alertSystem = require "chuckleberryFinnModdingAlertSystem"
-local changelog_handler = require "chuckleberryFinnModding_modChangelog"
-local ModManagerData = require "ModManager/Utilities/ModListData"
+local ok1, alertSystem = pcall(require, "chuckleberryFinnModdingAlertSystem")
+local ok2, changelog_handler = pcall(require, "chuckleberryFinnModding_modChangelog")
+local ModManagerData = require("ModManager/Utils/ModListData")
+local Changelog = require("ModManager/Utils/WorkshopSubmit")
 
-if alertSystem and changelog_handler then
-    local original_initialise = alertSystem.initialise
+if (ok1 and ok2) and (alertSystem and changelog_handler) then
+    local original_fetchMod = changelog_handler.fetchMod
+    function changelog_handler.fetchMod(modID, latest)
+        local mdReader = changelog_handler.resolveFile(modID, "ChangeLog.md")
+        if mdReader then
+            local lines = {}
+            local line = mdReader:readLine()
+            while line do
+                table.insert(lines, line)
+                line = mdReader:readLine()
+            end
+            mdReader:close()
+
+            local completeText = table.concat(lines, "\n")
+            local config = completeText:match("<!%-%- ALERT_CONFIG\n(.-)\n%-%->")
+            if config then
+                changelog_handler.parseModAlertConfig(modID, config)
+            end
+
+            local changelogs, _, isLegacy = Changelog.fetchChangelog(modID)
+            if not changelogs or #changelogs == 0 then return end
+            local alerts = {}
+            for _, entry in ipairs(changelogs) do
+                table.insert(alerts, { title = entry.title, contents = entry.contents, isMd = true, isLegacy = isLegacy })
+            end
+            return alerts
+        end
+        return original_fetchMod(modID, latest)
+    end
 
     local function formatDate(seconds)
         if not seconds or seconds == 0 then return "" end
@@ -15,7 +45,7 @@ if alertSystem and changelog_handler then
 
         local sdfComponents = SimpleDateFormat.new("d M yyyy H m")
         local dateStr = sdfComponents:format(millis)
-        
+
         local values = {}
         for v in string.gmatch(dateStr, "%S+") do table.insert(values, tonumber(v)) end
         local day, month, year, hour, min = values[1], values[2], values[3], values[4], values[5]
@@ -60,11 +90,36 @@ if alertSystem and changelog_handler then
         return res
     end
 
+    local function drawAlertChrome(self, layout, subHeader, alertTitle, modAuthor)
+        if layout.alertIcon then
+            self:drawTextureScaled(layout.alertIcon, 4+(alertSystem.padding/3), layout.headerY, 32, 32, 1, 1, 1, 1)
+        end
+
+        local maxSubheaderX = math.min(((alertSystem.padding*1.5)+layout.headerW), (self.width-layout.subHeaderW))
+        if subHeader then
+            self:drawText(subHeader, maxSubheaderX, layout.headerY + (alertSystem.padding/5), 1, 1, 1, 0.7, UIFont.NewSmall)
+        end
+
+        self:drawText(layout.header, layout.headerX, layout.headerY, 1, 1, 1, 0.96, UIFont.NewMedium)
+
+        local titleY = layout.headerY + layout.headerH + (alertSystem.padding/7)
+        if alertTitle then
+            self:drawText(alertTitle, layout.headerX, titleY, 1, 1, 1, 0.85, UIFont.NewSmall)
+        end
+
+        if modAuthor then
+            local authorX = self.alertContentPanel:getX() + self.alertContentPanel:getWidth() - (alertSystem.padding/4)
+            self:drawTextRight(modAuthor, authorX, titleY, 1, 1, 1, 0.85, UIFont.NewSmall)
+        end
+
+        return titleY
+    end
+
     function alertSystem:markCurrentAlertAsSeen()
         if self.alertSelected > 0 and self.alertsLoaded and self.alertsLoaded[self.alertSelected] then
             local modID = self.alertsLoaded[self.alertSelected]; local alertData = self.latestAlerts[modID]
             if alertData and not alertData.alreadyStored then
-                alertData.alreadyStored = true; self.alertsOld = (self.alertsOld or 0) + 1
+                alertData.alreadyStored = true; self.alertsOld = self.alertsOld + 1
                 if ModManagerData.data.alerts and ModManagerData.data.alerts[modID] then
                     ModManagerData.data.alerts[modID].seen = true
                     ModManagerData:save()
@@ -140,7 +195,7 @@ if alertSystem and changelog_handler then
 
         self.alertsLoaded = {}
         self.latestAlerts = {}
-        self.alertsLayout = {}
+        alertSystem.alertsLayout = {}
         self.alertsOld = 0
 
         for _, item in ipairs(sortedItems) do
@@ -160,7 +215,8 @@ if alertSystem and changelog_handler then
                     icon = modIcon,
                     modAuthor = modAuthor,
                     alreadyStored = seen,
-                    ts = item.ts
+                    ts = item.ts,
+                    isLegacy = alerts and alerts[1] and alerts[1].isLegacy or false
                 }
                 table.insert(self.alertsLoaded, modID)
                 if seen then
@@ -177,29 +233,60 @@ if alertSystem and changelog_handler then
         end
     end
 
+    local original_initialise = alertSystem.initialise
     function alertSystem:initialise()
         original_initialise(self)
 
-        self.latestAlerts = {}
+        self.alertContentPanel:removeFromUIManager()
+        self:removeChild(self.alertContentPanel)
+
+        local panel = ISRichTextPanel:new(self.padding, self.padding*3.5, self.width-self.padding*2, self.height-self.padding*5.3)
+        panel:initialise()
+        panel:instantiate()
+        panel:setAnchorRight(true)
+        panel:setAnchorBottom(false)
+        panel.defaultFont = UIFont.NewSmall
+        panel.autosetheight = false
+        panel.clip = true
+        panel.backgroundColor = {r=0, g=0, b=0, a=0}
+        panel.borderColor = {r=1, g=1, b=1, a=0.4}
+        panel.marginLeft = alertSystem.padding / 3
+        panel.marginTop = alertSystem.padding / 3
+        panel.marginBottom = alertSystem.padding / 3
+        panel:addScrollBars()
+        panel.marginRight = panel.vscroll and panel.vscroll:getWidth() or 0
+        self.alertContentPanel = panel
+        self:addChild(panel)
+
         self.alertsLoaded = {}
+        self.latestAlerts = self.latestAlerts or {}
         self.alertSelected = 0
         self.alertsOld = 0
-        self.alertsLayout = {}
+
+        self.latestAlerts[""] = nil
+        for i = #self.alertsLoaded, 1, -1 do
+            if self.alertsLoaded[i] == "" then
+                table.remove(self.alertsLoaded, i)
+                break
+            end
+        end
+
+        alertSystem.alertsLoaded = nil
+        alertSystem.alertsOld = nil
+        alertSystem.alertsLayout = {}
 
         if getSteamModeActive() then
             if not ModManagerData.data.workshop then
                 ModManagerData:load()
             end
-            
+
             self:processUpdates()
-            
-            if Events.OnModManagerWorkshopUpdate then
-                Events.OnModManagerWorkshopUpdate.Add(function()
-                    if MainScreen.instance and MainScreen.instance.alertSystem then
-                        MainScreen.instance.alertSystem:processUpdates()
-                    end
-                end)
-            end
+
+            Events.OnWorkshopUpdate.Add(function()
+                if MainScreen.instance and MainScreen.instance.alertSystem then
+                    MainScreen.instance.alertSystem:processUpdates()
+                end
+            end)
         end
     end
 
@@ -216,9 +303,11 @@ if alertSystem and changelog_handler then
             if not alertModData then return end
 
             local modName = alertModData.modName
-            local latestAlert = alertModData.alerts[#alertModData.alerts]
+            local isMd = alertModData.alerts and alertModData.alerts[1] and alertModData.alerts[1].isMd
+            local isLegacy = alertModData.isLegacy
+            local latestAlert = alertModData.alerts[(isMd and not isLegacy) and 1 or #alertModData.alerts]
             local alertTitle = latestAlert.title ~= "" and latestAlert.title
-            local alertContents = latestAlert.contents
+            local alertContents = (isMd and not isLegacy) and Changelog.markdownToPlaintext(latestAlert.contents or "") or latestAlert.contents
             local alertIcon = alertModData.icon
             local header = modName
 
@@ -232,69 +321,30 @@ if alertSystem and changelog_handler then
             local modAuthor = alertModData.modAuthor
             local layout = self:determineLayout(alertModID, header, subHeader, alertTitle, alertContents, alertIcon)
 
-            if layout.alertIcon then self:drawTextureScaled(layout.alertIcon, 4+(alertSystem.padding/3), layout.headerY, 32, 32, 1, 1, 1, 1) end
-
-            local maxSubheaderX = math.min( ((alertSystem.padding*1.5)+layout.headerW), (self.width-layout.subHeaderW) )
-            if subHeader then
-                self:drawText(subHeader, maxSubheaderX, layout.headerY + (alertSystem.padding/5), 1, 1, 1, 0.7, UIFont.NewSmall)
-            end
-
-            self:drawText(layout.header, layout.headerX, layout.headerY, 1, 1, 1, 0.96, UIFont.NewMedium)
-
-            local titleY = layout.headerY+layout.headerH+(alertSystem.padding/7)
-            if alertTitle then
-                self:drawText(alertTitle, layout.headerX, titleY, 1, 1, 1, 0.85, UIFont.NewSmall)
-            end
-
-            if modAuthor then
-                local authorX = self.alertContentPanel:getX()+self.alertContentPanel:getWidth()-(alertSystem.padding/4)
-                self:drawTextRight(modAuthor, authorX, titleY, 1, 1, 1, 0.85, UIFont.NewSmall)
-            end
+            local titleY = drawAlertChrome(self, layout, subHeader, alertTitle, modAuthor)
 
             self.alertContentPanel:setY((titleY+layout.titleH+(alertSystem.padding/7)))
-            self.alertContentPanel:setHeight(self.alertContentPanel.originalH+(self.alertContentPanel.originalY-self.alertContentPanel:getY()))
+            local panelH = self.height - (alertSystem.padding * 1.8) - self.alertContentPanel:getY()
+            self.alertContentPanel:setHeight(panelH)
+            if self.alertContentPanel.vscroll then
+                self.alertContentPanel.vscroll:setHeight(panelH)
+            end
 
-            self.alertContentPanel:clampStencilRectToParent(0, 0, self.alertContentPanel:getWidth(), self.alertContentPanel:getHeight())
-            self.alertContentPanel:setScrollHeight(layout.contentsH)
-            self.alertContentPanel:drawText(layout.contents, self.padding/3, self.padding/3, 1, 1, 1, 0.8, UIFont.NewSmall)
-            self.alertContentPanel:clearStencilRect()
+            if self.lastAlertModID ~= alertModID then
+                self.lastAlertModID = alertModID
+                self.alertContentPanel:setScrollHeight(0)
+                self.alertContentPanel:setYScroll(0)
+                self.alertContentPanel:setText(" <TEXT> <RGB:0.8,0.8,0.8> " .. alertContents)
+                self.alertContentPanel:paginate()
+            end
         end
     end
 
+    local original_render = alertSystem.render
     function alertSystem:render()
-        ISPanelJoypad.render(self)
-
-        if not self.collapsed then
-
-            if alertSystem.spiffoTexture and (not self.collapsed) then
-                local textureYOffset = self.height-(alertSystem.spiffoTexture:getHeight())
-                self:drawTexture(alertSystem.spiffoTexture, self.width-(alertSystem.padding*1.7), textureYOffset, 1, 1, 1, 1)
-            end
-
-            if self.alertsLoaded and #self.alertsLoaded > 0 then
-                local label = tostring(self.alertSelected).."/"..tostring(#self.alertsLoaded)
-                self:drawText(label, 40, 7, 1, 1, 1, 0.7, UIFont.AutoNormSmall)
-            end
-
-            self:drawTexture(alertSystem.alertLeft, self.alertLeftX, 0, 0.7, 1, 1, 1)
-            self:drawTexture(alertSystem.alertRight, self.alertRightX, 0, 0.7, 1, 1, 1)
-
-            local alertBarX = (self.alertLeftX+32)
-
-            local rectWidth = self.alertBarSpan-32
-            self:drawRectBorder(alertBarX, 10, rectWidth, 12, 0.7, 1, 1, 1)
-
-            if self.alertsLoaded and #self.alertsLoaded > 0 then
-                local selectedAlertWidth = math.max(2, rectWidth/#self.alertsLoaded)
-                self:drawRect(alertBarX+(selectedAlertWidth*(self.alertSelected-1)), 10, selectedAlertWidth, 12, 0.8, 1, 1, 1)
-            end
-
-        end
-
-        if self.alertsLoaded and #self.alertsLoaded > 0 then
-            local alertImage = (#self.alertsLoaded-(self.alertsOld or 0))>0 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
-            self:drawTexture(alertImage, 0, 0, 1, 1, 1, 1)
-        end
+        alertSystem.alertsLoaded = self.alertsLoaded or {}
+        alertSystem.alertsOld = self.alertsOld or 0
+        original_render(self)
     end
 
     local original_display = alertSystem.display
@@ -302,13 +352,8 @@ if alertSystem and changelog_handler then
         original_display(visible)
 
         local instance = MainScreen.instance and MainScreen.instance.alertSystem
-
-        if instance and not instance.__forcedCollapseInit then
-            instance.collapsed = true; if instance.collapse then
-                 instance.collapse.tooltip = getText("IGUI_ChuckAlertTooltip_Open")
-                 instance:markCurrentAlertAsSeen()
-            end
-            instance:collapseApply(); instance.__forcedCollapseInit = true
+        if instance and not instance.collapsed then
+            instance:markCurrentAlertAsSeen()
         end
     end
 end

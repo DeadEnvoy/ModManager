@@ -1,5 +1,5 @@
 {
-    "UI_mainscreen_btn_configs": "KONFIGI",
+    "UI_mainscreen_btn_configs": "KONFIGURACJE",
 
     "UI_modselector_separator": "z",
 
@@ -9,8 +9,6 @@
 
     "UI_modselector_disableWarningTitle": "UWAGA!",
     "UI_modselector_disableWarningText": "Wyłączenie tej modyfikacji spowoduje również wyłączenie następujących:",
-
-    "UI_modselector_modOptions": "KONFIGURACJA",
 
     "UI_modlistpanel_sortBy": "Sortuj według:",
     "UI_modlistpanel_sortBy_name": "Nazwa (A-Z)",
@@ -39,24 +37,66 @@
     "UI_modselector_btn_hide": "UKRYJ",
     "UI_modselector_btn_show": "POKAŻ",
     "UI_modselector_btn_favorite": "ULUBIONE",
-    "UI_modselector_btn_unfavorite": "USUŃ",
+    "UI_modselector_btn_unfavorite": "USUŃ Z ULUBIONYCH",
     "UI_modselector_btn_enable": "WŁĄCZ",
     "UI_modselector_btn_disable": "WYŁĄCZ",
 
+    "UI_modselector_LocalMod_tooltip": "Ten mod nie zostanie pobrany po stronie klienta.\n\nPowód: Nie znaleziono Workshop ID (mod lokalny).\n\nJeśli jesteś autorem tego moda, musisz opublikować go w Warsztacie i zasubskrybować.",
+
+    "UI_ServerSettings_SpawnRegions": "Regiony spawnu używane przez ten serwer:",
+    "UI_ServerSettings_AddSpawnRegion": "Dodaj dostępny region spawnu do listy:",
+    "UI_ServerOption_SpawnPoint": "Punkt spawnu:",
+
     "UI_modinfopanel_Status": "Status",
     "UI_modinfopanel_Version": "Wersja",
+    "UI_modinfopanel_Category": "Kategoria",
     "UI_modinfopanel_Author": "Autor",
     "UI_modinfopanel_ModID": "Mod ID",
     "UI_modinfopanel_WorkshopID": "Workshop ID",
     "UI_modinfopanel_LocalPath": "Ścieżka lokalna",
     "UI_modinfopanel_LastUpdate": "Ostatnia aktualizacja",
     "UI_modinfopanel_ZomboidVersion": "Wersja gry",
-    "UI_modinfopanel_Dependencies": "Wymagane",
-    "UI_modinfopanel_IncompatibleWith": "Niekompatybilne",
+    "UI_modinfopanel_Dependencies": "Zależności",
+    "UI_modinfopanel_IncompatibleWith": "Niekompatybilne z",
     "UI_modinfopanel_Changelog": "Lista zmian",
+    "UI_modinfopanel_SetCategory": "Przypisz...",
+    "UI_modinfopanel_SelectCategory": "Wybierz kategorię",
+
+    "UI_modinfopanel_Category_None": "Brak",
+    "UI_modinfopanel_Category_Animals": "Zwierzęta",
+    "UI_modinfopanel_Category_Armor": "Pancerz",
+    "UI_modinfopanel_Category_Audio": "Dźwięk",
+    "UI_modinfopanel_Category_Balance": "Balans",
+    "UI_modinfopanel_Category_Building": "Budowanie",
+    "UI_modinfopanel_Category_Crafting": "Rzemiosło",
+    "UI_modinfopanel_Category_Clothing": "Ubrania",
+    "UI_modinfopanel_Category_Farming": "Rolnictwo",
+    "UI_modinfopanel_Category_Food": "Jedzenie",
+    "UI_modinfopanel_Category_Framework": "Framework",
+    "UI_modinfopanel_Category_Hardmode": "Hardmode",
+    "UI_modinfopanel_Category_Interface": "Interfejs",
+    "UI_modinfopanel_Category_Items": "Przedmioty",
+    "UI_modinfopanel_Category_Localization": "Lokalizacja",
+    "UI_modinfopanel_Category_Literature": "Literatura",
+    "UI_modinfopanel_Category_Map": "Mapa",
+    "UI_modinfopanel_Category_Military": "Militaria",
+    "UI_modinfopanel_Category_Misc": "Inne",
+    "UI_modinfopanel_Category_Models": "Modele",
+    "UI_modinfopanel_Category_Modpack": "Pakiet modów",
+    "UI_modinfopanel_Category_Multiplayer": "Multiplayer",
+    "UI_modinfopanel_Category_QoL": "QoL",
+    "UI_modinfopanel_Category_Quests": "Zadania",
+    "UI_modinfopanel_Category_Realistic": "Realizm",
+    "UI_modinfopanel_Category_Scenario": "Scenariusz",
+    "UI_modinfopanel_Category_Silly/Fun": "Humor",
+    "UI_modinfopanel_Category_Skills": "Umiejętności",
+    "UI_modinfopanel_Category_Textures": "Tekstury",
+    "UI_modinfopanel_Category_Traits": "Cechy",
+    "UI_modinfopanel_Category_Vehicles": "Pojazdy",
+    "UI_modinfopanel_Category_Weapons": "Broń",
 
     "UI_modinfopanel_TimeFormat_Today": "Dzisiaj o {hour24}:{min}",
-    "UI_modinfopanel_TimeFormat_Yesterday": "Wczorajo {hour24}:{min}",
+    "UI_modinfopanel_TimeFormat_Yesterday": "Wczoraj o {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_ThisYear": "{day} {month} o {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_OtherYears": "{day} {month} {year} o {hour24}:{min}",
 
@@ -74,7 +114,5 @@
     "UI_modinfopanel_Month_Short_9": "września",
     "UI_modinfopanel_Month_Short_10": "października",
     "UI_modinfopanel_Month_Short_11": "listopada",
-    "UI_modinfopanel_Month_Short_12": "grudnia",
-
-    "UI_modmanager_changelogFormatting": "Formatowanie tekstu:"
+    "UI_modinfopanel_Month_Short_12": "grudnia"
 }

@@ -22,7 +22,8 @@ function ModListPresets:createChildren()
     self.presetsButton.internal = "PRESETS"
     self.presetsButton:initialise()
     self.presetsButton:instantiate()
-    self.presetsButton:setImage(getTexture("media/ui/ModManager/Presets.png"))
+    self.presetsButton:setImage(getTexture("media/ui/ModManager/Icons/Presets_" .. FONT_HGT_SMALL .. ".png"))
+    self.presetsButton:forceImageSize(FONT_HGT_SMALL, FONT_HGT_SMALL)
     self.presetsButton.borderColor = {r=0.5, g=0.5, b=0.5, a=1}
     self:addChild(self.presetsButton)
 
@@ -70,10 +71,43 @@ function ModListPresets:createChildren()
     self:addChild(self.delPresetButton);
     self.delPresetButton:setWidthToTitle()
     self.delPresetButton:setX(self.savePresetButton:getRight() + UI_BORDER_SPACING)
+    self.delPresetButton:setEnable(false)
+
+    self.sharePresetButton = ISButton:new(0, 0, 100, BUTTON_HGT, getText("UI_btn_share"), self, self.onPresetButton);
+    self.sharePresetButton.internal = "SHARE";
+    self.sharePresetButton:initialise();
+    self.sharePresetButton:instantiate();
+    self.sharePresetButton:setAnchorLeft(true);
+    self.sharePresetButton:setAnchorRight(false);
+    self.sharePresetButton:setAnchorTop(false);
+    self.sharePresetButton:setAnchorBottom(true);
+    self.sharePresetButton.borderColor = {r=1, g=1, b=1, a=0.1};
+    self.sharePresetButton:setFont(UIFont.Small);
+    self.sharePresetButton:ignoreWidthChange();
+    self.sharePresetButton:ignoreHeightChange();
+    self:addChild(self.sharePresetButton);
+    self.sharePresetButton:setWidthToTitle()
+    self.sharePresetButton:setX(self.delPresetButton:getRight() + UI_BORDER_SPACING)
+
+    self.addPresetButton = ISButton:new(0, 0, 100, BUTTON_HGT, getText("UI_btn_add"), self, self.onPresetButton);
+    self.addPresetButton.internal = "ADD";
+    self.addPresetButton:initialise();
+    self.addPresetButton:instantiate();
+    self.addPresetButton:setAnchorLeft(true);
+    self.addPresetButton:setAnchorRight(false);
+    self.addPresetButton:setAnchorTop(false);
+    self.addPresetButton:setAnchorBottom(true);
+    self.addPresetButton.borderColor = {r=1, g=1, b=1, a=0.1};
+    self.addPresetButton:setFont(UIFont.Small);
+    self.addPresetButton:ignoreWidthChange();
+    self.addPresetButton:ignoreHeightChange();
+    self:addChild(self.addPresetButton);
+    self.addPresetButton:setWidthToTitle()
+    self.addPresetButton:setX(self.sharePresetButton:getRight() + UI_BORDER_SPACING)
 
     self.joypadIndexY = 1
     self.joypadIndex = 1
-    self:insertNewLineOfButtons(self.presetsButton, self.presetCombo, self.savePresetButton, self.delPresetButton)
+    self:insertNewLineOfButtons(self.presetsButton, self.presetCombo, self.savePresetButton, self.delPresetButton, self.sharePresetButton, self.addPresetButton)
 end
 
 function ModListPresets:render()
@@ -101,11 +135,11 @@ end
 
 function ModListPresets:onPresetsButton(button)
     ModSelector.instance:setVisible(false)
-    
-    local width = 800
-    local height = 600
+
     local screenW = getCore():getScreenWidth()
     local screenH = getCore():getScreenHeight()
+    local width = math.max(700, screenW * 0.55)
+    local height = math.max(575, screenH * 0.70)
     local x = (screenW - width) / 2
     local y = (screenH - height) / 2
     
@@ -216,25 +250,47 @@ function ModListPresets:onPresetButton(button)
     end
     if button.internal == "DELETE" then
         local name = self.presetCombo.options[self.presetCombo.selected].text
-        self.parent.model.presets[name] = nil
-        self.parent.model:saveModDataToFile()
-        self:updateView()
-        self.presetCombo.selected = 1
-        self:choosePreset(self.presetCombo)
+
+        local modal = ISModalDialog:new(getCore():getScreenWidth() / 2 - 175, getCore():getScreenHeight() / 2 - 75, 350, 150, getText("UI_btn_del") .. ": " .. name .. "?", true, self, self.onConfirmDeletePreset)
+        modal:initialise()
+        modal:addToUIManager()
+        modal:bringToTop()
+        modal.presetName = name
+
+        modal.yes:enableCancelColor()
+        modal.no.backgroundColor = {r=0, g=0, b=0, a=1}
+        modal.no.borderColor = {r=0.5, g=0.5, b=0.5, a=1}
+        modal.no.backgroundColorMouseOver = {r=0.3, g=0.3, b=0.3, a=1}
+
+        if self.joyfocus then
+            modal.prevFocus = self
+            self.joyfocus.focus = modal
+            updateJoypadFocus(self.joyfocus)
+        end
     end
     if button.internal == "SHARE" then
-        if self.presetCombo.options[self.presetCombo.selected] and self.presetCombo.options[self.presetCombo.selected].data ~= "default" then
-            local text = self.parent.model:getPresetShareText(self.presetCombo.options[self.presetCombo.selected].text)
-            Clipboard.setClipboard(text)
-            local modal = ISModalDialog:new(getCore():getScreenWidth()/2 - 280/2, getCore():getScreenHeight() / 2 - 180/2, 280, 180, "Mods preset text copied to clipboard", false)
-            modal:initialise()
-            modal:addToUIManager()
-            if self.joyfocus then
-                modal.prevFocus = self
-                self.joyfocus.focus = modal
-                updateJoypadFocus(self.joyfocus)
-            end
+        local data = {};
+        local modArray = self.model:getActiveMods():getMods();
+        for i = 0, modArray:size()-1 do
+            local mId = modArray:get(i);
+            table.insert(data, mId);
         end
+
+        local screenW = getCore():getScreenWidth();
+        local screenH = getCore():getScreenHeight();
+        local width = math.max(420, screenW * 0.35);
+        local height = math.max(350, screenH * 0.4);
+        local x = (screenW - width) / 2;
+        local y = (screenH - height) / 2;
+
+        local window = ModPresetsShare:new(x, y, width, height, self.model, "ActiveMods", data);
+        window:initialise();
+        window:instantiate();
+        window:addToUIManager();
+        window:bringToTop();
+        window:setCapture(true);
+        window.returnToUI = ModSelector.instance;
+        ModSelector.instance.exportWindow = window;
     end
     if button.internal == "ADD" then
         local modal = ISTextBox:new(getCore():getScreenWidth()/2 - 280/2, getCore():getScreenHeight() / 2 - 180/2, 280, 180, "Paste here mods preset text:", "", self, self.addSharedPreset)
@@ -249,6 +305,37 @@ end
 
 function ModListPresets:addSharedPreset(button)
     self.model:addSharedPreset(button)
+    if button.internal == "OK" then
+        self:updateView()
+
+        local line = button.parent.entry:getText()
+        local presetName = line:match('^([^:]+):')
+        if presetName then
+            presetName = presetName:gsub("^%s*(.-)%s*$", "%1")
+            for i, opt in ipairs(self.presetCombo.options) do
+                if opt.text == presetName then
+                    self.presetCombo.selected = i
+                    self:choosePreset(self.presetCombo)
+                    break
+                end
+            end
+        end
+    end
+    if button.parent.joyfocus then
+        button.parent.joyfocus.focus = self
+        updateJoypadFocus(button.parent.joyfocus)
+    end
+end
+
+function ModListPresets:onConfirmDeletePreset(button)
+    if button.internal == "YES" then
+        local presetName = button.parent.presetName
+        self.parent.model.presets[presetName] = nil
+        self.parent.model:saveModDataToFile()
+        self:updateView()
+        self.presetCombo.selected = 1
+        self:choosePreset(self.presetCombo)
+    end
     if button.parent.joyfocus then
         button.parent.joyfocus.focus = self
         updateJoypadFocus(button.parent.joyfocus)

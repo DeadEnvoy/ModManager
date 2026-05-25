@@ -1,5 +1,5 @@
 {
-    "UI_mainscreen_btn_configs": "CONFIG",
+    "UI_mainscreen_btn_configs": "CONFIGURAZIONI",
 
     "UI_modselector_separator": "di",
 
@@ -8,43 +8,48 @@
     "UI_modselector_showHiddenMods": "Mostra mod nascosti",
 
     "UI_modselector_disableWarningTitle": "ATTENZIONE!",
-    "UI_modselector_disableWarningText": "Disabilitare questa modifica disabiliterà anche le seguenti:",
-
-    "UI_modselector_modOptions": "CONFIGURAZIONE",
+    "UI_modselector_disableWarningText": "Disabilitando questa mod verranno disabilitate anche le seguenti:",
 
     "UI_modlistpanel_sortBy": "Ordina per:",
     "UI_modlistpanel_sortBy_name": "Nome (A-Z)",
-    "UI_modlistpanel_sortBy_date": "Data di aggiunta",
+    "UI_modlistpanel_sortBy_date": "Più recenti",
     "UI_modlistpanel_sortBy_dateUpdated": "Data aggiornamento",
 
-    "UI_modselector_status_installed": "Aggiornato",
+    "UI_modselector_status_installed": "Aggiornata",
     "UI_modselector_status_needsUpdate": "Aggiornamento disponibile!",
 
     "UI_modoptions_title": "OPZIONI MOD",
 
-    "UI_btn_sort_apply": "ORDINA E ACCETTA",
+    "UI_btn_sort_apply": "ORDINA E APPLICA",
 
     "UI_modpresets_title": "LISTA PRESET",
 
     "UI_modpresets_presetsTab": "PRESET",
-    "UI_modpresets_historyTab": "CRONOLOGIA",
+    "UI_modpresets_historyTab": "STORICO",
 
     "UI_modpresets_copy": "COPIA",
 
     "UI_btn_select": "SELEZIONA",
-    "UI_btn_deleteAll": "CANCELLA TUTTO",
+    "UI_btn_deleteAll": "ELIMINA TUTTO",
 
-    "UI_modpresets_deleteAll_dialog": "Cancellare l'intera cronologia?",
+    "UI_modpresets_deleteAll_dialog": "Eliminare l'intero storico?",
 
     "UI_modselector_btn_hide": "NASCONDI",
     "UI_modselector_btn_show": "MOSTRA",
     "UI_modselector_btn_favorite": "PREFERITO",
-    "UI_modselector_btn_unfavorite": "RIMUOVI",
+    "UI_modselector_btn_unfavorite": "RIMUOVI DAI PREFERITI",
     "UI_modselector_btn_enable": "ABILITA",
     "UI_modselector_btn_disable": "DISABILITA",
 
+    "UI_modselector_LocalMod_tooltip": "Questa mod non verrà scaricata dal client.\n\nMotivo: Workshop ID non trovato (mod locale).\n\nSe sei l'autore di questa mod, devi pubblicarla sul Workshop e iscriverti ad essa.",
+
+    "UI_ServerSettings_SpawnRegions": "Regioni di spawn utilizzate da questo server:",
+    "UI_ServerSettings_AddSpawnRegion": "Aggiungi una regione di spawn disponibile alla lista:",
+    "UI_ServerOption_SpawnPoint": "Punto di spawn:",
+
     "UI_modinfopanel_Status": "Stato",
     "UI_modinfopanel_Version": "Versione",
+    "UI_modinfopanel_Category": "Categoria",
     "UI_modinfopanel_Author": "Autore",
     "UI_modinfopanel_ModID": "Mod ID",
     "UI_modinfopanel_WorkshopID": "Workshop ID",
@@ -52,13 +57,48 @@
     "UI_modinfopanel_LastUpdate": "Ultimo aggiornamento",
     "UI_modinfopanel_ZomboidVersion": "Versione gioco",
     "UI_modinfopanel_Dependencies": "Dipendenze",
-    "UI_modinfopanel_IncompatibleWith": "Incompatibile con",
-    "UI_modinfopanel_Changelog": "Changelog",
+    "UI_modinfopanel_IncompatibleWith": "Incompatibilità",
+    "UI_modinfopanel_Changelog": "Note di versione",
+    "UI_modinfopanel_SetCategory": "Assegna...",
+    "UI_modinfopanel_SelectCategory": "Seleziona categoria",
 
-    "UI_modinfopanel_TimeFormat_Today": "Oggi, ore {hour24}:{min}",
-    "UI_modinfopanel_TimeFormat_Yesterday": "Ieri, ore {hour24}:{min}",
-    "UI_modinfopanel_TimeFormat_ThisYear": "{day} {month}, ore {hour24}:{min}",
-    "UI_modinfopanel_TimeFormat_OtherYears": "{day} {month} {year}, ore {hour24}:{min}",
+    "UI_modinfopanel_Category_None": "Nessuna",
+    "UI_modinfopanel_Category_Animals": "Animali",
+    "UI_modinfopanel_Category_Armor": "Armatura",
+    "UI_modinfopanel_Category_Audio": "Audio",
+    "UI_modinfopanel_Category_Balance": "Bilanciamento",
+    "UI_modinfopanel_Category_Building": "Costruzione",
+    "UI_modinfopanel_Category_Crafting": "Artigianato",
+    "UI_modinfopanel_Category_Clothing": "Abbigliamento",
+    "UI_modinfopanel_Category_Farming": "Agricoltura",
+    "UI_modinfopanel_Category_Food": "Cibo",
+    "UI_modinfopanel_Category_Framework": "Framework",
+    "UI_modinfopanel_Category_Hardmode": "Modalità difficile",
+    "UI_modinfopanel_Category_Interface": "Interfaccia",
+    "UI_modinfopanel_Category_Items": "Oggetti",
+    "UI_modinfopanel_Category_Localization": "Localizzazione",
+    "UI_modinfopanel_Category_Literature": "Letteratura",
+    "UI_modinfopanel_Category_Map": "Mappa",
+    "UI_modinfopanel_Category_Military": "Militare",
+    "UI_modinfopanel_Category_Misc": "Varie",
+    "UI_modinfopanel_Category_Models": "Modelli",
+    "UI_modinfopanel_Category_Modpack": "Pacchetto mod",
+    "UI_modinfopanel_Category_Multiplayer": "Multigiocatore",
+    "UI_modinfopanel_Category_QoL": "Qualità della vita",
+    "UI_modinfopanel_Category_Quests": "Missioni",
+    "UI_modinfopanel_Category_Realistic": "Realistico",
+    "UI_modinfopanel_Category_Scenario": "Scenario",
+    "UI_modinfopanel_Category_Silly/Fun": "Divertente",
+    "UI_modinfopanel_Category_Skills": "Abilità",
+    "UI_modinfopanel_Category_Textures": "Texture",
+    "UI_modinfopanel_Category_Traits": "Tratti",
+    "UI_modinfopanel_Category_Vehicles": "Veicoli",
+    "UI_modinfopanel_Category_Weapons": "Armi",
+
+    "UI_modinfopanel_TimeFormat_Today": "Oggi alle {hour24}:{min}",
+    "UI_modinfopanel_TimeFormat_Yesterday": "Ieri alle {hour24}:{min}",
+    "UI_modinfopanel_TimeFormat_ThisYear": "{day} {month} alle {hour24}:{min}",
+    "UI_modinfopanel_TimeFormat_OtherYears": "{day} {month} {year} alle {hour24}:{min}",
 
     "UI_modinfopanel_AM": "AM",
     "UI_modinfopanel_PM": "PM",
@@ -74,7 +114,5 @@
     "UI_modinfopanel_Month_Short_9": "set",
     "UI_modinfopanel_Month_Short_10": "ott",
     "UI_modinfopanel_Month_Short_11": "nov",
-    "UI_modinfopanel_Month_Short_12": "dic",
-
-    "UI_modmanager_changelogFormatting": "Formattazione del testo:"
+    "UI_modinfopanel_Month_Short_12": "dic"
 }

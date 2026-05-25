@@ -9,11 +9,6 @@ local UI_BORDER_SPACING = 10
 local GHC = getCore():getGoodHighlitedColor()
 local BHC = getCore():getBadHighlitedColor()
 
-local function sanitizeString(str)
-    if not str then return "" end
-    return str:gsub('[^\32-\126]', '?')
-end
-
 function ModListBox:doDrawItem(y, item, alt)
     local isMouseOver = self.mouseoverselected == item.index
     local height = UI_BORDER_SPACING*2 + BUTTON_HGT + 2
@@ -73,17 +68,20 @@ function ModListBox:doDrawItem(y, item, alt)
     end
 
     if author and author ~= "" then
-        authorText = sanitizeString(author)
+        authorText = author
         authorWidth = getTextManager():MeasureStringX(self.font, authorText)
     end
 
     local nameToDraw = item.item.name
     local nameX = height * 2
     local nameWidth = getTextManager():MeasureStringX(self.font, nameToDraw)
-    local authorLeftBoundary = authorX - authorWidth
+    local rightBoundary = starX - 5
+    if authorText ~= "" then
+        rightBoundary = authorX - authorWidth - 5
+    end
 
-    if authorText ~= "" and (nameX + nameWidth > authorLeftBoundary - 5) then
-        while #nameToDraw > 5 and (nameX + getTextManager():MeasureStringX(self.font, nameToDraw .. "...") > authorLeftBoundary - 5) do
+    if nameX + nameWidth > rightBoundary then
+        while #nameToDraw > 5 and (nameX + getTextManager():MeasureStringX(self.font, nameToDraw .. "...") > rightBoundary) do
             nameToDraw = string.sub(nameToDraw, 1, #nameToDraw - 1)
         end
         nameToDraw = nameToDraw .. "..."
@@ -110,7 +108,32 @@ function ModListBox:doDrawItem(y, item, alt)
     if item.item.isHidden then
         r,g,b = 0.6, 0.6, 0.6
     end
+    local category = self.model:getCategory(item.item.modId)
+    local categoryText = ""
+    local categoryWidth = 0
+    if category and category ~= "" then
+        categoryText = "[" .. getText("UI_modinfopanel_Category_" .. category) .. "]"
+        categoryWidth = getTextManager():MeasureStringX(UIFont.Small, categoryText)
+    end
+
+    if nameX + nameWidth > rightBoundary then
+        local truncBoundary = rightBoundary
+        if categoryText ~= "" then
+            truncBoundary = truncBoundary - categoryWidth - 5
+        end
+        while #nameToDraw > 5 and (nameX + getTextManager():MeasureStringX(self.font, nameToDraw .. "...") > truncBoundary) do
+            nameToDraw = string.sub(nameToDraw, 1, #nameToDraw - 1)
+        end
+        nameToDraw = nameToDraw .. "..."
+    end
+
     self:drawText(nameToDraw, height*2, y+itemPadY, r, g, b, 0.9, self.font)
+
+    if categoryText ~= "" then
+        local catX = nameX + getTextManager():MeasureStringX(self.font, nameToDraw) + 5
+        local catPadY = (height - FONT_HGT_SMALL) / 2
+        self:drawText(categoryText, catX, y + catPadY, 0.6, 0.6, 0.6, 0.9, UIFont.Small)
+    end
 
     if authorText ~= "" then
         self:drawTextRight(authorText, authorX, y + itemPadY, 0.7, 0.7, 0.7, 0.9, self.font)

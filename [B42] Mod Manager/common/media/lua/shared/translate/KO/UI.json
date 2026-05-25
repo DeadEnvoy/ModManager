@@ -10,11 +10,9 @@
     "UI_modselector_disableWarningTitle": "경고!",
     "UI_modselector_disableWarningText": "이 모드를 비활성화하면 다음 모드도 비활성화됩니다:",
 
-    "UI_modselector_modOptions": "설정",
-
     "UI_modlistpanel_sortBy": "정렬 기준:",
     "UI_modlistpanel_sortBy_name": "이름 (A-Z)",
-    "UI_modlistpanel_sortBy_date": "추가 날짜",
+    "UI_modlistpanel_sortBy_date": "최신순",
     "UI_modlistpanel_sortBy_dateUpdated": "업데이트 날짜",
 
     "UI_modselector_status_installed": "최신",
@@ -22,7 +20,7 @@
 
     "UI_modoptions_title": "모드 옵션",
 
-    "UI_btn_sort_apply": "정렬 및 적용",
+    "UI_btn_sort_apply": "정렬 후 적용",
 
     "UI_modpresets_title": "프리셋 목록",
 
@@ -39,21 +37,63 @@
     "UI_modselector_btn_hide": "숨기기",
     "UI_modselector_btn_show": "보이기",
     "UI_modselector_btn_favorite": "즐겨찾기",
-    "UI_modselector_btn_unfavorite": "제거",
+    "UI_modselector_btn_unfavorite": "즐겨찾기 해제",
     "UI_modselector_btn_enable": "활성화",
     "UI_modselector_btn_disable": "비활성화",
 
+    "UI_modselector_LocalMod_tooltip": "이 모드는 클라이언트 측에서 다운로드되지 않습니다.\n\n이유: Workshop ID를 찾을 수 없음 (로컬 모드).\n\n이 모드의 제작자인 경우 워크샵에 게시하고 구독해야 합니다.",
+
+    "UI_ServerSettings_SpawnRegions": "이 서버에서 사용하는 스폰 지역:",
+    "UI_ServerSettings_AddSpawnRegion": "사용 가능한 스폰 지역을 목록에 추가:",
+    "UI_ServerOption_SpawnPoint": "스폰 지점:",
+
     "UI_modinfopanel_Status": "상태",
     "UI_modinfopanel_Version": "버전",
+    "UI_modinfopanel_Category": "카테고리",
     "UI_modinfopanel_Author": "제작자",
     "UI_modinfopanel_ModID": "Mod ID",
     "UI_modinfopanel_WorkshopID": "Workshop ID",
     "UI_modinfopanel_LocalPath": "로컬 경로",
     "UI_modinfopanel_LastUpdate": "마지막 업데이트",
     "UI_modinfopanel_ZomboidVersion": "게임 버전",
-    "UI_modinfopanel_Dependencies": "선행 모드",
-    "UI_modinfopanel_IncompatibleWith": "호환되지 않음",
-    "UI_modinfopanel_Changelog": "변경 로그",
+    "UI_modinfopanel_Dependencies": "필수 모드",
+    "UI_modinfopanel_IncompatibleWith": "비호환 모드",
+    "UI_modinfopanel_Changelog": "업데이트 내역",
+    "UI_modinfopanel_SetCategory": "할당...",
+    "UI_modinfopanel_SelectCategory": "카테고리 선택",
+
+    "UI_modinfopanel_Category_None": "없음",
+    "UI_modinfopanel_Category_Animals": "동물",
+    "UI_modinfopanel_Category_Armor": "방어구",
+    "UI_modinfopanel_Category_Audio": "오디오",
+    "UI_modinfopanel_Category_Balance": "밸런스",
+    "UI_modinfopanel_Category_Building": "건축",
+    "UI_modinfopanel_Category_Crafting": "제작",
+    "UI_modinfopanel_Category_Clothing": "의류",
+    "UI_modinfopanel_Category_Farming": "농업",
+    "UI_modinfopanel_Category_Food": "음식",
+    "UI_modinfopanel_Category_Framework": "프레임워크",
+    "UI_modinfopanel_Category_Hardmode": "하드모드",
+    "UI_modinfopanel_Category_Interface": "인터페이스",
+    "UI_modinfopanel_Category_Items": "아이템",
+    "UI_modinfopanel_Category_Localization": "현지화",
+    "UI_modinfopanel_Category_Literature": "문학",
+    "UI_modinfopanel_Category_Map": "지도",
+    "UI_modinfopanel_Category_Military": "군사",
+    "UI_modinfopanel_Category_Misc": "기타",
+    "UI_modinfopanel_Category_Models": "모델",
+    "UI_modinfopanel_Category_Modpack": "모드팩",
+    "UI_modinfopanel_Category_Multiplayer": "멀티플레이어",
+    "UI_modinfopanel_Category_QoL": "편의성",
+    "UI_modinfopanel_Category_Quests": "퀘스트",
+    "UI_modinfopanel_Category_Realistic": "리얼리즘",
+    "UI_modinfopanel_Category_Scenario": "시나리오",
+    "UI_modinfopanel_Category_Silly/Fun": "유머",
+    "UI_modinfopanel_Category_Skills": "스킬",
+    "UI_modinfopanel_Category_Textures": "텍스처",
+    "UI_modinfopanel_Category_Traits": "특성",
+    "UI_modinfopanel_Category_Vehicles": "차량",
+    "UI_modinfopanel_Category_Weapons": "무기",
 
     "UI_modinfopanel_TimeFormat_Today": "오늘 {ampm} {hour12}시 {min}분",
     "UI_modinfopanel_TimeFormat_Yesterday": "어제 {ampm} {hour12}시 {min}분",
@@ -74,7 +114,5 @@
     "UI_modinfopanel_Month_Short_9": "9",
     "UI_modinfopanel_Month_Short_10": "10",
     "UI_modinfopanel_Month_Short_11": "11",
-    "UI_modinfopanel_Month_Short_12": "12",
-
-    "UI_modmanager_changelogFormatting": "텍스트 서식:"
+    "UI_modinfopanel_Month_Short_12": "12"
 }

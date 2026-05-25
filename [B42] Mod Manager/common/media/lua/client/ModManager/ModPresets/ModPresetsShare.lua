@@ -18,7 +18,7 @@ end
 
 function ModPresetsShare:createChildren()
     local y = UI_BORDER_SPACING * 4
-    local btnWid = 100
+    local btnWid = math.max(80, self.width * 0.15)
 
     local modIds = {}
     for _, modId in ipairs(self.presetData) do
@@ -34,7 +34,14 @@ function ModPresetsShare:createChildren()
         end
     end
 
-    local soloString = self.presetName .. ":" .. table.concat(modIds, ";") .. ";"
+    local displayName = self.presetName
+    if self.presetName == "ActiveMods" then
+        local calendar = Calendar.getInstance()
+        local dateFormat = SimpleDateFormat.new("yyyy-MM-dd_HH-mm-ss", Locale.ENGLISH)
+        displayName = dateFormat:format(calendar:getTime())
+    end
+
+    local soloString = displayName .. ":" .. table.concat(modIds, ";") .. ";"
     local modIdsString = table.concat(mpModIds, ";") .. ";"
     local workshopIdsString = table.concat(workshopIds, ";")
 
@@ -62,6 +69,13 @@ function ModPresetsShare:createChildren()
     self:addChild(self.closeButton)
 
     self:insertNewLineOfButtons(self.closeButton)
+
+    self.onResolutionChangeEvent = function(oldw, oldh, neww, newh)
+        if self:isReallyVisible() then
+            self:onResolutionChange(oldw, oldh, neww, newh)
+        end
+    end
+    Events.OnResolutionChange.Add(self.onResolutionChangeEvent)
 end
 
 function ModPresetsShare:createRow(title, content, y)
@@ -74,7 +88,8 @@ function ModPresetsShare:createRow(title, content, y)
     local copyBtn = ISButton:new(UI_BORDER_SPACING, y, ENTRY_HGT, ENTRY_HGT, "", self, self.onCopy)
     copyBtn:initialise()
     copyBtn:instantiate()
-    copyBtn:setImage(getTexture("media/ui/ModManager/Copy.png"))
+    copyBtn:setImage(getTexture("media/ui/ModManager/Icons/Copy_" .. FONT_HGT_SMALL .. ".png"))
+    copyBtn:forceImageSize(FONT_HGT_SMALL, FONT_HGT_SMALL)
     copyBtn.internal = content
     copyBtn:setTooltip(getText("UI_modpresets_copy"))
     self:addChild(copyBtn)
@@ -98,8 +113,15 @@ function ModPresetsShare:onCopy(button)
 end
 
 function ModPresetsShare:onClose()
+    if self.onResolutionChange then
+        Events.OnResolutionChange.Remove(self.onResolutionChange)
+        self.onResolutionChange = nil
+    end
     self:setVisible(false)
     self:removeFromUIManager()
+    if ModSelector and ModSelector.instance and ModSelector.instance.exportWindow == self then
+        ModSelector.instance.exportWindow = nil
+    end
     if self.returnToUI then
         self.returnToUI:setVisible(true)
         if self.joyfocus then
@@ -107,6 +129,11 @@ function ModPresetsShare:onClose()
             self.joyfocus.focus = self.returnToUI
         end
     end
+end
+
+function ModPresetsShare:onResolutionChange(oldw, oldh, neww, newh)
+    self:setX((neww - self.width) / 2)
+    self:setY((newh - self.height) / 2)
 end
 
 function ModPresetsShare:prerender()

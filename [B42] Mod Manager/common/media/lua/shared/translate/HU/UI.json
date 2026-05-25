@@ -3,14 +3,12 @@
 
     "UI_modselector_separator": "/",
 
-    "UI_modselector_showEnabledMods": "Engedélyezett modok",
-    "UI_modselector_showDisabledMods": "Letiltott modok",
-    "UI_modselector_showHiddenMods": "Rejtett modok",
+    "UI_modselector_showEnabledMods": "Aktív modok mutatása",
+    "UI_modselector_showDisabledMods": "Inaktív modok mutatása",
+    "UI_modselector_showHiddenMods": "Rejtett modok mutatása",
 
     "UI_modselector_disableWarningTitle": "FIGYELEM!",
     "UI_modselector_disableWarningText": "Ezen mod letiltása a következőket is letiltja:",
-
-    "UI_modselector_modOptions": "KONFIGURÁCIÓ",
 
     "UI_modlistpanel_sortBy": "Rendezés:",
     "UI_modlistpanel_sortBy_name": "Név (A-Z)",
@@ -22,16 +20,16 @@
 
     "UI_modoptions_title": "MOD BEÁLLÍTÁSOK",
 
-    "UI_btn_sort_apply": "RENDEZÉS ÉS ELFOGADÁS",
+    "UI_btn_sort_apply": "RENDEZÉS ÉS ALKALMAZ",
 
     "UI_modpresets_title": "PRESET LISTA",
 
-    "UI_modpresets_presetsTab": "PRESETEK",
+    "UI_modpresets_presetsTab": "PRESET-EK",
     "UI_modpresets_historyTab": "ELŐZMÉNYEK",
 
     "UI_modpresets_copy": "MÁSOLÁS",
 
-    "UI_btn_select": "KIVÁLASZTÁS",
+    "UI_btn_select": "VÁLASZT",
     "UI_btn_deleteAll": "ÖSSZES TÖRLÉSE",
 
     "UI_modpresets_deleteAll_dialog": "Törlöd a teljes előzményt?",
@@ -39,12 +37,19 @@
     "UI_modselector_btn_hide": "ELREJTÉS",
     "UI_modselector_btn_show": "MEGJELENÍTÉS",
     "UI_modselector_btn_favorite": "KEDVENC",
-    "UI_modselector_btn_unfavorite": "ELTÁVOLÍTÁS",
+    "UI_modselector_btn_unfavorite": "KEDVENC TÖRLÉSE",
     "UI_modselector_btn_enable": "ENGEDÉLYEZÉS",
     "UI_modselector_btn_disable": "LETILTÁS",
 
+    "UI_modselector_LocalMod_tooltip": "Ez a mod nem lesz letöltve a kliens oldalon.\n\nOk: Workshop ID nem található (helyi mod).\n\nHa te vagy a mod szerzője, közzé kell tenned a Workshopon és fel kell rá iratkoznod.",
+
+    "UI_ServerSettings_SpawnRegions": "A szerver által használt spawn régiók:",
+    "UI_ServerSettings_AddSpawnRegion": "Elérhető spawn régió hozzáadása a listához:",
+    "UI_ServerOption_SpawnPoint": "Spawn pont:",
+
     "UI_modinfopanel_Status": "Állapot",
     "UI_modinfopanel_Version": "Verzió",
+    "UI_modinfopanel_Category": "Kategória",
     "UI_modinfopanel_Author": "Szerző",
     "UI_modinfopanel_ModID": "Mod ID",
     "UI_modinfopanel_WorkshopID": "Workshop ID",
@@ -52,8 +57,43 @@
     "UI_modinfopanel_LastUpdate": "Utolsó frissítés",
     "UI_modinfopanel_ZomboidVersion": "Játékverzió",
     "UI_modinfopanel_Dependencies": "Függőségek",
-    "UI_modinfopanel_IncompatibleWith": "Nem kompatibilis",
-    "UI_modinfopanel_Changelog": "Változások listája",
+    "UI_modinfopanel_IncompatibleWith": "Összeférhetetlen",
+    "UI_modinfopanel_Changelog": "Változásnapló",
+    "UI_modinfopanel_SetCategory": "Hozzárendelés...",
+    "UI_modinfopanel_SelectCategory": "Kategória választása",
+
+    "UI_modinfopanel_Category_None": "Nincs",
+    "UI_modinfopanel_Category_Animals": "Állatok",
+    "UI_modinfopanel_Category_Armor": "Páncélzat",
+    "UI_modinfopanel_Category_Audio": "Hang",
+    "UI_modinfopanel_Category_Balance": "Egyensúly",
+    "UI_modinfopanel_Category_Building": "Építés",
+    "UI_modinfopanel_Category_Crafting": "Készítés",
+    "UI_modinfopanel_Category_Clothing": "Ruházat",
+    "UI_modinfopanel_Category_Farming": "Gazdálkodás",
+    "UI_modinfopanel_Category_Food": "Étel",
+    "UI_modinfopanel_Category_Framework": "Keretrendszer",
+    "UI_modinfopanel_Category_Hardmode": "Nehéz mód",
+    "UI_modinfopanel_Category_Interface": "Felület",
+    "UI_modinfopanel_Category_Items": "Tárgyak",
+    "UI_modinfopanel_Category_Localization": "Lokalizáció",
+    "UI_modinfopanel_Category_Literature": "Irodalom",
+    "UI_modinfopanel_Category_Map": "Térkép",
+    "UI_modinfopanel_Category_Military": "Katonai",
+    "UI_modinfopanel_Category_Misc": "Egyéb",
+    "UI_modinfopanel_Category_Models": "Modellek",
+    "UI_modinfopanel_Category_Modpack": "Mod csomag",
+    "UI_modinfopanel_Category_Multiplayer": "Többjátékos",
+    "UI_modinfopanel_Category_QoL": "Kényelem",
+    "UI_modinfopanel_Category_Quests": "Küldetések",
+    "UI_modinfopanel_Category_Realistic": "Realisztikus",
+    "UI_modinfopanel_Category_Scenario": "Forgatókönyv",
+    "UI_modinfopanel_Category_Silly/Fun": "Vicces",
+    "UI_modinfopanel_Category_Skills": "Képességek",
+    "UI_modinfopanel_Category_Textures": "Textúrák",
+    "UI_modinfopanel_Category_Traits": "Tulajdonságok",
+    "UI_modinfopanel_Category_Vehicles": "Járművek",
+    "UI_modinfopanel_Category_Weapons": "Fegyverek",
 
     "UI_modinfopanel_TimeFormat_Today": "Ma, {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_Yesterday": "Tegnap, {hour24}:{min}",
@@ -74,7 +114,5 @@
     "UI_modinfopanel_Month_Short_9": "szept.",
     "UI_modinfopanel_Month_Short_10": "okt.",
     "UI_modinfopanel_Month_Short_11": "nov.",
-    "UI_modinfopanel_Month_Short_12": "dec.",
-
-    "UI_modmanager_changelogFormatting": "Szövegformázás:"
+    "UI_modinfopanel_Month_Short_12": "dec."
 }

@@ -1,5 +1,8 @@
 require "ISUI/ISPanelJoypad"
 require "OptionScreens/ModSelector/ModInfoPanel"
+require "OptionScreens/ModSelector/ModInfoPanelCategoryParam"
+require "OptionScreens/ModSelector/ModInfoPanelIncompatibleParam"
+require "OptionScreens/ModSelector/ModInfoPanelChangelogParam"
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local BUTTON_HGT = FONT_HGT_SMALL + 6
@@ -22,12 +25,21 @@ function ModInfoPanel:createChildren()
     self:addChild(self.thumbnailPanel)
 
     local prevPanel = self.thumbnailPanel
+
     for _, param in ipairs(self.modInfoParams) do
-        self[param] = ModInfoPanel.Param:new(0, prevPanel:getBottom() - 1, self.width, param)
-        self[param]:initialise()
-        self[param]:instantiate()
-        self:addChild(self[param])
-        prevPanel = self[param]
+        if param == "Category" then
+            self[param] = ModInfoPanel.CategoryParam:new(0, prevPanel:getBottom() - 1, self.width)
+            self[param]:initialise()
+            self[param]:instantiate()
+            self:addChild(self[param])
+            prevPanel = self[param]
+        else
+            self[param] = ModInfoPanel.Param:new(0, prevPanel:getBottom() - 1, self.width, param)
+            self[param]:initialise()
+            self[param]:instantiate()
+            self:addChild(self[param])
+            prevPanel = self[param]
+        end
     end
 
     self.dependenciesPanel = ModInfoPanel.InteractionParam:new(0, prevPanel:getBottom()-1, self.width, "Dependencies")
@@ -40,7 +52,7 @@ function ModInfoPanel:createChildren()
     self.incompatiblePanel:instantiate()
     self:addChild(self.incompatiblePanel)
 
-    self.changelogPanel = ModInfoPanel.Changelog:new(0, self.incompatiblePanel:getBottom() - 1, self.width, self:getHeight() - self.incompatiblePanel:getBottom() + 1)
+    self.changelogPanel = ModInfoPanel.ChangelogParam:new(0, self.incompatiblePanel:getBottom() - 1, self.width, self:getHeight() - self.incompatiblePanel:getBottom() + 1)
     self.changelogPanel:initialise()
     self.changelogPanel:instantiate()
     self:addChild(self.changelogPanel)
@@ -60,13 +72,14 @@ function ModInfoPanel:updateView(modInfo)
     self.dependenciesPanel:setModInfo(modInfo)
     self.incompatiblePanel:setModInfo(modInfo)
     self.incompatiblePanel:setY(self.dependenciesPanel:getBottom()-1)
-    self.incompatiblePanel:setHeight(self:getHeight() - self.incompatiblePanel:getY())
-    self:setVisible(true)
-
     self.incompatiblePanel:setHeight(BUTTON_HGT)
+
     self.changelogPanel:setY(self.incompatiblePanel:getBottom() - 1)
     self.changelogPanel:setHeight(self:getHeight() - self.changelogPanel:getY())
+    self.changelogPanel:recalcSize()
     self.changelogPanel:setModInfo(modInfo)
+
+    self:setVisible(true)
 end
 
 function ModInfoPanel:recalcSize()
@@ -75,20 +88,13 @@ function ModInfoPanel:recalcSize()
         child:setWidth(self.width)
         child:recalcSize()
     end
-    self.incompatiblePanel:setHeight(self:getHeight() - self.incompatiblePanel:getY())
+    self.incompatiblePanel:setHeight(BUTTON_HGT)
 
     if self.changelogPanel then
+        self.changelogPanel:setY(self.incompatiblePanel:getBottom() - 1)
         self.changelogPanel:setHeight(self:getHeight() - self.changelogPanel:getY())
+        self.changelogPanel:recalcSize()
     end
-end
-
-function ModInfoPanel:new(x, y, width, height)
-    local o = ISPanelJoypad:new(x, y, width, height)
-    setmetatable(o, self)
-    self.__index = self
-    o.modInfoParams = {"Status", "Version", "Author", "ModID", "WorkshopID", "LastUpdate", "ZomboidVersion"}
-    o.thumbnailPreviewImage = nil
-    return o
 end
 
 function ModInfoPanel:drawCustomRectBorder(x, y, w, h, r, g, b, a)
@@ -107,4 +113,13 @@ function ModInfoPanel:render()
         self:drawTextureScaledAspect(self.thumbnailPreviewImage, (self.width - w)/2, self.thumbnailPanel:getBottom() + 16, w, h, 1, 1, 1, 1)
     end
 	self:renderJoypadFocus()
+end
+
+function ModInfoPanel:new(x, y, width, height)
+    local o = ISPanelJoypad:new(x, y, width, height)
+    setmetatable(o, self)
+    self.__index = self
+    o.modInfoParams = {"Status", "Version", "Category", "Author", "ModID", "WorkshopID", "LastUpdate", "ZomboidVersion"}
+    o.thumbnailPreviewImage = nil
+    return o
 end

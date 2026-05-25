@@ -105,6 +105,19 @@ function MainScreen:onGainJoypadFocus(...)
     end
 end
 
+Events.OnKeyPressed.Remove(ToggleEscapeMenu)
+local original_ToggleEscapeMenu = ToggleEscapeMenu
+ToggleEscapeMenu = function(key)
+    if MainScreen.instance and MainScreen.instance.inGame and ModOptionsScreen.instance and ModOptionsScreen.instance:isReallyVisible() then
+        if getCore():isKey("Main Menu", key) or (getCore():getKey("Main Menu") == 0 and key == Keyboard.KEY_ESCAPE) then
+            ModOptionsScreen.instance:onKeyRelease(Keyboard.KEY_ESCAPE)
+            return
+        end
+    end
+    original_ToggleEscapeMenu(key)
+end
+Events.OnKeyPressed.Add(ToggleEscapeMenu)
+
 local original_onMenuItemMouseDownMainMenu = MainScreen.onMenuItemMouseDownMainMenu
 function MainScreen.onMenuItemMouseDownMainMenu(item, x, y)
     if item.internal == "MODOPTIONS" then

@@ -12,7 +12,6 @@ local JOYPAD_TEX_SIZE = 32
 local BUTTON_PADDING = JOYPAD_TEX_SIZE + UI_BORDER_SPACING*2
 
 function ISButton:enableBlueColor()
-    local GHC = getCore():getGoodHighlitedColor()
     local r, g, b = 0.168, 0.615, 0.952
     self:setBackgroundRGBA(r, g, b, 0.25)
     self:setBackgroundColorMouseOverRGBA(r, g, b, 0.50)
@@ -21,6 +20,16 @@ end
 
 local original_onKeyRelease = MainScreen.onKeyRelease
 function MainScreen:onKeyRelease(key)
+    if ModPresetsWindow and ModPresetsWindow.instance and ModPresetsWindow.instance:isReallyVisible() then
+        ModPresetsWindow.instance:onKeyRelease(key)
+        return
+    end
+
+    if ModOptionsScreen and ModOptionsScreen.instance and ModOptionsScreen.instance:isReallyVisible() then
+        ModOptionsScreen.instance:onKeyRelease(key)
+        return
+    end
+
     if ModSelector.instance and ModSelector.instance:isReallyVisible() then
         ModSelector.instance:onKeyRelease(key)
         return
@@ -45,8 +54,6 @@ function ModSelector:create()
     local top = self.modListPanel:getY()
     self.modInfoPanel = ModInfoPanel:new(left, top, self.width - UI_BORDER_SPACING - left - 1, self.modListPanel.height)
     self.modInfoPanel:setAnchorBottom(true)
-    self.modInfoPanel:addScrollBars()
-    self.modInfoPanel:setScrollChildren(true)
     self:addChild(self.modInfoPanel)
     self.modInfoPanel:setVisible(false)
 
@@ -182,17 +189,17 @@ function ModSelector:prerender()
     end
 
     local diff = current - active
-    
+
     local txtX, txtY, font = UI_BORDER_SPACING + 1, 15, UIFont.Medium
-    
+
     local str1 = getText("UI_LoadGameScreen_Mods") .. " " .. active
     self:drawText(str1, txtX, txtY, 1, 1, 1, 1, font)
-    txtX = txtX + getTextManager():MeasureStringX(font, str1)
-    
+    txtX = txtX + getTextManager():MeasureStringX(font, str1 .. " ")
+
     if diff ~= 0 then
         local str2 = ""
         local r, g, b = 1, 1, 1
-        
+
         if diff > 0 then
             str2 = " + " .. diff .. " "
             r, g, b = 0.2, 0.8, 1
@@ -200,13 +207,20 @@ function ModSelector:prerender()
             str2 = " - " .. math.abs(diff) .. " "
             r, g, b = 1.0, 0.2, 0.2
         end
-        
+
         self:drawText(str2, txtX, txtY, r, g, b, 1, font)
         txtX = txtX + getTextManager():MeasureStringX(font, str2)
     end
-    
+
     local str3 = " " .. getText("UI_modselector_separator") .. " " .. total
     self:drawText(str3, txtX, txtY, 1, 1, 1, 1, font)
+end
+
+function ModSelector:render()
+    ISPanelJoypad.render(self)
+    if self:hasBlockingModal() then
+        self:drawRect(0, 0, self.width, self.height, 0.5, 0, 0, 0)
+    end
 end
 
 function ModSelector:selectModByInfo(modInfo)
@@ -229,7 +243,9 @@ function ModSelector:updateView()
     self.modListPanel:updateView()
     self.presetPanel:updateView()
 
-    self.mapOrderbtn.enable = self.model:checkMapConflicts()
+    local showMapOrder = self.model:checkMapConflicts()
+    self.mapOrderbtn.enable = showMapOrder
+    self.mapOrderbtn:setVisible(showMapOrder)
 
     if self.modInfoPanel and self.modInfoPanel:getIsVisible() and self.modInfoPanel.modInfo then
         self.modInfoPanel:updateView(self.modInfoPanel.modInfo)
@@ -299,7 +315,43 @@ function ModSelector:update()
     end
 end
 
+function ModSelector:hasBlockingModal()
+    if self.exportWindow and self.exportWindow:isReallyVisible() then
+        return true
+    end
+    if self.disableConfirmWindow and self.disableConfirmWindow:isReallyVisible() then
+        return true
+    end
+    if self.categorySelectWindow and self.categorySelectWindow:isReallyVisible() then
+        return true
+    end
+    return false
+end
+
+function ModSelector:closeBlockingModal()
+    if self.categorySelectWindow and self.categorySelectWindow:isReallyVisible() then
+        self.categorySelectWindow:onClose()
+        return true
+    end
+    if self.disableConfirmWindow and self.disableConfirmWindow:isReallyVisible() then
+        self.disableConfirmWindow:onClose()
+        return true
+    end
+    if self.exportWindow and self.exportWindow:isReallyVisible() then
+        self.exportWindow:onClose()
+        return true
+    end
+    return false
+end
+
 function ModSelector:onKeyRelease(key)
+    if key == Keyboard.KEY_ESCAPE and self:closeBlockingModal() then
+        return
+    end
+    if key == Keyboard.KEY_RETURN and self:hasBlockingModal() then
+        return
+    end
+
     if self.modListPanel.searchEntry:isFocused() then
         if key == Keyboard.KEY_ESCAPE then
             self.backButton:forceClick()

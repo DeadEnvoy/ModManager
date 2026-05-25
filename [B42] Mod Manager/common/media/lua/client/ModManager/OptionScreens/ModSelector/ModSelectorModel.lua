@@ -1,6 +1,46 @@
 require "OptionScreens/ModSelector/ModSelectorModel"
 
-local ModManagerData = require "ModManager/Utilities/ModListData"
+local ModManagerData = require("ModManager/Utils/ModListData")
+
+ModSelector.Model.CATEGORIES = {
+    "Animals",
+    "Armor",
+    "Audio",
+    "Balance",
+    "Building",
+    "Crafting",
+    "Clothing",
+    "Farming",
+    "Food",
+    "Framework",
+    "Hardmode",
+    "Interface",
+    "Items",
+    "Localization",
+    "Literature",
+    "Map",
+    "Military",
+    "Misc",
+    "Models",
+    "Modpack",
+    "Multiplayer",
+    "QoL",
+    "Quests",
+    "Realistic",
+    "Scenario",
+    "Silly/Fun",
+    "Skills",
+    "Textures",
+    "Traits",
+    "Vehicles",
+    "Weapons",
+}
+
+local CATEGORY_LOOKUP = {}
+for _, name in ipairs(ModSelector.Model.CATEGORIES) do
+    CATEGORY_LOOKUP[string.lower(name)] = name;
+end
+CATEGORY_LOOKUP["vehicle"] = "Vehicles";
 
 local original_new = ModSelector.Model.new
 function ModSelector.Model:new(view)
@@ -48,15 +88,34 @@ function ModSelector.Model:setSort(sortType)
 end
 
 function ModSelector.Model:isHidden(id)
-    return ModManagerData.data.mods[id] and ModManagerData.data.mods[id].hidden == true
+    return ModManagerData.data.mods[id].hidden == true;
 end
 
 function ModSelector.Model:setHidden(id, isHidden)
-    if ModManagerData.data.mods[id] then
-        ModManagerData.data.mods[id].hidden = isHidden
-        ModManagerData:save()
-        self:refreshMods()
+    ModManagerData.data.mods[id].hidden = isHidden
+    ModManagerData:save()
+    self:refreshMods()
+end
+
+function ModSelector.Model:getCategory(id)
+    if self:isCategoryLocked(id) then
+        return self.mods[id].category
     end
+    return ModManagerData.data.mods[id].category
+end
+
+function ModSelector.Model:setCategory(id, category)
+    if self:isCategoryLocked(id) then
+        return
+    end
+    ModManagerData.data.mods[id].category = category
+    ModManagerData:save()
+    self:refreshMods()
+end
+
+function ModSelector.Model:isCategoryLocked(modId)
+    local category = getModInfoByID(modId):getCategory()
+    return (category ~= "" and CATEGORY_LOOKUP[string.lower(category)]) and self.mods[modId].category or false
 end
 
 function ModSelector.Model:isFavorite(id)
@@ -105,7 +164,14 @@ function ModSelector.Model:reloadMods()
                 data.modInfo = modInfo
                 data.name = modInfo:getName()
                 data.icon = modInfo:getIcon()
-                data.category = modInfo:getCategory()
+                data.author = modInfo:getAuthor() or ""
+                local rawCategory = modInfo:getCategory()
+                if rawCategory ~= "" then
+                    local primary = rawCategory:match("^%s*([^,]-)%s*[,]") or rawCategory:match("^%s*(.-)%s*$")
+                    data.category = CATEGORY_LOOKUP[string.lower(primary)] or ""
+                else
+                    data.category = ""
+                end
                 data.defaultActive = self:isModActive(modId)
                 data.defaultFav = self.favs[modId]
                 data.indexAdded = self:indexByDateAdded(modId)
@@ -123,10 +189,7 @@ function ModSelector.Model:reloadMods()
                 
                 if data.icon == "" then data.icon = ModSelector.Model.categories[data.category] end
 
-                data.lowerName = string.lower(data.name)
-                data.lowerId = string.lower(data.modId)
-                local author = modInfo:getAuthor() or ""
-                data.lowerAuthor = string.lower(author)
+                data.source = modInfo:getSource()
 
                 self.mods[modId] = data
                 table.insert(self.sortedMods, data)
@@ -181,6 +244,7 @@ function ModSelector.Model:refreshMods()
         modData.isActive = self:isModActive(modId)
         modData.favorite = self:isFavorite(modId)
         modData.isHidden = self:isHidden(modId)
+        modData.category = self:getCategory(modId)
     end
 
     for modId, modData in pairs(self.mods) do
@@ -207,7 +271,7 @@ end
 function ModSelector.Model:filterMods(category, searchWord, favoriteMode, onlyEnabled, onlyDisabled, showHidden)
     ---@diagnostic disable-next-line: undefined-field
     table.wipe(self.currentMods)
-    
+
     for _, modData in ipairs(self.sortedMods) do
         local show = true
         if category ~= "" and modData.category ~= category then
@@ -220,13 +284,13 @@ function ModSelector.Model:filterMods(category, searchWord, favoriteMode, onlyEn
 
         if searchWord ~= "" then
             local isMatch = false
-            if string.find(modData.lowerName, searchWord, 1, true) then
+            if string.find(string.lower(modData.name), searchWord, 1, true) then
                 isMatch = true
-            elseif string.find(modData.lowerId, searchWord, 1, true) then
+            elseif string.find(string.lower(modData.modId), searchWord, 1, true) then
                 isMatch = true
             elseif string.find(modData.workshopIDStr, searchWord, 1, true) then
                 isMatch = true
-            elseif string.find(modData.lowerAuthor, searchWord, 1, true) then
+            elseif string.find(string.lower(modData.author), searchWord, 1, true) then
                 isMatch = true
             end
 
@@ -271,11 +335,11 @@ function ModSelector.Model:trackMods()
     if modListData.mods then
         local sorted = {}
         for modID, data in pairs(modListData.mods) do
-            table.insert(sorted, { id = modID, index = data.index, hidden = data.hidden })
+            table.insert(sorted, { id = modID, index = data.index, hidden = data.hidden, category = data.category })
         end
         table.sort(sorted, function(a, b) return (a.index or 0) < (b.index or 0) end)
         for _, item in ipairs(sorted) do
-            table.insert(storedModsList, { id = item.id, hidden = item.hidden })
+            table.insert(storedModsList, { id = item.id, hidden = item.hidden, category = item.category })
         end
     end
 
@@ -314,7 +378,7 @@ function ModSelector.Model:trackMods()
 
     for _, mod in ipairs(storedModsList) do
         if not delModsSet[mod.id] then
-            newCacheMods[mod.id] = { hidden = mod.hidden, index = currentIndex }
+            newCacheMods[mod.id] = { hidden = mod.hidden, category = mod.category, index = currentIndex }
             currentIndex = currentIndex + 1
         end
     end
@@ -427,6 +491,7 @@ function ModSelector.Model:addSharedPreset(button)
             for i, val in ipairs(luautils.split(modsString, ";")) do
                 table.insert(self.presets[presetName], val)
             end
+            self:saveModDataToFile()
         end
     end
 end
@@ -486,10 +551,15 @@ function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm, s
                 for _, depInfo in ipairs(dependents) do
                     table.insert(dependentData, {name=depInfo:getName(), id=depInfo:getWorkshopID(), modId=depInfo:getId()})
                 end
-                local w,h = 600, 400
-                local dialog = ModSelector.DisableConfirmWindow:new(getCore():getScreenWidth()/2 - w/2, getCore():getScreenHeight()/2 - h/2, w, h, dependentData, self, modInfo)
+                local screenW = getCore():getScreenWidth()
+                local screenH = getCore():getScreenHeight()
+                local w = math.max(600, screenW * 0.35)
+                local h = math.max(400, screenH * 0.4)
+                local dialog = ModSelector.DisableConfirmWindow:new((screenW - w) / 2, (screenH - h) / 2, w, h, dependentData, self, modInfo)
                 dialog:initialise()
+                ModSelector.instance.disableConfirmWindow = dialog
                 dialog:addToUIManager()
+                dialog:setCapture(true)
                 dialog:bringToTop()
                 return
             end
@@ -509,7 +579,9 @@ function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm, s
     end
 end
 
+local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
+local FONT_HGT_LARGE = getTextManager():getFontHeight(UIFont.Large)
 
 ModSelector.DisableConfirmPanel = ISPanelJoypad:derive("DisableConfirmPanel")
 local DisableConfirmPanel = ModSelector.DisableConfirmPanel
@@ -524,17 +596,29 @@ function DisableConfirmPanel:new(x, y, width, height, data)
 end
 
 function DisableConfirmPanel:createChildren()
-    local y = 10
+    local y = 0
+    local buttonHeight = FONT_HGT_MEDIUM + 6
+    local spacing = 5
+    self.buttons = {}
     for _, v in ipairs(self.data) do
-        local button = ISButton:new(25, y, 550, FONT_HGT_MEDIUM + 6, v.name, self, DisableConfirmPanel.onOptionMouseDown)
+        local button = ISButton:new(25, y, self.width - 50, buttonHeight, v.name, self, DisableConfirmPanel.onOptionMouseDown)
         button.modData = v
         button:initialise()
         button:instantiate()
         button:setFont(UIFont.Medium)
         self:addChild(button)
-        y = y + FONT_HGT_MEDIUM + 6 + 5
+        table.insert(self.buttons, button)
+        y = y + buttonHeight + spacing
     end
-    self:setScrollHeight(y)
+    self:setScrollHeight(math.max(0, y - spacing))
+end
+
+function DisableConfirmPanel:onResize()
+    if self.buttons then
+        for _, button in ipairs(self.buttons) do
+            button:setWidth(self.width - 50)
+        end
+    end
 end
 
 function DisableConfirmPanel:onMouseWheel(del)
@@ -579,45 +663,92 @@ end
 
 function DisableConfirmWindow:prerender()
     ISPanelJoypad.prerender(self)
-    self:drawTextCentre(getText("UI_modselector_disableWarningTitle"), self.width / 2, 5, 1, 1, 1, 1, UIFont.Title)
-    self:drawTextCentre(getText("UI_modselector_disableWarningText"), self.width / 2, 35, 0.8, 0.8, 0.8, 1, UIFont.Small)
+    local titleY = 5
+    local subtitleY = math.max(35, titleY + FONT_HGT_LARGE + 5)
+    self:drawTextCentre(getText("UI_modselector_disableWarningTitle"), self.width / 2, titleY, 1, 1, 1, 1, UIFont.Large)
+    self:drawTextCentre(getText("UI_modselector_disableWarningText"), self.width / 2, subtitleY, 0.8, 0.8, 0.8, 1, UIFont.Small)
 end
 
 function DisableConfirmWindow:createChildren()
-    local panel = DisableConfirmPanel:new(0, 60, self.width, self.height - 110, self.data)
-    panel:initialise()
-    panel:instantiate()
-    panel:setAnchorRight(true)
-    panel:setAnchorBottom(true)
-    panel:addScrollBars()
-    panel:setScrollChildren(true)
-    panel.vscroll.doSetStencil = false
-    self:addChild(panel)
+    local titleY = 5
+    local subtitleY = math.max(35, titleY + FONT_HGT_LARGE + 5)
+    local panelTop = subtitleY + FONT_HGT_SMALL + 5
+    self.panel = DisableConfirmPanel:new(10, panelTop, self.width - 20, self.height - panelTop - 50, self.data)
+    self.panel:initialise()
+    self.panel:instantiate()
+    self.panel:setAnchorRight(true)
+    self.panel:setAnchorBottom(true)
+    self.panel:addScrollBars()
+    self.panel:setScrollChildren(true)
+    self.panel.vscroll.doSetStencil = false
+    self:addChild(self.panel)
 
-    local btnDisable = ISButton:new(self.width/2 - 150 - 5, self.height - 40, 150, 30, getText("UI_btn_accept"), self, DisableConfirmWindow.onOptionMouseDown)
-    btnDisable.internal = "DISABLE"
-    btnDisable:initialise()
-    btnDisable:instantiate()
-    self:addChild(btnDisable)
+    self.btnDisable = ISButton:new(self.width/2 - 150 - 5, self.height - 40, 150, 30, getText("UI_btn_accept"), self, DisableConfirmWindow.onOptionMouseDown)
+    self.btnDisable.internal = "DISABLE"
+    self.btnDisable:initialise()
+    self.btnDisable:instantiate()
+    self:addChild(self.btnDisable)
 
-    local btnCancel = ISButton:new(self.width/2 + 5, self.height - 40, 150, 30, getText("UI_btn_cancel"), self, DisableConfirmWindow.onOptionMouseDown)
-    btnCancel.internal = "CANCEL"
-    btnCancel:initialise()
-    btnCancel:instantiate()
-    self:addChild(btnCancel)
+    self.btnCancel = ISButton:new(self.width/2 + 5, self.height - 40, 150, 30, getText("UI_btn_cancel"), self, DisableConfirmWindow.onOptionMouseDown)
+    self.btnCancel.internal = "CANCEL"
+    self.btnCancel:initialise()
+    self.btnCancel:instantiate()
+    self:addChild(self.btnCancel)
+
+    self.onResolutionChangeEvent = function(_, _, neww, newh)
+        if self:isReallyVisible() then
+            self:onResolutionChange(neww, newh)
+        end
+    end
+    Events.OnResolutionChange.Add(self.onResolutionChangeEvent)
+end
+
+function DisableConfirmWindow:onResolutionChange(neww, newh)
+    local width = math.max(600, neww * 0.35)
+    local height = math.max(400, newh * 0.4)
+    local titleY = 5
+    local subtitleY = math.max(35, titleY + FONT_HGT_LARGE + 5)
+    local panelTop = subtitleY + FONT_HGT_SMALL + 5
+
+    self:setX((neww - width) / 2)
+    self:setY((newh - height) / 2)
+    self:setWidth(width)
+    self:setHeight(height)
+
+    self.panel:setX(10)
+    self.panel:setY(panelTop)
+    self.panel:setWidth(self.width - 20)
+    self.panel:setHeight(self.height - panelTop - 50)
+    self.panel:onResize()
+
+    self.btnDisable:setX(self.width/2 - 150 - 5)
+    self.btnDisable:setY(self.height - 40)
+
+    self.btnCancel:setX(self.width/2 + 5)
+    self.btnCancel:setY(self.height - 40)
+end
+
+function DisableConfirmWindow:onClose()
+    if self.onResolutionChangeEvent then
+        Events.OnResolutionChange.Remove(self.onResolutionChangeEvent)
+        self.onResolutionChangeEvent = nil
+    end
+    self:setVisible(false)
+    self:removeFromUIManager()
+    if ModSelector.instance then
+        ModSelector.instance.disableConfirmWindow = nil
+    end
 end
 
 function DisableConfirmWindow:onOptionMouseDown(button)
-    self:setVisible(false)
-    self:removeFromUIManager()
+    self:onClose()
     if button.internal == "DISABLE" then
         self.model:onConfirmDisable(self.modToDisable)
     end
 end
 
 function DisableConfirmWindow:closeAndSelect(modId)
-    self:setVisible(false)
-    self:removeFromUIManager()
+    self:onClose()
 
     local modSelector = ModSelector.instance
     modSelector:setVisible(true)

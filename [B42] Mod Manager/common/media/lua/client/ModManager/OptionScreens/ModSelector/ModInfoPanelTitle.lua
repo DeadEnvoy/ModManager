@@ -91,7 +91,6 @@ function ModInfoPanel.Title:onEnableClick(button)
 end
 
 function ModInfoPanel.Title:setModInfo(modInfo)
-    self.title.name = modInfo:getName()
     local model = self.parent.parent.model
     local modId = modInfo:getId()
 
@@ -118,6 +117,55 @@ function ModInfoPanel.Title:setModInfo(modInfo)
     self.hideButton:setX(self.width - self.hideButton:getWidth() - UI_BORDER_SPACING)
     self.favoriteButton:setX(self.hideButton:getX() - self.favoriteButton:getWidth() - UI_BORDER_SPACING)
     self.enableButton:setX(self.favoriteButton:getX() - self.enableButton:getWidth() - UI_BORDER_SPACING)
+
+    local fullName = modInfo:getName()
+    local maxNameWidth = self.enableButton:getX() - self.title:getX() - UI_BORDER_SPACING
+    local truncatedName = fullName
+    if getTextManager():MeasureStringX(UIFont.Medium, fullName) > maxNameWidth then
+        while #truncatedName > 5 and getTextManager():MeasureStringX(UIFont.Medium, truncatedName .. "...") > maxNameWidth do
+            truncatedName = string.sub(truncatedName, 1, #truncatedName - 1)
+        end
+        truncatedName = truncatedName .. "..."
+    end
+
+    self.fullModName = fullName
+    self.truncatedModName = truncatedName
+    self.isNameTruncated = (truncatedName ~= fullName)
+    self.isExpanded = false
+    self.title.name = truncatedName
+
+    self.enableButton:setVisible(true)
+    self.favoriteButton:setVisible(true)
+    self.hideButton:setVisible(true)
+end
+
+function ModInfoPanel.Title:prerender()
+    ISPanelJoypad.prerender(self)
+    if not self.isNameTruncated then return end
+
+    local titleX = self.title:getX()
+    local titleY = self.title:getY()
+    local titleW = getTextManager():MeasureStringX(UIFont.Medium, self.truncatedModName)
+    local titleH = self.title:getHeight()
+    local mx = self:getMouseX()
+    local my = self:getMouseY()
+    local isOverTitle = mx >= titleX and mx < titleX + titleW and my >= titleY and my < titleY + titleH
+
+    if isOverTitle then
+        if not self.isExpanded then
+            self.title.name = self.fullModName
+            self.enableButton:setVisible(false)
+            self.favoriteButton:setVisible(false)
+            self.hideButton:setVisible(false)
+            self.isExpanded = true
+        end
+    elseif self.isExpanded then
+        self.title.name = self.truncatedModName
+        self.enableButton:setVisible(true)
+        self.favoriteButton:setVisible(true)
+        self.hideButton:setVisible(true)
+        self.isExpanded = false
+    end
 end
 
 function ModInfoPanel.Title:new(x, y, width)

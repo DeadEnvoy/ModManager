@@ -1,35 +1,52 @@
 {
     "UI_mainscreen_btn_configs": "КОНФИГУРАЦИИ",    
+
     "UI_modselector_separator": "из",   
+
     "UI_modselector_showEnabledMods": "Показать включенные",
     "UI_modselector_showDisabledMods": "Показать отключенные",
     "UI_modselector_showHiddenMods": "Показать скрытые",    
+
     "UI_modselector_disableWarningTitle": "ВНИМАНИЕ!",
     "UI_modselector_disableWarningText": "Отключение данной модификации так-же приведёт к отключению следующих:",   
-    "UI_modselector_modOptions": "КОНФИГУРАЦИИ",    
+
     "UI_modlistpanel_sortBy": "Сортировка:",
     "UI_modlistpanel_sortBy_name": "По имени (А-Я)",
     "UI_modlistpanel_sortBy_date": "По дате добавления",
     "UI_modlistpanel_sortBy_dateUpdated": "По дате обновления", 
+
     "UI_modselector_status_installed": "Актуальная",
     "UI_modselector_status_needsUpdate": "Доступно обновление!",    
+
     "UI_modoptions_title": "НАСТРОЙКИ МОДИФИКАЦИЙ", 
+
     "UI_btn_sort_apply": "СОРТИРОВАТЬ И ПРИНЯТЬ",   
+
     "UI_modpresets_title": "СПИСОК ПРЕСЕТОВ",   
     "UI_modpresets_presetsTab": "ПРЕСЕТЫ",
     "UI_modpresets_historyTab": "ИСТОРИЯ",  
     "UI_modpresets_copy": "КОПИРОВАТЬ", 
+
     "UI_btn_select": "ВЫБРАТЬ",
     "UI_btn_deleteAll": "УДАЛИТЬ ВСЁ",  
-    "UI_modpresets_deleteAll_dialog": "Удалить всю историю?",   
+
+    "UI_modpresets_deleteAll_dialog": "Удалить всю историю?", 
     "UI_modselector_btn_hide": "СКРЫТЬ",
     "UI_modselector_btn_show": "ПОКАЗАТЬ",
     "UI_modselector_btn_favorite": "В ИЗБРАННОЕ",
     "UI_modselector_btn_unfavorite": "ИЗ ИЗБРАННОГО",
     "UI_modselector_btn_enable": "ВКЛЮЧИТЬ",
-    "UI_modselector_btn_disable": "ОТКЛЮЧИТЬ",  
+    "UI_modselector_btn_disable": "ОТКЛЮЧИТЬ",
+
+    "UI_modselector_LocalMod_tooltip": "Модификация не будет загружена на стороне клиента.\n\nПричина: Workshop ID не был найден (локальная модификация).\n\nЕсли Вы являетесь автором этой модификации, то Вам необходимо опубликовать её в мастерской и подписаться на неё.",
+
+    "UI_ServerSettings_SpawnRegions": "Регионы спавна, используемые этим сервером:",
+    "UI_ServerSettings_AddSpawnRegion": "Добавить доступный регион спавна в список:",
+    "UI_ServerOption_SpawnPoint": "Точка спавна:",
+
     "UI_modinfopanel_Status": "Статус",
     "UI_modinfopanel_Version": "Версия",
+    "UI_modinfopanel_Category": "Категория",
     "UI_modinfopanel_Author": "Автор",
     "UI_modinfopanel_ModID": "Mod ID",
     "UI_modinfopanel_WorkshopID": "Workshop ID",
@@ -38,13 +55,51 @@
     "UI_modinfopanel_ZomboidVersion": "Версия игры",
     "UI_modinfopanel_Dependencies": "Зависимости",
     "UI_modinfopanel_IncompatibleWith": "Несовместимости",
-    "UI_modinfopanel_Changelog": "Список изменений",    
+    "UI_modinfopanel_Changelog": "Список изменений",
+    "UI_modinfopanel_SetCategory": "Назначить...",
+    "UI_modinfopanel_SelectCategory": "Выберите категорию",
+
+    "UI_modinfopanel_Category_None": "Отсутствует",
+    "UI_modinfopanel_Category_Animals": "Животные",
+    "UI_modinfopanel_Category_Armor": "Броня",
+    "UI_modinfopanel_Category_Audio": "Аудио",
+    "UI_modinfopanel_Category_Balance": "Баланс",
+    "UI_modinfopanel_Category_Building": "Строительство",
+    "UI_modinfopanel_Category_Crafting": "Ремесло",
+    "UI_modinfopanel_Category_Clothing": "Одежда",
+    "UI_modinfopanel_Category_Farming": "Фермерство",
+    "UI_modinfopanel_Category_Food": "Еда",
+    "UI_modinfopanel_Category_Framework": "Библиотека",
+    "UI_modinfopanel_Category_Hardmode": "Хардмод",
+    "UI_modinfopanel_Category_Interface": "Интерфейс",
+    "UI_modinfopanel_Category_Items": "Предметы",
+    "UI_modinfopanel_Category_Localization": "Локализация",
+    "UI_modinfopanel_Category_Literature": "Литература",
+    "UI_modinfopanel_Category_Map": "Карта",
+    "UI_modinfopanel_Category_Military": "Военное",
+    "UI_modinfopanel_Category_Misc": "Прочее",
+    "UI_modinfopanel_Category_Models": "Модели",
+    "UI_modinfopanel_Category_Modpack": "Модпак",
+    "UI_modinfopanel_Category_Multiplayer": "Мультиплеер",
+    "UI_modinfopanel_Category_QoL": "Качество жизни",
+    "UI_modinfopanel_Category_Quests": "Задания",
+    "UI_modinfopanel_Category_Realistic": "Реализм",
+    "UI_modinfopanel_Category_Scenario": "Сценарий",
+    "UI_modinfopanel_Category_Silly/Fun": "Юмор",
+    "UI_modinfopanel_Category_Skills": "Навыки",
+    "UI_modinfopanel_Category_Textures": "Текстуры",
+    "UI_modinfopanel_Category_Traits": "Навыки",
+    "UI_modinfopanel_Category_Vehicles": "Транспорт",
+    "UI_modinfopanel_Category_Weapons": "Оружие",
+
     "UI_modinfopanel_TimeFormat_Today": "Сегодня в {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_Yesterday": "Вчера в {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_ThisYear": "{day} {month} в {hour24}:{min}",
-    "UI_modinfopanel_TimeFormat_OtherYears": "{day} {month} {year} г. в {hour24}:{min}",    
+    "UI_modinfopanel_TimeFormat_OtherYears": "{day} {month} {year} г. в {hour24}:{min}",  
+
     "UI_modinfopanel_AM": "AM",
     "UI_modinfopanel_PM": "PM", 
+
     "UI_modinfopanel_Month_Short_1": "янв.",
     "UI_modinfopanel_Month_Short_2": "февр.",
     "UI_modinfopanel_Month_Short_3": "марта",
@@ -56,7 +111,5 @@
     "UI_modinfopanel_Month_Short_9": "сент.",
     "UI_modinfopanel_Month_Short_10": "окт.",
     "UI_modinfopanel_Month_Short_11": "нояб.",
-    "UI_modinfopanel_Month_Short_12": "дек.",
-
-    "UI_modmanager_changelogFormatting": "Форматирование текста:"
+    "UI_modinfopanel_Month_Short_12": "дек."
 }

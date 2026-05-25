@@ -1,5 +1,5 @@
 {
-    "UI_mainscreen_btn_configs": "KONFIGS",
+    "UI_mainscreen_btn_configs": "KONFIGURATIONEN",
 
     "UI_modselector_separator": "von",
 
@@ -9,8 +9,6 @@
 
     "UI_modselector_disableWarningTitle": "WARNUNG!",
     "UI_modselector_disableWarningText": "Das Deaktivieren dieser Modifikation deaktiviert auch Folgendes:",
-
-    "UI_modselector_modOptions": "KONFIGURATION",
 
     "UI_modlistpanel_sortBy": "Sortieren nach:",
     "UI_modlistpanel_sortBy_name": "Name (A-Z)",
@@ -39,12 +37,19 @@
     "UI_modselector_btn_hide": "VERSTECKEN",
     "UI_modselector_btn_show": "ANZEIGEN",
     "UI_modselector_btn_favorite": "FAVORIT",
-    "UI_modselector_btn_unfavorite": "ENTFERNEN",
+    "UI_modselector_btn_unfavorite": "AUS FAVORITEN",
     "UI_modselector_btn_enable": "AKTIVIEREN",
     "UI_modselector_btn_disable": "DEAKTIVIEREN",
 
+    "UI_modselector_LocalMod_tooltip": "Diese Mod wird nicht auf der Client-Seite heruntergeladen.\n\nGrund: Workshop-ID nicht gefunden (lokale Mod).\n\nWenn Sie der Autor dieser Mod sind, müssen Sie sie im Workshop veröffentlichen und abonnieren.",
+
+    "UI_ServerSettings_SpawnRegions": "Von diesem Server verwendete Spawn-Regionen:",
+    "UI_ServerSettings_AddSpawnRegion": "Verfügbare Spawn-Region zur Liste hinzufügen:",
+    "UI_ServerOption_SpawnPoint": "Spawn-Punkt:",
+
     "UI_modinfopanel_Status": "Status",
     "UI_modinfopanel_Version": "Version",
+    "UI_modinfopanel_Category": "Kategorie",
     "UI_modinfopanel_Author": "Autor",
     "UI_modinfopanel_ModID": "Mod ID",
     "UI_modinfopanel_WorkshopID": "Workshop ID",
@@ -53,7 +58,42 @@
     "UI_modinfopanel_ZomboidVersion": "Spielversion",
     "UI_modinfopanel_Dependencies": "Abhängigkeiten",
     "UI_modinfopanel_IncompatibleWith": "Inkompatibel mit",
-    "UI_modinfopanel_Changelog": "Änderungsprotokoll",
+    "UI_modinfopanel_Changelog": "Änderungen",
+    "UI_modinfopanel_SetCategory": "Festlegen...",
+    "UI_modinfopanel_SelectCategory": "Kategorie wählen",
+
+    "UI_modinfopanel_Category_None": "Keine",
+    "UI_modinfopanel_Category_Animals": "Tiere",
+    "UI_modinfopanel_Category_Armor": "Panzerung",
+    "UI_modinfopanel_Category_Audio": "Audio",
+    "UI_modinfopanel_Category_Balance": "Balance",
+    "UI_modinfopanel_Category_Building": "Bau",
+    "UI_modinfopanel_Category_Crafting": "Herstellung",
+    "UI_modinfopanel_Category_Clothing": "Kleidung",
+    "UI_modinfopanel_Category_Farming": "Anbau",
+    "UI_modinfopanel_Category_Food": "Nahrung",
+    "UI_modinfopanel_Category_Framework": "Framework",
+    "UI_modinfopanel_Category_Hardmode": "Hardmode",
+    "UI_modinfopanel_Category_Interface": "Oberfläche",
+    "UI_modinfopanel_Category_Items": "Gegenstände",
+    "UI_modinfopanel_Category_Localization": "Lokalisierung",
+    "UI_modinfopanel_Category_Literature": "Literatur",
+    "UI_modinfopanel_Category_Map": "Karte",
+    "UI_modinfopanel_Category_Military": "Militär",
+    "UI_modinfopanel_Category_Misc": "Sonstiges",
+    "UI_modinfopanel_Category_Models": "Modelle",
+    "UI_modinfopanel_Category_Modpack": "Modpack",
+    "UI_modinfopanel_Category_Multiplayer": "Multiplayer",
+    "UI_modinfopanel_Category_QoL": "QoL",
+    "UI_modinfopanel_Category_Quests": "Quests",
+    "UI_modinfopanel_Category_Realistic": "Realistisch",
+    "UI_modinfopanel_Category_Scenario": "Szenario",
+    "UI_modinfopanel_Category_Silly/Fun": "Spaßig",
+    "UI_modinfopanel_Category_Skills": "Fähigkeiten",
+    "UI_modinfopanel_Category_Textures": "Texturen",
+    "UI_modinfopanel_Category_Traits": "Merkmale",
+    "UI_modinfopanel_Category_Vehicles": "Fahrzeuge",
+    "UI_modinfopanel_Category_Weapons": "Waffen",
 
     "UI_modinfopanel_TimeFormat_Today": "Heute um {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_Yesterday": "Gestern um {hour24}:{min}",
@@ -74,7 +114,5 @@
     "UI_modinfopanel_Month_Short_9": "Sept.",
     "UI_modinfopanel_Month_Short_10": "Okt.",
     "UI_modinfopanel_Month_Short_11": "Nov.",
-    "UI_modinfopanel_Month_Short_12": "Dez.",
-
-    "UI_modmanager_changelogFormatting": "Textformatierung:"
+    "UI_modinfopanel_Month_Short_12": "Dez."
 }
