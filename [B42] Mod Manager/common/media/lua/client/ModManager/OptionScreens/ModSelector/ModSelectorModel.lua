@@ -52,6 +52,41 @@ end
 CATEGORY_LOOKUP["vehicle"] = "Vehicles";
 CATEGORY_LOOKUP["utilities"] = "Utility";
 
+local SUPPORT_SERVICES = {
+    { key = "tribute", name = "Tribute", urlPrefix = "https://web.tribute.tg/" },
+    { key = "ko-fi", name = "Ko-fi", urlPrefix = "https://ko-fi.com/" },
+    { key = "buy-me-a-coffee", name = "Buy Me a Coffee", urlPrefix = "https://buymeacoffee.com/" },
+    { key = "donationalerts", name = "DonationAlerts", urlPrefix = "https://www.donationalerts.com/" },
+    { key = "patreon", name = "Patreon", urlPrefix = "https://www.patreon.com/" },
+    { key = "boosty", name = "Boosty", urlPrefix = "https://boosty.to/" }
+}
+
+local function getSupportLinks(modID)
+    local reader = getModFileReader(modID, "mod.info", false)
+    if not reader then return {} end
+
+    local values = {}
+    local line = reader:readLine()
+    while line do
+        local key, value = line:match("^%s*([%w%-]+)%s*=%s*(.-)%s*$")
+        if key and value and value ~= "" then
+            values[key] = value
+        end
+        line = reader:readLine()
+    end
+    reader:close()
+
+    local links = {}
+    for _, service in ipairs(SUPPORT_SERVICES) do
+        local url = values[service.key]
+        if url and string.sub(url, 1, #service.urlPrefix) == service.urlPrefix then
+            table.insert(links, { name = service.name, url = "https://steamcommunity.com/linkfilter/?u=" .. url })
+        end
+    end
+
+    return links
+end
+
 local original_new = ModSelector.Model.new
 function ModSelector.Model:new(view)
     local o = original_new(self, view)
@@ -186,6 +221,8 @@ function ModSelector.Model:reloadMods()
                 data.defaultActive = self:isModActive(modId)
                 data.defaultFav = self.favs[modId]
                 data.indexAdded = self:indexByDateAdded(modId)
+                data.supportLinks = getSupportLinks(modId)
+                data.hasSupportLinks = #data.supportLinks > 0
 
                 local workshopID = modInfoFromDir:getWorkshopID()
                 data.workshopIDStr = (workshopID and workshopID ~= "") and tostring(workshopID) or ""
@@ -197,8 +234,6 @@ function ModSelector.Model:reloadMods()
 
                 data.timeUpdated = (cachedData and cachedData.lastUpdate) or 0
                 data.workshopState = (cachedData and cachedData.state) or ""
-                
-                if data.icon == "" then data.icon = ModSelector.Model.categories[data.category] end
 
                 data.source = modInfo:getSource()
 
