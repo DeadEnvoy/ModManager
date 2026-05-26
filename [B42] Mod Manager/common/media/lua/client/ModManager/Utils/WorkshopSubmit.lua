@@ -174,7 +174,12 @@ local function stripInline(text)
     text = string.gsub(text, "_(.-)_", "%1");
     text = string.gsub(text, "~~(.-)~~", "%1");
     text = string.gsub(text, "`(.-)`", "%1");
-    text = string.gsub(text, "%[(.-)%]%((.-)%)", "\"%1\"");
+    text = string.gsub(text, "%[(.-)%]%((.-)%)", function(label)
+        if string.match(label, "^\".-\"$") or string.match(label, "^#%d+$") then
+            return label
+        end
+        return "\"" .. label .. "\""
+    end);
     return text
 end
 
