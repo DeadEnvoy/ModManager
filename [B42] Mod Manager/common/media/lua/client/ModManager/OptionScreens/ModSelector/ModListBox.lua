@@ -41,10 +41,17 @@ function ModListBox:doDrawItem(y, item, alt)
         end
     end
 
-    if item.item.icon ~= "" then
-        self:drawTextureScaled(getTexture(item.item.icon), height + UI_BORDER_SPACING, y + (height - BUTTON_HGT) / 2, BUTTON_HGT, BUTTON_HGT, 1, 1, 1, 1)
-    else
-        self:drawTextureScaled(Texture.getWhite(), height + UI_BORDER_SPACING, y + (height - BUTTON_HGT) / 2, BUTTON_HGT, BUTTON_HGT, 0.1, 1, 1, 1)
+    local iconX = height + UI_BORDER_SPACING
+    local iconY = y + (height - BUTTON_HGT) / 2
+    local iconTexture = Texture.trygetTexture(item.item.icon) or Texture.trygetTexture("Item_Pie.png")
+    self:drawTextureScaled(iconTexture, iconX, iconY, BUTTON_HGT, BUTTON_HGT, 1, 1, 1, 1)
+
+    if item.item.hasSupportLinks then
+        local supportIconSize = BUTTON_HGT * 0.45
+        local supportIconOffset = BUTTON_HGT * 0.06
+        local supportIconX = iconX + BUTTON_HGT - supportIconSize + supportIconOffset
+        local supportIconY = iconY + BUTTON_HGT - supportIconSize + supportIconOffset
+        self:drawTextureScaled(getTexture("media/ui/ModManager/Icons/Support.png"), supportIconX, supportIconY, supportIconSize, supportIconSize, 1, 1, 1, 1)
     end
 
     local itemPadY = (height - self.fontHgt) / 2
@@ -61,7 +68,7 @@ function ModListBox:doDrawItem(y, item, alt)
     local author = item.item.modInfo:getAuthor()
     local authorText = ""
     local authorWidth = 0
-    
+
     local authorX = starX - 10
     if not showStar then
         authorX = starX + BUTTON_HGT
@@ -75,16 +82,10 @@ function ModListBox:doDrawItem(y, item, alt)
     local nameToDraw = item.item.name
     local nameX = height * 2
     local nameWidth = getTextManager():MeasureStringX(self.font, nameToDraw)
-    local rightBoundary = starX - 5
+    local textSpacing = getTextManager():MeasureStringX(UIFont.Small, "  ")
+    local rightBoundary = starX - textSpacing
     if authorText ~= "" then
-        rightBoundary = authorX - authorWidth - 5
-    end
-
-    if nameX + nameWidth > rightBoundary then
-        while #nameToDraw > 5 and (nameX + getTextManager():MeasureStringX(self.font, nameToDraw .. "...") > rightBoundary) do
-            nameToDraw = string.sub(nameToDraw, 1, #nameToDraw - 1)
-        end
-        nameToDraw = nameToDraw .. "..."
+        rightBoundary = authorX - authorWidth - textSpacing
     end
 
     local r,g,b = 0.9, 0.9, 0.9
@@ -119,7 +120,7 @@ function ModListBox:doDrawItem(y, item, alt)
     if nameX + nameWidth > rightBoundary then
         local truncBoundary = rightBoundary
         if categoryText ~= "" then
-            truncBoundary = truncBoundary - categoryWidth - 5
+            truncBoundary = truncBoundary - categoryWidth - textSpacing
         end
         while #nameToDraw > 5 and (nameX + getTextManager():MeasureStringX(self.font, nameToDraw .. "...") > truncBoundary) do
             nameToDraw = string.sub(nameToDraw, 1, #nameToDraw - 1)
@@ -130,7 +131,7 @@ function ModListBox:doDrawItem(y, item, alt)
     self:drawText(nameToDraw, height*2, y+itemPadY, r, g, b, 0.9, self.font)
 
     if categoryText ~= "" then
-        local catX = nameX + getTextManager():MeasureStringX(self.font, nameToDraw) + 5
+        local catX = nameX + getTextManager():MeasureStringX(self.font, nameToDraw) + textSpacing
         local catPadY = (height - FONT_HGT_SMALL) / 2
         self:drawText(categoryText, catX, y + catPadY, 0.6, 0.6, 0.6, 0.9, UIFont.Small)
     end
