@@ -1,3 +1,12 @@
+# 1.5.1
+**FIXES**
+- Fixed duplication in Russian localization.
+
+**MODDING**
+- The list of assignable categories has been adjusted.
+    - Added 11 new categories: "Animations", "Climate", "Equipment", "Immersion", "Lighting", "Overhaul", "Performance", "Roleplay", "Utility", "Voices" and "Zombies".
+    - Removed categories: "Hardmode" and "Military".
+
 # 1.5.0
 **NEW**
 - Server settings screen has been redesigned and simplified.
