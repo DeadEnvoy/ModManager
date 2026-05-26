@@ -1,5 +1,5 @@
 require "ISUI/ISPanelJoypad"
-require "OptionScreens/ModSelector/ModInfoPanel"
+require "ModManager/OptionScreens/ModSelector/ModInfoPanel"
 
 local ModManagerData = require("ModManager/Utils/ModListData")
 

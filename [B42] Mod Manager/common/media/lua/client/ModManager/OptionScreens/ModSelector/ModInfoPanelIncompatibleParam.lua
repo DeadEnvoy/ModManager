@@ -1,5 +1,5 @@
 require "ISUI/ISToolTip"
-require "OptionScreens/ModSelector/ModInfoPanelParam"
+require "ModManager/OptionScreens/ModSelector/ModInfoPanelParam"
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local UI_BORDER_SPACING = 10

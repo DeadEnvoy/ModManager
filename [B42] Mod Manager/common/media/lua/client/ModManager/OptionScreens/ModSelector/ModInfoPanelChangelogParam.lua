@@ -1,7 +1,7 @@
 require "ISUI/ISPanelJoypad"
 require "ISUI/ISRichTextPanel"
-require "OptionScreens/ModSelector/ModInfoPanel"
-require "OptionScreens/ModSelector/ModInfoPanelInteractionParam"
+require "ModManager/OptionScreens/ModSelector/ModInfoPanel"
+require "ModManager/OptionScreens/ModSelector/ModInfoPanelInteractionParam"
 
 local UI_BORDER_SPACING = 10
 local Changelog = require("ModManager/Utils/WorkshopSubmit")
