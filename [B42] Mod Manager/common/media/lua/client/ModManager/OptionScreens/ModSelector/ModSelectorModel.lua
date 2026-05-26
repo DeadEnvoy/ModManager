@@ -140,9 +140,10 @@ end
 
 function ModSelector.Model:reloadMods()
     self:loadModDataFromFile()
-    
-    local modListData = ModManagerData:load()
-    
+    self:trackMods()
+
+    local modListData = ModManagerData.data
+
     self.modsByDateAdded = {}
     if modListData.mods then
         local sorted = {}
