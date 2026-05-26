@@ -1,8 +1,6 @@
 require "ISUI/ISPanelJoypad"
 require "OptionScreens/ModSelector/ModInfoPanel"
-require "OptionScreens/ModSelector/ModInfoPanelCategoryParam"
 require "OptionScreens/ModSelector/ModInfoPanelIncompatibleParam"
-require "OptionScreens/ModSelector/ModInfoPanelChangelogParam"
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local BUTTON_HGT = FONT_HGT_SMALL + 6
@@ -42,6 +40,12 @@ function ModInfoPanel:createChildren()
         end
     end
 
+    self.supportPanel = ModInfoPanel.SupportParam:new(0, prevPanel:getBottom() - 1, self.width)
+    self.supportPanel:initialise()
+    self.supportPanel:instantiate()
+    self.supportPanel:setVisible(false)
+    self:addChild(self.supportPanel)
+
     self.dependenciesPanel = ModInfoPanel.InteractionParam:new(0, prevPanel:getBottom()-1, self.width, "Dependencies")
     self.dependenciesPanel:initialise()
     self.dependenciesPanel:instantiate()
@@ -64,11 +68,25 @@ function ModInfoPanel:updateView(modInfo)
     self.titlePanel:setModInfo(modInfo)
     self.descPanel:setModInfo(modInfo)
     self.thumbnailPanel:setModInfo(modInfo)
+    self.supportPanel:setModInfo(modInfo)
 
+    local prevPanel = self.thumbnailPanel
     for _, param in ipairs(self.modInfoParams) do
-        self[param]:setModInfo(modInfo)
+        local panel = self[param]
+        panel:setVisible(true)
+        panel:setY(prevPanel:getBottom() - 1)
+        panel:setModInfo(modInfo)
+        prevPanel = panel
+
+        if param == "Author" and self.supportPanel:hasLinks() then
+            self.supportPanel:setVisible(true)
+            self.supportPanel:setY(prevPanel:getBottom() - 1)
+            prevPanel = self.supportPanel
+        end
     end
 
+    self.supportPanel:setVisible(self.supportPanel:hasLinks())
+    self.dependenciesPanel:setY(prevPanel:getBottom()-1)
     self.dependenciesPanel:setModInfo(modInfo)
     self.incompatiblePanel:setModInfo(modInfo)
     self.incompatiblePanel:setY(self.dependenciesPanel:getBottom()-1)
@@ -112,7 +130,7 @@ function ModInfoPanel:render()
         local w = self.thumbnailPreviewImage:getWidth() * (h / self.thumbnailPreviewImage:getHeight())
         self:drawTextureScaledAspect(self.thumbnailPreviewImage, (self.width - w)/2, self.thumbnailPanel:getBottom() + 16, w, h, 1, 1, 1, 1)
     end
-	self:renderJoypadFocus()
+    self:renderJoypadFocus()
 end
 
 function ModInfoPanel:new(x, y, width, height)
