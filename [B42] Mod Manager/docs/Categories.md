@@ -4,41 +4,50 @@ Mod Manager allows mod authors to assign categories to their mods for better org
 
 ## Available Categories
 
-The following 30+ categories are available for mod authors to assign:
+The following 40 categories are available for mod authors to assign:
 
 | Category | Description |
 |----------|-------------|
 | **Animals** | Mods that add or modify animals, wildlife, pets, or animal-related mechanics |
+| **Animations** | Mods that add or modify animations, animation sets, or animation behavior |
 | **Armor** | Mods focused on protective gear, armor systems, and defensive equipment |
 | **Audio** | Mods that add or modify sounds, music, ambient audio, or audio systems |
 | **Balance** | Mods that adjust game balance, difficulty, or gameplay mechanics |
 | **Building** | Mods related to construction, building mechanics, or new structures |
 | **Crafting** | Mods that add or modify crafting recipes, systems, or mechanics |
 | **Clothing** | Mods that add or modify clothing, outfits, or wearable items |
+| **Climate** | Mods related to weather, temperature, seasons, or climate systems |
+| **Equipment** | Mods that add or modify gear, loadouts, and usable equipment |
 | **Farming** | Mods related to agriculture, farming, crops, or gardening |
 | **Food** | Mods that add or modify food items, cooking, or nutrition systems |
 | **Framework** | Library mods, APIs, or frameworks that other mods depend on |
-| **Hardmode** | Mods that increase difficulty or add hardcore survival elements |
+| **Immersion** | Mods that improve atmosphere, authenticity, and overall immersion |
 | **Interface** | Mods that modify or add UI elements, HUD, menus, or interface systems |
 | **Items** | Mods that add or modify general items, objects, or inventory systems |
+| **Lighting** | Mods that add or modify lighting, visibility, or light effects |
 | **Localization** | Translation mods or language packs |
 | **Literature** | Mods that add books, magazines, notes, or readable content |
 | **Map** | Mods that add new maps, locations, or modify existing areas |
-| **Military** | Mods focused on military equipment, weapons, or tactical gear |
 | **Misc** | Miscellaneous mods that don't fit other categories |
 | **Models** | Mods that add or modify 3D models, animations, or visual assets |
 | **Modpack** | Collections of multiple mods bundled together |
 | **Multiplayer** | Mods specifically designed for or enhancing multiplayer gameplay |
+| **Overhaul** | Mods that broadly rework multiple systems or major parts of gameplay |
+| **Performance** | Mods focused on FPS improvements, optimization, and performance tuning |
 | **QoL** | Quality of Life improvements and convenience features |
 | **Quests** | Mods that add quest systems, missions, or objectives |
 | **Realistic** | Mods that add realism or simulation elements |
+| **Roleplay** | Mods focused on roleplay mechanics, interactions, or storytelling |
 | **Scenario** | Mods that add new game scenarios or challenge modes |
 | **Silly/Fun** | Humorous, joke, or entertainment-focused mods |
 | **Skills** | Mods that add or modify character skills and progression |
 | **Textures** | Mods that add or modify textures, sprites, or visual appearance |
 | **Traits** | Mods that add or modify character traits and perks |
+| **Utility** | Utility mods that improve workflows, setup, or support features |
 | **Vehicles** | Mods that add or modify vehicles, vehicle mechanics, or transportation |
+| **Voices** | Mods that add or modify voices, speech, or vocal audio content |
 | **Weapons** | Mods that add or modify weapons, ammunition, or combat systems |
+| **Zombies** | Mods that add or modify zombie behavior, types, or mechanics |
 
 ## How to Assign a Category
 
@@ -91,6 +100,7 @@ The following aliases are automatically converted:
 | Alias | Converts To |
 |-------|-------------|
 | `Vehicle` | `Vehicles` |
+| `Utilities` | `Utility` |
 
 ## Best Practices
 

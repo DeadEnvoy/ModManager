@@ -4,36 +4,45 @@ local ModManagerData = require("ModManager/Utils/ModListData")
 
 ModSelector.Model.CATEGORIES = {
     "Animals",
+    "Animations",
     "Armor",
     "Audio",
     "Balance",
     "Building",
     "Crafting",
     "Clothing",
+    "Climate",
+    "Equipment",
     "Farming",
     "Food",
     "Framework",
-    "Hardmode",
+    "Immersion",
     "Interface",
     "Items",
+    "Lighting",
     "Localization",
     "Literature",
     "Map",
-    "Military",
     "Misc",
     "Models",
     "Modpack",
     "Multiplayer",
+    "Overhaul",
+    "Performance",
     "QoL",
     "Quests",
     "Realistic",
+    "Roleplay",
     "Scenario",
     "Silly/Fun",
     "Skills",
     "Textures",
     "Traits",
+    "Utility",
     "Vehicles",
+    "Voices",
     "Weapons",
+    "Zombies",
 }
 
 local CATEGORY_LOOKUP = {}
@@ -41,6 +50,7 @@ for _, name in ipairs(ModSelector.Model.CATEGORIES) do
     CATEGORY_LOOKUP[string.lower(name)] = name;
 end
 CATEGORY_LOOKUP["vehicle"] = "Vehicles";
+CATEGORY_LOOKUP["utilities"] = "Utility";
 
 local original_new = ModSelector.Model.new
 function ModSelector.Model:new(view)
