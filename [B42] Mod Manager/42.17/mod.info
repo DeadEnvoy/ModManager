@@ -9,3 +9,4 @@ versionMin=42.17.0
 modversion=1.5.2
 require=ModLoadOrderSorter_b42
 incompatible=ZBetterModList,WorkshopUpdateCheck,ClientModsToServer,twistmultiplayerui
+tribute=https://web.tribute.tg/d/KU3
