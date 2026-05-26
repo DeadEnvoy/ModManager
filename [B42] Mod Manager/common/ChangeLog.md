@@ -1,11 +1,24 @@
-# 1.5.1
-**FIXES**
-- Fixed duplication in Russian localization.
+# 1.5.2
+**UI**
+- Added a fallback icon for mods that don't provide one.
+- Mods whose authors accept donations now show a support indicator.
 
+**MODDING**
+- Mod authors can now add support options to mod.info.
+    - Supported services: Ko-fi, Buy Me a Coffee, Patreon, Boosty, DonationAlerts, Tribute.
+- Fixed Markdown-to-plain-text conversion for quoted links and issue references.
+
+**FIXES**
+- Fixed a crash when opening the mod list ([#1](https://github.com/DeadEnvoy/ModManager/issues/1)).
+
+# 1.5.1
 **MODDING**
 - The list of assignable categories has been adjusted.
     - Added 11 new categories: "Animations", "Climate", "Equipment", "Immersion", "Lighting", "Overhaul", "Performance", "Roleplay", "Utility", "Voices" and "Zombies".
     - Removed categories: "Hardmode" and "Military".
+
+**FIXES**
+- Fixed duplication in Russian localization.
 
 # 1.5.0
 **NEW**
@@ -32,6 +45,13 @@
     - Information about older versions is now displayed in a semi-transparent style.
 - Windows, icons, and UI elements now adapt to resolution.
 
+**MODDING**
+- A documentation section has been added to the project directory.
+- Publishing modifications to Steam Workshop has been changed.
+    - Automatic conversion of Markdown changelog format to Steam BBCode has been added.
+    - The ability to choose changelog format when publishing a mod has been removed.
+- Adding images to the mod settings window has been simplified.
+
 **FIXES**
 - [Mod Update and Alert System](https://steamcommunity.com/sharedfiles/filedetails/?id=3077900375).
     - Added pcall wrapper to prevent crash on Linux when mod is missing.
@@ -41,13 +61,6 @@
 - Fixed a bug with incorrect display of the number of active mods.
 - Fixed a bug where the "Hidden" flag was not applied.
 - Fixed a bug with non-ASCII character display.
-
-**MODDING**
-- A documentation section has been added to the project directory.
-- Publishing modifications to Steam Workshop has been changed.
-    - Automatic conversion of Markdown changelog format to Steam BBCode has been added.
-    - The ability to choose changelog format when publishing a mod has been removed.
-- Adding images to the mod settings window has been simplified.
 
 **TECHNICAL**
 - The method of storing mod data has been optimized and improved.
