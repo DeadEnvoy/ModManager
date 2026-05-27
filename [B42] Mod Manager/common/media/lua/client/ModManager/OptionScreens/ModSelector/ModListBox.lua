@@ -48,7 +48,7 @@ function ModListBox:doDrawItem(y, item, alt)
 
     if item.item.hasSupportLinks then
         local supportIconSize = BUTTON_HGT * 0.45
-        local supportIconOffset = BUTTON_HGT * 0.06
+        local supportIconOffset = BUTTON_HGT * 0.12
         local supportIconX = iconX + BUTTON_HGT - supportIconSize + supportIconOffset
         local supportIconY = iconY + BUTTON_HGT - supportIconSize + supportIconOffset
         self:drawTextureScaled(getTexture("media/ui/ModManager/Icons/Support.png"), supportIconX, supportIconY, supportIconSize, supportIconSize, 1, 1, 1, 1)
