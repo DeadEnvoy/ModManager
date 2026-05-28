@@ -380,15 +380,37 @@ end
 
 local function getVanillaMapFolders()
     local result = {};
-    for _, mapFolder in ipairs(getMapDirectoryTable()) do
+    local sortedResult = {};
+    local mapGroups = MapGroups.new();
+    mapGroups:createGroups(ActiveMods.getById("serversettings"), true, false);
+    local mapFolders = mapGroups:getAllMapsInOrder();
+    for i = 1, mapFolders:size() do
+        local mapFolder = mapFolders:get(i - 1);
         if mapFolder ~= "challengemaps" and isVanillaMap(mapFolder) then
             local info = getMapInfo(mapFolder);
-            if not (info.only_for_game_mode and info.only_for_game_mode ~= "Multiplayer") then
-                table.insert(result, mapFolder);
+            if info and not (info.only_for_game_mode and info.only_for_game_mode ~= "Multiplayer") then
+                if MapsOrder then
+                    local sorted = false;
+                    for orderIndex, orderedMap in ipairs(MapsOrder) do
+                        if orderedMap == mapFolder then
+                            table.insert(sortedResult, orderIndex, mapFolder);
+                            sorted = true;
+                            break;
+                        end
+                    end
+                    if not sorted then
+                        table.insert(result, mapFolder);
+                    end
+                else
+                    table.insert(result, mapFolder);
+                end
             end
         end
     end
-    return result
+    for _, mapFolder in ipairs(result) do
+        table.insert(sortedResult, mapFolder);
+    end
+    return sortedResult
 end
 
 local function findSpawnRegionInList(panel, mapFolder)
