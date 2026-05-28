@@ -1,6 +1,5 @@
 require "ISUI/ISPanelJoypad"
 require "OptionScreens/ModSelector/ModInfoPanel"
-require "OptionScreens/ModSelector/ModInfoPanelIncompatibleParam"
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local BUTTON_HGT = FONT_HGT_SMALL + 6
