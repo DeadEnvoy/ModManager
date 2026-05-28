@@ -80,19 +80,23 @@ local function getMapLots(mapFolder, modsString)
     return nil
 end
 
-local function ensureLotsForMap(mapsPanel, mapFolder, insertBeforeIndex, modsString)
+local function ensureLotsForMap(mapsPanel, mapFolder, insertBeforeIndex, modsString, addedMaps)
     local lots = getMapLots(mapFolder, modsString);
     if not lots then return insertBeforeIndex end
 
     for _, lotFolder in ipairs(lots) do
         local inList = mapsPanel:findMapInList(lotFolder);
         if lotFolder ~= mapFolder and not inList then
-            insertBeforeIndex = ensureLotsForMap(mapsPanel, lotFolder, insertBeforeIndex, modsString);
+            insertBeforeIndex = ensureLotsForMap(mapsPanel, lotFolder, insertBeforeIndex, modsString, addedMaps);
             mapsPanel:addMapToList(lotFolder, insertBeforeIndex);
             insertBeforeIndex = insertBeforeIndex + 1;
             mapsPanel.listbox.selected = insertBeforeIndex - 1;
             mapsPanel.listbox:ensureVisible(mapsPanel.listbox.selected);
-            mapsPanel.pageEdit:notify("addedMap", lotFolder);
+            if addedMaps then
+                table.insert(addedMaps, lotFolder);
+            else
+                mapsPanel.pageEdit:notify("addedMap", lotFolder);
+            end
         end
     end
 
@@ -155,11 +159,11 @@ local function applyModsDiff(pageEdit, settings, addedMods, removedMods)
 
     for _, panel in ipairs(pageEdit.customui) do
         if panel.notify then
-            for _, modID in ipairs(removedMods) do
-                panel:notify("removedMod", modID, modsString);
+            if #removedMods > 0 then
+                panel:notify("removedMods", removedMods, modsString);
             end
-            for _, modID in ipairs(addedMods) do
-                panel:notify("addedMod", modID, modsString);
+            if #addedMods > 0 then
+                panel:notify("addedMods", addedMods, modsString);
             end
         end
     end
@@ -907,6 +911,65 @@ function ServerSettingsScreen:create(...)
                     self.pageEdit:notify("addedMap", mapFolder);
                     self:fillComboBox(modsString);
                 end
+
+                function panel:addMapsForMods(modIDs, modsString, addedMaps)
+                    for _, modID in ipairs(modIDs) do
+                        local mapFolders = getMapFoldersForMod(modID);
+                        if mapFolders then
+                            local insertAt = 1;
+                            for i = 1, mapFolders:size() do
+                                local mapFolder = mapFolders:get(i - 1);
+                                if not self:findMapInList(mapFolder) then
+                                    self:addMapToList(mapFolder, insertAt);
+                                    insertAt = insertAt + 1;
+                                    insertAt = ensureLotsForMap(self, mapFolder, insertAt, modsString, addedMaps);
+                                    self.listbox.selected = 1;
+                                    self.listbox:ensureVisible(self.listbox.selected);
+                                    table.insert(addedMaps, mapFolder);
+                                end
+                            end
+                        end
+                    end
+                end
+
+                function panel:removeMapsForMods(modIDs, removedMaps)
+                    for _, modID in ipairs(modIDs) do
+                        local mapFolders = getMapFoldersForMod(modID);
+                        if mapFolders then
+                            for i = 1, mapFolders:size() do
+                                local mapFolder = mapFolders:get(i - 1);
+                                local index = self:findMapInList(mapFolder);
+                                while index do
+                                    self.listbox:removeItemByIndex(index);
+                                    index = self:findMapInList(mapFolder);
+                                end
+                                table.insert(removedMaps, mapFolder);
+                            end
+                        end
+                    end
+                end
+
+                function panel:removeDependentMaps(modsString, removedMaps)
+                    local changed = true;
+                    while changed do
+                        changed = false;
+                        for i = #self.listbox.items, 1, -1 do
+                            local mapFolder = self.listbox.items[i].item.mapFolder;
+                            local lots = getMapLots(mapFolder, modsString);
+                            if lots then
+                                for _, lot in ipairs(lots) do
+                                    if not self:findMapInList(lot) then
+                                        self.listbox:removeItemByIndex(i);
+                                        table.insert(removedMaps, mapFolder);
+                                        changed = true;
+                                        break
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+
                 if panel.comboBox then
                     panel.comboBox.target = panel;
                     panel.comboBox.onChange = panel.onAddInstalledMap;
@@ -917,59 +980,47 @@ function ServerSettingsScreen:create(...)
 
                 function panel:notify(message, arg1, arg2)
                     if message == "addedMod" then
-                        local modID = arg1;
-                        local modsString = arg2;
-                        local mapFolders = getMapFoldersForMod(modID);
-                        if mapFolders then
-                            local insertAt = 1;
-                            for i = 1, mapFolders:size() do
-                                local mapFolder = mapFolders:get(i - 1);
-                                if not self:findMapInList(mapFolder) then
-                                    self:addMapToList(mapFolder, insertAt);
-                                    insertAt = insertAt + 1;
-                                    insertAt = ensureLotsForMap(self, mapFolder, insertAt, modsString);
-                                    self.listbox.selected = 1;
-                                    self.listbox:ensureVisible(self.listbox.selected);
-                                    self.pageEdit:notify("addedMap", mapFolder);
-                                end
-                            end
+                        local addedMaps = {};
+                        self:addMapsForMods({ arg1 }, arg2, addedMaps);
+                        for _, mapFolder in ipairs(addedMaps) do
+                            self.pageEdit:notify("addedMap", mapFolder);
                         end
-                        self:fillComboBox(modsString);
+                        self:fillComboBox(arg2);
+                    elseif message == "addedMods" then
+                        local addedMaps = {};
+                        self:addMapsForMods(arg1, arg2, addedMaps);
+                        if #addedMaps > 0 then
+                            self.pageEdit:notify("addedMaps", addedMaps);
+                        end
+                        self:fillComboBox(arg2);
                     elseif message == "removedMod" then
-                        local modID = arg1;
-                        local modsString = arg2;
-                        self:fillComboBox(modsString);
-                        local mapFolders = getMapFoldersForMod(modID);
-                        if mapFolders then
-                            for i = 1, mapFolders:size() do
-                                local mapFolder = mapFolders:get(i - 1);
-                                local index = self:findMapInList(mapFolder);
-                                while index do
-                                    self.listbox:removeItemByIndex(index);
-                                    index = self:findMapInList(mapFolder);
-                                end
-                                self.pageEdit:notify("removedMap", mapFolder);
-                            end
+                        local removedMaps = {};
+                        self:removeMapsForMods({ arg1 }, removedMaps);
+                        for _, mapFolder in ipairs(removedMaps) do
+                            self.pageEdit:notify("removedMap", mapFolder);
                         end
+                        self:fillComboBox(arg2);
+                    elseif message == "removedMods" then
+                        local removedMaps = {};
+                        self:removeMapsForMods(arg1, removedMaps);
+                        if #removedMaps > 0 then
+                            self.pageEdit:notify("removedMaps", removedMaps);
+                        end
+                        self:fillComboBox(arg2);
                     elseif message == "removedMap" then
                         local modsString = self.pageEdit and self.pageEdit.settings and self.pageEdit.settings:getServerOptions():getOptionByName("Mods"):getValue() or nil;
-                        local changed = true;
-                        while changed do
-                            changed = false;
-                            for i = #self.listbox.items, 1, -1 do
-                                local mapFolder = self.listbox.items[i].item.mapFolder;
-                                local lots = getMapLots(mapFolder, modsString);
-                                if lots then
-                                    for _, lot in ipairs(lots) do
-                                        if not self:findMapInList(lot) then
-                                            self.listbox:removeItemByIndex(i);
-                                            self.pageEdit:notify("removedMap", mapFolder);
-                                            changed = true;
-                                            break
-                                        end
-                                    end
-                                end
-                            end
+                        local removedMaps = {};
+                        self:removeDependentMaps(modsString, removedMaps);
+                        for _, mapFolder in ipairs(removedMaps) do
+                            self.pageEdit:notify("removedMap", mapFolder);
+                        end
+                        self:fillComboBox(modsString);
+                    elseif message == "removedMaps" then
+                        local modsString = self.pageEdit and self.pageEdit.settings and self.pageEdit.settings:getServerOptions():getOptionByName("Mods"):getValue() or nil;
+                        local removedMaps = {};
+                        self:removeDependentMaps(modsString, removedMaps);
+                        if #removedMaps > 0 then
+                            self.pageEdit:notify("removedMaps", removedMaps);
                         end
                         self:fillComboBox(modsString);
                     end
@@ -1102,9 +1153,8 @@ function ServerSettingsScreen:create(...)
                     self.settings:getServerOptions():getOptionByName("SpawnPoint"):setValue(self.entry:getText());
                 end
 
-                function panel:notify(message, arg1, arg2)
-                    if message == "addedMap" then
-                        local mapFolder = arg1;
+                function panel:addSpawnRegionsForMaps(mapFolders)
+                    for _, mapFolder in ipairs(mapFolders) do
                         if mapFolder == "Muldraugh, KY" then
                             for _, vanillaFolder in ipairs(getVanillaMapFolders()) do
                                 if not findSpawnRegionInList(self, vanillaFolder) then
@@ -1116,10 +1166,11 @@ function ServerSettingsScreen:create(...)
                                 self:addToList(mapFolder, "media/maps/" .. mapFolder .. "/spawnpoints.lua");
                             end
                         end
-                        local modsString = self.settings:getServerOptions():getOptionByName("Mods"):getValue();
-                        fillSpawnRegionsComboBox(self, modsString);
-                    elseif message == "removedMap" then
-                        local mapFolder = arg1;
+                    end
+                end
+
+                function panel:removeSpawnRegionsForMaps(mapFolders)
+                    for _, mapFolder in ipairs(mapFolders) do
                         if mapFolder == "Muldraugh, KY" then
                             for i = #self.listbox.items, 1, -1 do
                                 if isVanillaMap(self.listbox.items[i].item.name) then
@@ -1134,11 +1185,33 @@ function ServerSettingsScreen:create(...)
                                 self.listbox:removeItemByIndex(index);
                             end
                         end
+                    end
+                end
+
+                function panel:notify(message, arg1, arg2)
+                    if message == "addedMap" then
+                        self:addSpawnRegionsForMaps({ arg1 });
+                        local modsString = self.settings:getServerOptions():getOptionByName("Mods"):getValue();
+                        fillSpawnRegionsComboBox(self, modsString);
+                    elseif message == "addedMaps" then
+                        self:addSpawnRegionsForMaps(arg1);
+                        local modsString = self.settings:getServerOptions():getOptionByName("Mods"):getValue();
+                        fillSpawnRegionsComboBox(self, modsString);
+                    elseif message == "removedMap" then
+                        self:removeSpawnRegionsForMaps({ arg1 });
+                        local modsString = self.settings:getServerOptions():getOptionByName("Mods"):getValue();
+                        fillSpawnRegionsComboBox(self, modsString);
+                    elseif message == "removedMaps" then
+                        self:removeSpawnRegionsForMaps(arg1);
                         local modsString = self.settings:getServerOptions():getOptionByName("Mods"):getValue();
                         fillSpawnRegionsComboBox(self, modsString);
                     elseif message == "addedMod" then
                         fillSpawnRegionsComboBox(self, arg2);
+                    elseif message == "addedMods" then
+                        fillSpawnRegionsComboBox(self, arg2);
                     elseif message == "removedMod" then
+                        fillSpawnRegionsComboBox(self, arg2);
+                    elseif message == "removedMods" then
                         fillSpawnRegionsComboBox(self, arg2);
                     end
                 end
