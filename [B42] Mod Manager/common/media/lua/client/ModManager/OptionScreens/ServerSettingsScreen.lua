@@ -919,7 +919,6 @@ function ServerSettingsScreen:create(...)
                     if message == "addedMod" then
                         local modID = arg1;
                         local modsString = arg2;
-                        self:fillComboBox(modsString);
                         local mapFolders = getMapFoldersForMod(modID);
                         if mapFolders then
                             local insertAt = 1;
@@ -935,6 +934,7 @@ function ServerSettingsScreen:create(...)
                                 end
                             end
                         end
+                        self:fillComboBox(modsString);
                     elseif message == "removedMod" then
                         local modID = arg1;
                         local modsString = arg2;
