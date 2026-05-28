@@ -1,3 +1,9 @@
+# 1.5.3
+**FIXES**
+- Optimized batch adding of mods and maps.
+- Fixed a crash in the server settings screen caused by invalid map data.
+- Fixed the comboBox refresh order when adding a map.
+
 # 1.5.2
 **UI**
 - Added a fallback icon for mods that don't provide one.
