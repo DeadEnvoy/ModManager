@@ -1,3 +1,7 @@
+# 1.5.4
+**FIXES**
+- Fixed an issue with an invalid tooltip key ([#4](https://github.com/DeadEnvoy/ModManager/issues/4)).
+
 # 1.5.3
 **FIXES**
 - Server settings performance and stability.
