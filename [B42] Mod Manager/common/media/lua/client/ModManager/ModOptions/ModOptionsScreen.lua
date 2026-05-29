@@ -124,12 +124,21 @@ function ModOptionsScreen:selectModByID(modID)
 end
 
 function ModOptionsScreen:getOptionTooltip(option)
-    if not option.tooltip then return nil end
-    local tooltipText = getText(option.tooltip)
-    if tooltipText and string.trim(tooltipText) ~= "" then
-        return tooltipText
+    if option.tooltip == nil then return nil end
+
+    if type(option.tooltip) == "string" then
+        if string.trim(option.tooltip) == "" then return nil end
+
+        local tooltipText = getTextOrNull(option.tooltip)
+        if tooltipText and string.trim(tooltipText) ~= "" then
+            return tooltipText
+        end
+        return option.tooltip
     end
-    return nil
+
+    local tooltipRaw = tostring(option.tooltip)
+    if string.trim(tooltipRaw) == "" then return nil end
+    return tooltipRaw
 end
 
 function ModOptionsScreen:onSortChanged()
