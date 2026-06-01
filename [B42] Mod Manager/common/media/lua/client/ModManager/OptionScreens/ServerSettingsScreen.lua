@@ -1132,7 +1132,7 @@ function ServerSettingsScreen:create(...)
                         local file = settings:getSpawnRegionFile(i - 1);
                         if isVanillaMap(name) then
                             local info = getMapInfo(name);
-                            if not (info.only_for_game_mode and info.only_for_game_mode ~= "Multiplayer") then
+                            if info and not (info.only_for_game_mode and info.only_for_game_mode ~= "Multiplayer") then
                                 self:addToList(name, file);
                             end
                         else
