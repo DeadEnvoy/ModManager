@@ -1,3 +1,7 @@
+# 1.5.5
+**FIXES**
+- Fixed missing "Choose mods" button broken by the latest update (42.19.0).
+
 # 1.5.4
 **FIXES**
 - Fixed an issue with an invalid tooltip key ([#4](https://github.com/DeadEnvoy/ModManager/issues/4)).
