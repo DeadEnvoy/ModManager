@@ -2,8 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: "[42.xx] Issue title"
-labels: bug
-assignees: ''
+assignees: 'DeadEnvoy'
 
 ---
 
