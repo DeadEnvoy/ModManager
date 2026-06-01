@@ -654,9 +654,17 @@ function ServerSettingsScreen:create(...)
                     layoutModsPanel(self);
                 end
 
-                if panel.button then
-                    panel.button:setOnClick(onModsPanelButtonChoose, panel);
+                if not panel.button then
+                    local buttonWid = UI_BORDER_SPACING * 2 + getTextManager():MeasureStringX(UIFont.Medium, getText("UI_NewGame_ChooseMods"));
+                    panel.button = ISButton:new(0, 0, buttonWid, BUTTON_HGT, getText("UI_NewGame_ChooseMods"), panel, onModsPanelButtonChoose);
+                    panel.button:initialise();
+                    panel.button.borderColor = {r=1, g=1, b=1, a=0.2};
+                    panel.button:setFont(UIFont.Medium);
+                    panel:addChild(panel.button);
+                    panel:addJoypadColumn({ panel.button });
+                    layoutModsPanel(panel);
                 end
+                panel.button:setOnClick(onModsPanelButtonChoose, panel);
 
                 local warningTexture = getTexture("media/ui/ModManager/Icons/Warning_" .. FONT_HGT_SMALL ..".png");
                 panel.listbox.mouseOverButtonIndex = nil;
