@@ -1,7 +1,7 @@
 require "ISUI/ISPanelJoypad"
 require "ModManager/OptionScreens/ModSelector/ModInfoPanel"
 
-local ModManagerData = require("ModManager/Utils/ModListData")
+local ModListData = require("ModManager/Utils/ModListData")
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local BUTTON_HGT = FONT_HGT_SMALL + 6
@@ -26,7 +26,7 @@ function ModInfoPanel.Param:render()
         local finalText = ""
         local r, g, b = 0.9, 0.9, 0.9
 
-        local isQuerying = ModManagerData.isQuerying and self.workshopID ~= ""
+        local isQuerying = ModListData.isQuerying and self.workshopID ~= ""
 
         if isQuerying then
             finalText = versionText
@@ -107,7 +107,7 @@ function ModInfoPanel.Param:render()
             end
         end
     elseif self.type == "LastUpdate" then
-        local isQuerying = ModManagerData.isQuerying and self.workshopID ~= ""
+        local isQuerying = ModListData.isQuerying and self.workshopID ~= ""
         local textX = self.borderX + UI_BORDER_SPACING
 
         if isQuerying then

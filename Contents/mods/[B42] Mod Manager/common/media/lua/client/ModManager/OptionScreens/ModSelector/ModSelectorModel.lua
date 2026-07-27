@@ -1,6 +1,6 @@
 require "OptionScreens/ModSelector/ModSelectorModel"
 
-local ModManagerData = require("ModManager/Utils/ModListData")
+local ModListData = require("ModManager/Utils/ModListData")
 
 ModSelector.Model.CATEGORIES = {
     "Animals",
@@ -133,12 +133,12 @@ function ModSelector.Model:setSort(sortType)
 end
 
 function ModSelector.Model:isHidden(id)
-    return ModManagerData.data.mods[id].hidden == true;
+    return ModListData.data.mods[id].hidden == true;
 end
 
 function ModSelector.Model:setHidden(id, isHidden)
-    ModManagerData.data.mods[id].hidden = isHidden
-    ModManagerData:save()
+    ModListData.data.mods[id].hidden = isHidden
+    ModListData:save()
     self:refreshMods()
 end
 
@@ -146,15 +146,15 @@ function ModSelector.Model:getCategory(id)
     if self:isCategoryLocked(id) then
         return self.mods[id].category
     end
-    return ModManagerData.data.mods[id].category
+    return ModListData.data.mods[id].category
 end
 
 function ModSelector.Model:setCategory(id, category)
     if self:isCategoryLocked(id) then
         return
     end
-    ModManagerData.data.mods[id].category = category
-    ModManagerData:save()
+    ModListData.data.mods[id].category = category
+    ModListData:save()
     self:refreshMods()
 end
 
@@ -177,7 +177,7 @@ function ModSelector.Model:reloadMods()
     self:loadModDataFromFile()
     self:trackMods()
 
-    local modListData = ModManagerData.data
+    local modListData = ModListData.data
 
     self.modsByDateAdded = {}
     if modListData.mods then
@@ -195,7 +195,7 @@ function ModSelector.Model:reloadMods()
     table.wipe(self.mods)
     ---@diagnostic disable-next-line: undefined-field
     table.wipe(self.sortedMods)
-    
+
     self.incompatibles = {}
     self.requirements = {}
 
@@ -227,7 +227,7 @@ function ModSelector.Model:reloadMods()
                 local workshopID = modInfoFromDir:getWorkshopID()
                 data.workshopIDStr = (workshopID and workshopID ~= "") and tostring(workshopID) or ""
 
-                local cachedData = ModManagerData:getModWorkshopInfo(modId)
+                local cachedData = ModListData:getModWorkshopInfo(modId)
                 if data.workshopIDStr == "" and cachedData and cachedData.workshopID then
                     data.workshopIDStr = tostring(cachedData.workshopID)
                 end
@@ -244,7 +244,7 @@ function ModSelector.Model:reloadMods()
     end
 
     self.ModsEnabled = getCore():getOptionModsEnabled()
-    
+
     self:buildDependencyGraph()
 
     self:refreshMods()
@@ -254,10 +254,10 @@ function ModSelector.Model:buildDependencyGraph()
     local function addIncompatibles(id, data)
         self.incompatibles[id] = self.incompatibles[id] or {}
         if data == nil then return end
-        for i = 0, data:size()-1 do
+        for i = 0, data:size() - 1 do
             local id2 = data:get(i)
             self.incompatibles[id][id2] = true
-            
+
             self.incompatibles[id2] = self.incompatibles[id2] or {}
             self.incompatibles[id2][id] = true
         end
@@ -266,10 +266,10 @@ function ModSelector.Model:buildDependencyGraph()
     local function addRequire(id, data)
         self.requirements[id] = self.requirements[id] or { dependsOn = {}, neededFor = {} }
         if data == nil then return end
-        for i = 0, data:size()-1 do
+        for i = 0, data:size() - 1 do
             local id2 = data:get(i)
             self.requirements[id2] = self.requirements[id2] or { dependsOn = {}, neededFor = {} }
-            
+
             self.requirements[id].dependsOn[id2] = true
             self.requirements[id2].neededFor[id] = true
         end
@@ -296,7 +296,7 @@ function ModSelector.Model:refreshMods()
     for modId, modData in pairs(self.mods) do
         modData.incompatibleWith = self.incompatibles[modId]
         modData.isIncompatible = false
-        
+
         if self.incompatibles[modId] then
             for id, _ in pairs(self.incompatibles[modId]) do
                 if self.mods[id] and self.mods[id].isActive then
@@ -375,8 +375,8 @@ function ModSelector.Model:indexByDateAdded(modID)
 end
 
 function ModSelector.Model:trackMods()
-    local modListData = ModManagerData:load()
-    
+    local modListData = ModListData:load()
+
     local storedModsList = {}
     if modListData.mods then
         local sorted = {}
@@ -433,9 +433,9 @@ function ModSelector.Model:trackMods()
         currentIndex = currentIndex + 1
     end
 
-    ModManagerData.data.mods = newCacheMods
-    ModManagerData:save()
-    
+    ModListData.data.mods = newCacheMods
+    ModListData:save()
+
     self.modsByDateAdded = {}
     local sorted = {}
     for modID, data in pairs(newCacheMods) do
@@ -581,7 +581,7 @@ function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm, s
 
             if self:isModActive(modId) and modInfo:getRequire() then
                 local requiredMods = modInfo:getRequire()
-                for i = 0, requiredMods:size()-1 do
+                for i = 0, requiredMods:size() - 1 do
                     local reqId = requiredMods:get(i)
                     if self.mods[reqId] then
                         self:forceActivateMods(self.mods[reqId].modInfo, true, true, true)
@@ -595,7 +595,7 @@ function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm, s
             if #dependents > 0 then
                 local dependentData = {}
                 for _, depInfo in ipairs(dependents) do
-                    table.insert(dependentData, {name=depInfo:getName(), id=depInfo:getWorkshopID(), modId=depInfo:getId()})
+                    table.insert(dependentData, { name = depInfo:getName(), id = depInfo:getWorkshopID(), modId = depInfo:getId() })
                 end
                 local screenW = getCore():getScreenWidth()
                 local screenH = getCore():getScreenHeight()
@@ -647,7 +647,8 @@ function DisableConfirmPanel:createChildren()
     local spacing = 5
     self.buttons = {}
     for _, v in ipairs(self.data) do
-        local button = ISButton:new(25, y, self.width - 50, buttonHeight, v.name, self, DisableConfirmPanel.onOptionMouseDown)
+        local button = ISButton:new(25, y, self.width - 50, buttonHeight, v.name, self,
+            DisableConfirmPanel.onOptionMouseDown)
         button.modData = v
         button:initialise()
         button:instantiate()
@@ -729,13 +730,13 @@ function DisableConfirmWindow:createChildren()
     self.panel.vscroll.doSetStencil = false
     self:addChild(self.panel)
 
-    self.btnDisable = ISButton:new(self.width/2 - 150 - 5, self.height - 40, 150, 30, getText("UI_btn_accept"), self, DisableConfirmWindow.onOptionMouseDown)
+    self.btnDisable = ISButton:new(self.width / 2 - 150 - 5, self.height - 40, 150, 30, getText("UI_btn_accept"), self, DisableConfirmWindow.onOptionMouseDown)
     self.btnDisable.internal = "DISABLE"
     self.btnDisable:initialise()
     self.btnDisable:instantiate()
     self:addChild(self.btnDisable)
 
-    self.btnCancel = ISButton:new(self.width/2 + 5, self.height - 40, 150, 30, getText("UI_btn_cancel"), self, DisableConfirmWindow.onOptionMouseDown)
+    self.btnCancel = ISButton:new(self.width / 2 + 5, self.height - 40, 150, 30, getText("UI_btn_cancel"), self, DisableConfirmWindow.onOptionMouseDown)
     self.btnCancel.internal = "CANCEL"
     self.btnCancel:initialise()
     self.btnCancel:instantiate()
@@ -767,10 +768,10 @@ function DisableConfirmWindow:onResolutionChange(neww, newh)
     self.panel:setHeight(self.height - panelTop - 50)
     self.panel:onResize()
 
-    self.btnDisable:setX(self.width/2 - 150 - 5)
+    self.btnDisable:setX(self.width / 2 - 150 - 5)
     self.btnDisable:setY(self.height - 40)
 
-    self.btnCancel:setX(self.width/2 + 5)
+    self.btnCancel:setX(self.width / 2 + 5)
     self.btnCancel:setY(self.height - 40)
 end
 
@@ -844,10 +845,10 @@ function ModSelector.Model:acceptChanges()
     elseif self.isServerSettingsMods then
         local result = {}
         local mods = activeMods:getMods()
-        for i = 0, mods:size()-1 do
+        for i = 0, mods:size() - 1 do
             local id = mods:get(i)
             local info = self.mods[id].modInfo
-            table.insert(result, {modID = id, modInfo = info})
+            table.insert(result, { modID = id, modInfo = info })
         end
         self.serverSettingsFinishFunc(result)
         self.isServerSettingsMods = false
@@ -870,7 +871,7 @@ function ModSelector.Model:acceptChanges()
         local activeModList = activeMods:getMods()
         local currentIds = {}
         local currentCount = 0
-        for i=0, activeModList:size()-1 do
+        for i = 0, activeModList:size() - 1 do
             currentIds[activeModList:get(i)] = true
             currentCount = currentCount + 1
         end
@@ -881,16 +882,22 @@ function ModSelector.Model:acceptChanges()
             if #data == currentCount then
                 local match = true
                 for _, id in ipairs(data) do
-                    if not currentIds[id] then match = false break end
+                    if not currentIds[id] then
+                        match = false
+                        break
+                    end
                 end
-                if match then isDuplicate = true break end
+                if match then
+                    isDuplicate = true
+                    break
+                end
             end
         end
 
         local HISTORY_LIMIT = 30
         local historyLines = {}
         local file = getFileReader("ModManager/HistoryData.cfg", false)
-        
+
         if file then
             local line = file:readLine()
             while line ~= nil do
@@ -904,11 +911,14 @@ function ModSelector.Model:acceptChanges()
                             historyIds[modId] = true
                             historyCount = historyCount + 1
                         end
-                        
+
                         if historyCount == currentCount then
                             local match = true
                             for id, _ in pairs(currentIds) do
-                                if not historyIds[id] then match = false break end
+                                if not historyIds[id] then
+                                    match = false
+                                    break
+                                end
                             end
                             if match then isDuplicate = true end
                         end
@@ -922,7 +932,7 @@ function ModSelector.Model:acceptChanges()
 
         if not isDuplicate then
             table.sort(historyLines, function(a, b) return a > b end)
-            
+
             while #historyLines >= HISTORY_LIMIT do
                 table.remove(historyLines)
             end
@@ -935,7 +945,7 @@ function ModSelector.Model:acceptChanges()
                 table.insert(modsStrTable, ";")
             end
             local newLine = dateStr .. ":" .. table.concat(modsStrTable)
-            
+
             table.insert(historyLines, 1, newLine)
 
             local writer = getFileWriter("ModManager/HistoryData.cfg", true, false)

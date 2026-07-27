@@ -1,16 +1,16 @@
 if isServer() then return; end
 
 local SteamWorkshopQuery = {};
-local ModManagerData = require("ModManager/Utils/ModListData");
+local ModListData = require("ModManager/Utils/ModListData");
 
 LuaEventManager.AddEvent("OnWorkshopUpdate");
 
 function SteamWorkshopQuery.OnSteamQueryCompleted(status, info)
-    ModManagerData.isQuerying = false;
+    ModListData.isQuerying = false;
     if status == "Completed" then
-        ModManagerData:updateWorkshopData(info, SteamWorkshopQuery.modMap);
-        ModManagerData:updateUsageStats(SteamWorkshopQuery.queriedCount or 0);
-        ModManagerData:save(); triggerEvent("OnWorkshopUpdate");
+        ModListData:updateWorkshopData(info, SteamWorkshopQuery.modMap);
+        ModListData:updateUsageStats(SteamWorkshopQuery.queriedCount or 0);
+        ModListData:save(); triggerEvent("OnWorkshopUpdate");
     end
 end
 
@@ -42,7 +42,7 @@ function SteamWorkshopQuery.query()
     end
 
     if not workshopIDs:isEmpty() then
-        local modListData = ModManagerData:load();
+        local modListData = ModListData:load();
         local now = os.time();
         local usage = modListData.workshop and modListData.workshop.usage or { time = 0, requests = 0 };
 
@@ -55,7 +55,7 @@ function SteamWorkshopQuery.query()
             return;
         end
 
-        ModManagerData.isQuerying = true;
+        ModListData.isQuerying = true;
         SteamWorkshopQuery.queriedCount = workshopIDs:size();
         querySteamWorkshopItemDetails(workshopIDs, SteamWorkshopQuery.OnSteamQueryCompleted, nil);
     else

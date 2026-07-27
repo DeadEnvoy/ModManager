@@ -1,6 +1,6 @@
 if isServer() then return; end
 
-local ModManagerData = {
+local ModListData = {
     data = {},
     isQuerying = false
 }
@@ -56,7 +56,7 @@ local function readFileContent(filename)
     return content ~= "" and content or nil
 end
 
-function ModManagerData:load()
+function ModListData:load()
     self.data = deepCopy(defaultData)
 
     local content = readFileContent("ModManager/ModListData.lua")
@@ -83,7 +83,7 @@ local function quoteStr(s)
     return string.format("%q", tostring(s or ""))
 end
 
-function ModManagerData:save()
+function ModListData:save()
     local content = {}
 
     table.insert(content, "return {\r\n")
@@ -162,22 +162,22 @@ function ModManagerData:save()
     return true
 end
 
-function ModManagerData:getWorkshopData()
+function ModListData:getWorkshopData()
     return self.data and self.data.workshop
 end
 
-function ModManagerData:getAlertsData()
+function ModListData:getAlertsData()
     return self.data and self.data.alerts
 end
 
-function ModManagerData:getModWorkshopInfo(modID)
+function ModListData:getModWorkshopInfo(modID)
     if self.data and self.data.workshop and self.data.workshop.mods and self.data.workshop.mods[modID] then
         return self.data.workshop.mods[modID]
     end
     return nil
 end
 
-function ModManagerData:updateWorkshopData(steamInfo, modMap)
+function ModListData:updateWorkshopData(steamInfo, modMap)
     if not self.data.workshop then
         self.data.workshop = { usage = { time = 0, requests = 0 }, mods = {} }
     end
@@ -203,7 +203,7 @@ function ModManagerData:updateWorkshopData(steamInfo, modMap)
     end
 end
 
-function ModManagerData:updateUsageStats(numRequests)
+function ModListData:updateUsageStats(numRequests)
     if not self.data.workshop then self:load() end
     if not self.data.workshop.usage then
         self.data.workshop.usage = { time = 0, requests = 0 }
@@ -218,4 +218,4 @@ function ModManagerData:updateUsageStats(numRequests)
     self.data.workshop.usage.requests = (self.data.workshop.usage.requests or 0) + numRequests
 end
 
-return ModManagerData
+return ModListData
