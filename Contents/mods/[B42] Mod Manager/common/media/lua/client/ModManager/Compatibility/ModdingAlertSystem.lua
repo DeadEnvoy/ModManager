@@ -1,6 +1,39 @@
 ---@diagnostic disable: inject-field
 require "OptionScreens/ModSelector/ModSelector"
 require "ISUI/ISRichTextPanel"
+require "ModManager/OptionScreens/ModSelector/ModInfoPanelSupportParam"
+require "ModManager/OptionScreens/ModSelector/ModSelectorModel"
+
+-- The welcome message is hidden to get straight to the update list, so the Ko-fi
+-- link for Chuckleberry Finn is injected here to keep the support option visible.
+
+local original_setModInfo = ModInfoPanel.SupportParam.setModInfo
+function ModInfoPanel.SupportParam:setModInfo(modInfo)
+    original_setModInfo(self, modInfo)
+    if modInfo and modInfo:getId() == "ChuckleberryFinnAlertSystem" and #self.supportLinks == 0 then
+        local link = {
+            name = "Ko-fi",
+            url = "https://steamcommunity.com/linkfilter/?u=https://ko-fi.com/chuckleberryfinn"
+        }
+        self.supportLinks = { link }
+        self.displayLinks = { link }
+    end
+end
+
+local original_reloadMods = ModSelector.Model.reloadMods
+function ModSelector.Model:reloadMods()
+    original_reloadMods(self)
+    local modData = self.mods and self.mods["ChuckleberryFinnAlertSystem"]
+    if modData and not modData.hasSupportLinks then
+        modData.hasSupportLinks = true
+        modData.supportLinks = {
+            {
+                name = "Ko-fi",
+                url = "https://steamcommunity.com/linkfilter/?u=https://ko-fi.com/chuckleberryfinn"
+            }
+        }
+    end
+end
 
 local ok1, alertSystem = pcall(require, "chuckleberryFinnModdingAlertSystem")
 local ok2, changelog_handler = pcall(require, "chuckleberryFinnModding_modChangelog")
