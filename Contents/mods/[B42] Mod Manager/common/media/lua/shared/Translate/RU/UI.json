@@ -121,5 +121,7 @@
     "UI_modinfopanel_Month_Short_9": "сент.",
     "UI_modinfopanel_Month_Short_10": "окт.",
     "UI_modinfopanel_Month_Short_11": "нояб.",
-    "UI_modinfopanel_Month_Short_12": "дек."
+    "UI_modinfopanel_Month_Short_12": "дек.",
+
+    "UI_alertSystem_noUpdates": "Обновлений модов за последние две недели не было."
 }

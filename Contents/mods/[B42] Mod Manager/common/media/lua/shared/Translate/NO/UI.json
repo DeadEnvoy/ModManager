@@ -124,5 +124,7 @@
     "UI_modinfopanel_Month_Short_9": "sep.",
     "UI_modinfopanel_Month_Short_10": "okt.",
     "UI_modinfopanel_Month_Short_11": "nov.",
-    "UI_modinfopanel_Month_Short_12": "des."
+    "UI_modinfopanel_Month_Short_12": "des.",
+
+    "UI_alertSystem_noUpdates": "Ingen modoppdateringer de siste to ukene."
 }

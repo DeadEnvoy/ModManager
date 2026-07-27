@@ -124,5 +124,7 @@
     "UI_modinfopanel_Month_Short_9": "9月",
     "UI_modinfopanel_Month_Short_10": "10月",
     "UI_modinfopanel_Month_Short_11": "11月",
-    "UI_modinfopanel_Month_Short_12": "12月"
+    "UI_modinfopanel_Month_Short_12": "12月",
+
+    "UI_alertSystem_noUpdates": "过去两周内没有模组更新。"
 }

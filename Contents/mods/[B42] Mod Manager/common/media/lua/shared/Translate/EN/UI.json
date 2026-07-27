@@ -124,5 +124,7 @@
     "UI_modinfopanel_Month_Short_9": "Sep",
     "UI_modinfopanel_Month_Short_10": "Oct",
     "UI_modinfopanel_Month_Short_11": "Nov",
-    "UI_modinfopanel_Month_Short_12": "Dec"
+    "UI_modinfopanel_Month_Short_12": "Dec",
+
+    "UI_alertSystem_noUpdates": "No mod updates in the last two weeks."
 }

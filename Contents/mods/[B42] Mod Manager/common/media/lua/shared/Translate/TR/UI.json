@@ -124,5 +124,7 @@
     "UI_modinfopanel_Month_Short_9": "Eyl",
     "UI_modinfopanel_Month_Short_10": "Eki",
     "UI_modinfopanel_Month_Short_11": "Kas",
-    "UI_modinfopanel_Month_Short_12": "Ara"
+    "UI_modinfopanel_Month_Short_12": "Ara",
+
+    "UI_alertSystem_noUpdates": "Son iki haftada mod güncellemesi yok."
 }

@@ -124,5 +124,7 @@
     "UI_modinfopanel_Month_Short_9": "9",
     "UI_modinfopanel_Month_Short_10": "10",
     "UI_modinfopanel_Month_Short_11": "11",
-    "UI_modinfopanel_Month_Short_12": "12"
+    "UI_modinfopanel_Month_Short_12": "12",
+
+    "UI_alertSystem_noUpdates": "지난 2주 동안 모드 업데이트가 없습니다."
 }

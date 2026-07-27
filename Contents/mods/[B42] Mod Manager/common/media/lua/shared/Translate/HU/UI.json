@@ -124,5 +124,7 @@
     "UI_modinfopanel_Month_Short_9": "szept.",
     "UI_modinfopanel_Month_Short_10": "okt.",
     "UI_modinfopanel_Month_Short_11": "nov.",
-    "UI_modinfopanel_Month_Short_12": "dec."
+    "UI_modinfopanel_Month_Short_12": "dec.",
+
+    "UI_alertSystem_noUpdates": "Az elmúlt két hétben nem volt mod-frissítés."
 }
