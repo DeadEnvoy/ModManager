@@ -1,5 +1,4 @@
 ---@diagnostic disable: inject-field
-require "OptionScreens/ModSelector/ModSelector"
 require "ISUI/ISRichTextPanel"
 require "ModManager/OptionScreens/ModSelector/ModInfoPanelSupportParam"
 require "ModManager/OptionScreens/ModSelector/ModSelectorModel"
@@ -37,7 +36,7 @@ end
 
 local ok1, alertSystem = pcall(require, "chuckleberryFinnModdingAlertSystem")
 local ok2, changelog_handler = pcall(require, "chuckleberryFinnModding_modChangelog")
-local ModManagerData = require("ModManager/Utils/ModListData")
+local ModListData = require("ModManager/Utils/ModListData")
 local Changelog = require("ModManager/Utils/WorkshopSubmit")
 
 if (ok1 and ok2) and (alertSystem and changelog_handler) then
@@ -125,23 +124,23 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
 
     local function drawAlertChrome(self, layout, subHeader, alertTitle, modAuthor)
         if layout.alertIcon then
-            self:drawTextureScaled(layout.alertIcon, 4+(alertSystem.padding/3), layout.headerY, 32, 32, 1, 1, 1, 1)
+            self:drawTextureScaled(layout.alertIcon, 4 + (alertSystem.padding / 3), layout.headerY, 32, 32, 1, 1, 1, 1)
         end
 
-        local maxSubheaderX = math.min(((alertSystem.padding*1.5)+layout.headerW), (self.width-layout.subHeaderW))
+        local maxSubheaderX = math.min(((alertSystem.padding * 1.5) + layout.headerW), (self.width - layout.subHeaderW))
         if subHeader then
-            self:drawText(subHeader, maxSubheaderX, layout.headerY + (alertSystem.padding/5), 1, 1, 1, 0.7, UIFont.NewSmall)
+            self:drawText(subHeader, maxSubheaderX, layout.headerY + (alertSystem.padding / 5), 1, 1, 1, 0.7, UIFont.NewSmall)
         end
 
         self:drawText(layout.header, layout.headerX, layout.headerY, 1, 1, 1, 0.96, UIFont.NewMedium)
 
-        local titleY = layout.headerY + layout.headerH + (alertSystem.padding/7)
+        local titleY = layout.headerY + layout.headerH + (alertSystem.padding / 7)
         if alertTitle then
             self:drawText(alertTitle, layout.headerX, titleY, 1, 1, 1, 0.85, UIFont.NewSmall)
         end
 
         if modAuthor then
-            local authorX = self.alertContentPanel:getX() + self.alertContentPanel:getWidth() - (alertSystem.padding/4)
+            local authorX = self.alertContentPanel:getX() + self.alertContentPanel:getWidth() - (alertSystem.padding / 4)
             self:drawTextRight(modAuthor, authorX, titleY, 1, 1, 1, 0.85, UIFont.NewSmall)
         end
 
@@ -153,9 +152,9 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
             local modID = self.alertsLoaded[self.alertSelected]; local alertData = self.latestAlerts[modID]
             if alertData and not alertData.alreadyStored then
                 alertData.alreadyStored = true; self.alertsOld = self.alertsOld + 1
-                if ModManagerData.data.alerts and ModManagerData.data.alerts[modID] then
-                    ModManagerData.data.alerts[modID].seen = true
-                    ModManagerData:save()
+                if ModListData.data.alerts and ModListData.data.alerts[modID] then
+                    ModListData.data.alerts[modID].seen = true
+                    ModListData:save()
                 end
             end
         end
@@ -165,8 +164,8 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
     function alertSystem:onMouseDown(x, y)
         if y <= 32 then
             local click = 0
-            if (x >= self.alertLeftX+8 and x <= self.alertLeftX+24) then click = -1 end
-            if (x >= self.alertRightX+8 and x <= self.alertRightX+24) then click = 1 end
+            if (x >= self.alertLeftX + 8 and x <= self.alertLeftX + 24) then click = -1 end
+            if (x >= self.alertRightX + 8 and x <= self.alertRightX + 24) then click = 1 end
             if click ~= 0 then
                 self:markCurrentAlertAsSeen()
             end
@@ -177,7 +176,7 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
     local original_onMouseWheel = alertSystem.onMouseWheel
     function alertSystem:onMouseWheel(del)
         local x, y = self:getMouseX(), self:getMouseY()
-        if x >= self.alertLeftX and x <= self.alertLeftX+self.alertBarSpan and y >= 10 and y <= 10+12 then
+        if x >= self.alertLeftX and x <= self.alertLeftX + self.alertBarSpan and y >= 10 and y <= 10 + 12 then
             self:markCurrentAlertAsSeen()
         end
         return original_onMouseWheel(self, del)
@@ -192,9 +191,9 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
 
     function alertSystem:processUpdates()
         local twoWeeksAgo = os.time() - 14 * 24 * 60 * 60
-        local existingAlerts = ModManagerData:getAlertsData() or {}
+        local existingAlerts = ModListData:getAlertsData() or {}
         local newAlerts = {}
-        local workshopMods = ModManagerData.data.workshop and ModManagerData.data.workshop.mods or {}
+        local workshopMods = ModListData.data.workshop and ModListData.data.workshop.mods or {}
 
         for modID, wsData in pairs(workshopMods) do
             local ts = wsData.lastUpdate
@@ -218,7 +217,7 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
             end
         end
 
-        ModManagerData.data.alerts = newAlerts; ModManagerData:save()
+        ModListData.data.alerts = newAlerts; ModListData:save()
 
         local sortedItems = {}
         for modID, data in pairs(newAlerts) do
@@ -273,7 +272,7 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
         self.alertContentPanel:removeFromUIManager()
         self:removeChild(self.alertContentPanel)
 
-        local panel = ISRichTextPanel:new(self.padding, self.padding*3.5, self.width-self.padding*2, self.height-self.padding*5.3)
+        local panel = ISRichTextPanel:new(self.padding, self.padding * 3.5, self.width - self.padding * 2, self.height - self.padding * 5.3)
         panel:initialise()
         panel:instantiate()
         panel:setAnchorRight(true)
@@ -281,8 +280,8 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
         panel.defaultFont = UIFont.NewSmall
         panel.autosetheight = false
         panel.clip = true
-        panel.backgroundColor = {r=0, g=0, b=0, a=0}
-        panel.borderColor = {r=1, g=1, b=1, a=0.4}
+        panel.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
+        panel.borderColor = { r = 1, g = 1, b = 1, a = 0.4 }
         panel.marginLeft = alertSystem.padding / 3
         panel.marginTop = alertSystem.padding / 3
         panel.marginBottom = alertSystem.padding / 3
@@ -309,8 +308,8 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
         alertSystem.alertsLayout = {}
 
         if getSteamModeActive() then
-            if not ModManagerData.data.workshop then
-                ModManagerData:load()
+            if not ModListData.data.workshop then
+                ModListData:load()
             end
 
             self:processUpdates()
@@ -326,7 +325,7 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
     function alertSystem:prerender()
         ISPanelJoypad.prerender(self)
 
-        local collapseWidth = not self.collapsed and self.width or self.collapse.width+10
+        local collapseWidth = not self.collapsed and self.width or self.collapse.width + 10
         self:drawRect(0, 0, collapseWidth, self.height, 0.8, 0, 0, 0)
         self:drawRectBorder(0, 0, collapseWidth, self.height, 0.8, 1, 1, 1)
 
@@ -356,7 +355,7 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
 
             local titleY = drawAlertChrome(self, layout, subHeader, alertTitle, modAuthor)
 
-            self.alertContentPanel:setY((titleY+layout.titleH+(alertSystem.padding/7)))
+            self.alertContentPanel:setY((titleY + layout.titleH + (alertSystem.padding / 7)))
             local panelH = self.height - (alertSystem.padding * 1.8) - self.alertContentPanel:getY()
             self.alertContentPanel:setHeight(panelH)
             if self.alertContentPanel.vscroll then
@@ -396,7 +395,6 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
         end
     end
 
-    local original_render = alertSystem.render
     function alertSystem:render()
         alertSystem.alertsLoaded = self.alertsLoaded or {}
         alertSystem.alertsOld = self.alertsOld or 0
