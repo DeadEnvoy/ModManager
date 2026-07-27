@@ -53,7 +53,7 @@ function ModInfoPanel.IncompatibleParam:setModInfo(modInfo)
 
     if #incompatibleIDs == 0 then return end
 
-    local fullText_tooltip = ""
+    local fullText_tooltip = {}
     local fullText_display = ""
     local availableWidth = self.width - self.borderX - UI_BORDER_SPACING * 2
     local spaceWidth = getTextManager():MeasureStringX(UIFont.Small, ", ")
@@ -80,18 +80,17 @@ function ModInfoPanel.IncompatibleParam:setModInfo(modInfo)
             modInfo2 = incompatibleModData.modInfo
         end
 
+        table.insert(fullText_tooltip, string.format(" <RGB:%.3f,%.3f,%.3f> %s ", color.r, color.g, color.b, partText))
         if i > 1 then
-            fullText_tooltip = fullText_tooltip .. ", "
             fullText_display = fullText_display .. ", "
         end
-        fullText_tooltip = fullText_tooltip .. partText
         fullText_display = fullText_display .. partText
 
         table.insert(self.displayParts, { text = partText, color = color, available = available, modInfo = modInfo2, id = incompatibleID })
     end
 
     if getTextManager():MeasureStringX(UIFont.Small, fullText_display) > availableWidth then
-        self.tooltip = fullText_tooltip
+        self.tooltip = table.concat(fullText_tooltip, "<LINE>")
         local truncatedParts = {}
         local currentWidth = 0
         for _, part in ipairs(self.displayParts) do
