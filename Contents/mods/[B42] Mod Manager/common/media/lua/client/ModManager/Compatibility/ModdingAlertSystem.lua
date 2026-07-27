@@ -337,6 +337,29 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
                 self.alertContentPanel:setText(" <TEXT> <RGB:0.8,0.8,0.8> " .. alertContents)
                 self.alertContentPanel:paginate()
             end
+        elseif not self.collapsed then
+            local bottomPad = alertSystem.padding * 1.8
+            local expandedY = bottomPad
+            local expandedH = self.height - bottomPad * 2
+            self.alertContentPanel:setY(expandedY)
+            self.alertContentPanel:setHeight(expandedH)
+
+            local noUpdatesText = getText("UI_alertSystem_noUpdates")
+            local font = UIFont.NewSmall
+            local textW = getTextManager():MeasureStringX(font, noUpdatesText)
+            local textH = getTextManager():MeasureStringY(font, noUpdatesText)
+            local panelX = self.alertContentPanel:getX()
+            local panelW = self.alertContentPanel:getWidth()
+            local textX = panelX + (panelW - textW) / 2
+            local textY = expandedY + (expandedH - textH) / 2
+            self:drawText(noUpdatesText, textX, textY, 1, 1, 1, 0.5, font)
+
+            if self.lastAlertModID ~= nil then
+                self.lastAlertModID = nil
+                self.alertContentPanel:setScrollHeight(0)
+                self.alertContentPanel:setYScroll(0)
+                self.alertContentPanel:setText("")
+            end
         end
     end
 
@@ -344,7 +367,35 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
     function alertSystem:render()
         alertSystem.alertsLoaded = self.alertsLoaded or {}
         alertSystem.alertsOld = self.alertsOld or 0
-        original_render(self)
+
+        ISPanelJoypad.render(self)
+
+        if not self.collapsed then
+            if alertSystem.spiffoTexture then
+                local textureYOffset = self.height - (alertSystem.spiffoTexture:getHeight())
+                self:drawTexture(alertSystem.spiffoTexture, self.width - (alertSystem.padding * 1.7), textureYOffset, 1, 1, 1, 1)
+            end
+
+            if #alertSystem.alertsLoaded > 0 then
+                local label = tostring(self.alertSelected) .. "/" .. tostring(#alertSystem.alertsLoaded)
+                self:drawText(label, 40, 7, 1, 1, 1, 0.7, UIFont.AutoNormSmall)
+
+                self:drawTexture(alertSystem.alertLeft, self.alertLeftX, 0, 0.7, 1, 1, 1)
+                self:drawTexture(alertSystem.alertRight, self.alertRightX, 0, 0.7, 1, 1, 1)
+
+                local alertBarX = self.alertLeftX + 32
+                local rectWidth = self.alertBarSpan - 32
+                self:drawRectBorder(alertBarX, 10, rectWidth, 12, 0.7, 1, 1, 1)
+
+                local selectedAlertWidth = math.max(2, rectWidth / #alertSystem.alertsLoaded)
+                self:drawRect(alertBarX + (selectedAlertWidth * (self.alertSelected - 1)), 10, selectedAlertWidth, 12, 0.8, 1, 1, 1)
+            end
+        end
+
+        if #alertSystem.alertsLoaded > 0 then
+            local alertImage = (#alertSystem.alertsLoaded - alertSystem.alertsOld) > 0 and alertSystem.alertTextureFull or alertSystem.alertTextureEmpty
+            self:drawTexture(alertImage, 0, 0, 1, 1, 1, 1)
+        end
     end
 
     local original_display = alertSystem.display
