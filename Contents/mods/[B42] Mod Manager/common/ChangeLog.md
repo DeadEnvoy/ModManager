@@ -1,3 +1,8 @@
+# 1.5.7
+**FIXES**
+- Fixed a bug where mod data could not be saved or updated.
+    - The 42.20.0 update restricted getFileWriter to a whitelist of extensions (ini, cfg, txt, log) — .lua files are no longer writable. Existing data is migrated to .ini automatically on first launch.
+
 # 1.5.6
 **UI**
 - Improved the tooltip that appears when hovering over the incompatible mods block if the text overflows.
