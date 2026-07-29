@@ -133,11 +133,14 @@ function ModSelector.Model:setSort(sortType)
 end
 
 function ModSelector.Model:isHidden(id)
-    return ModListData.data.mods[id].hidden == true;
+    local modData = ModListData.data.mods[id]
+    return modData and modData.hidden == true
 end
 
 function ModSelector.Model:setHidden(id, isHidden)
-    ModListData.data.mods[id].hidden = isHidden
+    local mods = ModListData.data.mods
+    if not mods[id] then mods[id] = {} end
+    mods[id].hidden = isHidden
     ModListData:save()
     self:refreshMods()
 end
@@ -146,14 +149,17 @@ function ModSelector.Model:getCategory(id)
     if self:isCategoryLocked(id) then
         return self.mods[id].category
     end
-    return ModListData.data.mods[id].category
+    local modData = ModListData.data.mods[id]
+    return modData and modData.category or ""
 end
 
 function ModSelector.Model:setCategory(id, category)
     if self:isCategoryLocked(id) then
         return
     end
-    ModListData.data.mods[id].category = category
+    local mods = ModListData.data.mods
+    if not mods[id] then mods[id] = {} end
+    mods[id].category = category
     ModListData:save()
     self:refreshMods()
 end
