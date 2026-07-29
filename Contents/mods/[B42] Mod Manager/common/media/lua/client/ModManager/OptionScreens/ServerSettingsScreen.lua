@@ -7,12 +7,12 @@ local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small);
 local FONT_LINE_HGT_SMALL = getTextManager():getFontFromEnum(UIFont.Small):getLineHeight();
 local BUTTON_HGT = FONT_HGT_SMALL + 6;
 
-local ModManagerData = require("ModManager/Utils/ModListData");
+local ModListData = require("ModManager/Utils/ModListData");
 
 local function resolveWorkshopID(modID, modInfo)
     local workshopID = modInfo and modInfo:getWorkshopID() or nil;
     if not workshopID or workshopID == "" then
-        local cachedData = ModManagerData:getModWorkshopInfo(modID);
+        local cachedData = ModListData:getModWorkshopInfo(modID);
         if cachedData and cachedData.workshopID then
             workshopID = tostring(cachedData.workshopID);
         end
