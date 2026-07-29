@@ -20,17 +20,17 @@ function MainScreen:instantiate(...)
         self.modOptionsOption.prerender = MainScreen.prerenderBottomPanelLabel
 
         self.bottomPanel:addChild(self.modOptionsOption)
-        
+
         local yDelta = self.modOptionsOption:getHeight() + labelSeparator
-        
+
         if self.sb_options then
             self.modOptionsOption:setY(self.optionsOption:getBottom() + labelSeparator)
             self.sb_options:setY(self.sb_options:getY() + yDelta)
             if self.exitOption then
                 self.exitOption:setY(self.exitOption:getY() + yDelta)
             end
-            if self.quitToDesktop then
-                self.quitToDesktop:setY(self.quitToDesktop:getY() + yDelta)
+            if self.quitToDesktopOption then
+                self.quitToDesktopOption:setY(self.quitToDesktopOption:getY() + yDelta)
             end
         else
             local newY = self.optionsOption:getBottom() + labelSeparator
@@ -38,8 +38,8 @@ function MainScreen:instantiate(...)
             if self.exitOption then
                 self.exitOption:setY(self.exitOption:getY() + yDelta)
             end
-            if self.quitToDesktop then
-                self.quitToDesktop:setY(self.quitToDesktop:getY() + yDelta)
+            if self.quitToDesktopOption then
+                self.quitToDesktopOption:setY(self.quitToDesktopOption:getY() + yDelta)
             end
         end
 
@@ -67,10 +67,10 @@ function MainScreen:render(...)
 
     if self.inGame and isClient() and self.modOptionsOption and self.modOptionsOption:isVisible() then
         local labelSeparator = 16
-        
+
         local newY = self.optionsOption:getBottom()
         self.modOptionsOption:setY(newY)
-        
+
         newY = self.modOptionsOption:getBottom() + labelSeparator
 
         if self.sb_options and self.sb_options:isVisible() then
@@ -83,9 +83,9 @@ function MainScreen:render(...)
             newY = self.exitOption:getBottom()
         end
 
-        if self.quitToDesktop then
-            self.quitToDesktop:setY(newY)
-            newY = self.quitToDesktop:getBottom()
+        if self.quitToDesktopOption then
+            self.quitToDesktopOption:setY(newY)
+            newY = self.quitToDesktopOption:getBottom()
         end
 
         self.bottomPanel:setHeight(newY)
@@ -123,7 +123,7 @@ function MainScreen.onMenuItemMouseDownMainMenu(item, x, y)
     if item.internal == "MODOPTIONS" then
         getSoundManager():playUISound("UIActivateMainMenuItem")
         local joypadData = JoypadState.getMainMenuJoypad()
-        
+
         MainScreen.instance.bottomPanel:setVisible(false)
 
         local screenW, screenH = getCore():getScreenWidth(), getCore():getScreenHeight()
