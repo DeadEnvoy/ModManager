@@ -1,10 +1,5 @@
 if isServer() then return; end
 
-local ModListData = {
-    data = {},
-    isQuerying = false
-}
-
 local defaultData = {
     version = 1,
     mods = {},
@@ -26,6 +21,11 @@ local function deepCopy(t)
     end
     return copy
 end
+
+local ModListData = {
+    data = deepCopy(defaultData),
+    isQuerying = false
+}
 
 local function tryParseContent(content)
     ---@diagnostic disable-next-line: deprecated
@@ -59,21 +59,53 @@ end
 function ModListData:load()
     self.data = deepCopy(defaultData)
 
-    local content = readFileContent("ModManager/ModListData.lua")
-    if content then
-        local res = tryParseContent(content)
-        if res then
+    local isLegacy, content = false, nil
+
+    local mainContent = readFileContent("ModManager/ModListData.ini")
+    if mainContent then
+        local res = tryParseContent(mainContent)
+        if res and type(res) == "table" then
+            content = mainContent
             self.data = res
-            return self.data
+        else
+            content = readFileContent("ModManager/ModListData.tmp.ini")
+            if content then
+                local tmpRes = tryParseContent(content)
+                if tmpRes and type(tmpRes) == "table" then
+                    self.data = tmpRes
+                end
+            end
+        end
+    else
+        content = readFileContent("ModManager/ModListData.tmp.ini")
+        if content then
+            local tmpRes = tryParseContent(content)
+            if tmpRes and type(tmpRes) == "table" then
+                self.data = tmpRes
+            end
         end
     end
 
-    local tmpContent = readFileContent("ModManager/ModListData.tmp")
-    if tmpContent then
-        local tmpRes = tryParseContent(tmpContent)
-        if tmpRes then
-            self.data = tmpRes
+    if not content then
+        local legacyContent = readFileContent("ModManager/ModListData.lua") or readFileContent("ModManager/ModListData.tmp")
+        if legacyContent then
+            local legacyRes = tryParseContent(legacyContent)
+            if legacyRes and type(legacyRes) == "table" then
+                self.data = legacyRes
+                isLegacy = true
+            end
         end
+    end
+
+    self.data.version = self.data.version or defaultData.version
+    self.data.mods = self.data.mods or {}
+    self.data.alerts = self.data.alerts or {}
+    self.data.workshop = self.data.workshop or { usage = { time = 0, requests = 0 }, mods = {} }
+    self.data.workshop.usage = self.data.workshop.usage or { time = 0, requests = 0 }
+    self.data.workshop.mods = self.data.workshop.mods or {}
+
+    if isLegacy then
+        self:save()
     end
 
     return self.data
@@ -145,14 +177,16 @@ function ModListData:save()
 
     local finalContent = table.concat(content)
 
-    local tmpWriter = getFileWriter("ModManager/ModListData.tmp", true, false)
-    if not tmpWriter then
-        return false
+    local currentMain = readFileContent("ModManager/ModListData.ini")
+    if currentMain then
+        local tmpWriter = getFileWriter("ModManager/ModListData.tmp.ini", true, false)
+        if tmpWriter then
+            tmpWriter:write(currentMain)
+            tmpWriter:close()
+        end
     end
-    tmpWriter:write(finalContent)
-    tmpWriter:close()
 
-    local mainWriter = getFileWriter("ModManager/ModListData.lua", true, false)
+    local mainWriter = getFileWriter("ModManager/ModListData.ini", true, false)
     if not mainWriter then
         return false
     end
@@ -171,10 +205,7 @@ function ModListData:getAlertsData()
 end
 
 function ModListData:getModWorkshopInfo(modID)
-    if self.data and self.data.workshop and self.data.workshop.mods and self.data.workshop.mods[modID] then
-        return self.data.workshop.mods[modID]
-    end
-    return nil
+    return self.data.workshop.mods[modID]
 end
 
 function ModListData:updateWorkshopData(steamInfo, modMap)
@@ -217,5 +248,7 @@ function ModListData:updateUsageStats(numRequests)
     self.data.workshop.usage.time = now
     self.data.workshop.usage.requests = (self.data.workshop.usage.requests or 0) + numRequests
 end
+
+ModListData:load()
 
 return ModListData
