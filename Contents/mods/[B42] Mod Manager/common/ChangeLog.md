@@ -1,3 +1,15 @@
+# 1.5.6
+**UI**
+- Improved the tooltip that appears when hovering over the incompatible mods block if the text overflows.
+- [Mod Update and Alert System](https://steamcommunity.com/sharedfiles/filedetails/?id=3077900375).
+    - When no mods have been updated in the last two weeks, a notice is shown instead of an empty panel.
+
+**FIXES**
+- Fixed missing "Exit to Main Menu" option introduced in the 42.20.0 update.
+
+**TECHNICAL**
+- 42.18 - 42.19 support has been discontinued.
+
 # 1.5.5
 **FIXES**
 - Fixed missing "Choose mods" button broken by the latest update (42.19.0).
