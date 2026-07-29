@@ -7,7 +7,7 @@ require "ISUI/ISSetKeybindDialog"
 require "OptionScreens/MainOptions"
 require "ModManager/PZAPI"
 
-local ModManagerData = require("ModManager/Utils/ModListData")
+local ModListData = require("ModManager/Utils/ModListData")
 
 function MainOptions:addModOptionsPanel()
     PZAPI.ModOptions:load()
@@ -81,7 +81,7 @@ end
 
 function ModOptionsScreen:loadModsByDateAdded()
     self.modsByDateAdded = {}
-    local modListData = ModManagerData:load()
+    local modListData = ModListData:load()
     if modListData and modListData.mods then
         local sorted = {}
         for modID, data in pairs(modListData.mods) do
