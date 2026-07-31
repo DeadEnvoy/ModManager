@@ -1,6 +1,5 @@
 require "ISUI/ISPanelJoypad"
 require "ISUI/ISButton"
-require "ISUI/ISControllerTestPanel"
 require "ISUI/ISVolumeControl"
 require "ISUI/ISDuplicateKeybindDialog"
 require "ISUI/ISSetKeybindDialog"
