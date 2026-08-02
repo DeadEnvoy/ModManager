@@ -6,9 +6,7 @@ require "ModManager/OptionScreens/ModSelector/ModSelectorModel"
 -- The welcome message is hidden to get straight to the update list, so the Ko-fi
 -- link for Chuckleberry Finn is injected here to keep the support option visible.
 
-local original_setModInfo = ModInfoPanel.SupportParam.setModInfo
-function ModInfoPanel.SupportParam:setModInfo(modInfo)
-    original_setModInfo(self, modInfo)
+Functions.PostHook.Add(ModInfoPanel.SupportParam, "setModInfo", function(self, modInfo)
     if modInfo and modInfo:getId() == "ChuckleberryFinnAlertSystem" and #self.supportLinks == 0 then
         local link = {
             name = "Ko-fi",
@@ -17,11 +15,9 @@ function ModInfoPanel.SupportParam:setModInfo(modInfo)
         self.supportLinks = { link }
         self.displayLinks = { link }
     end
-end
+end)
 
-local original_reloadMods = ModSelector.Model.reloadMods
-function ModSelector.Model:reloadMods()
-    original_reloadMods(self)
+Functions.PostHook.Add(ModSelector.Model, "reloadMods", function(self)
     local modData = self.mods and self.mods["ChuckleberryFinnAlertSystem"]
     if modData and not modData.hasSupportLinks then
         modData.hasSupportLinks = true
@@ -32,7 +28,7 @@ function ModSelector.Model:reloadMods()
             }
         }
     end
-end
+end)
 
 local ok1, alertSystem = pcall(require, "chuckleberryFinnModdingAlertSystem")
 local ok2, changelog_handler = pcall(require, "chuckleberryFinnModding_modChangelog")
@@ -160,8 +156,7 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
         end
     end
 
-    local original_onMouseDown = alertSystem.onMouseDown
-    function alertSystem:onMouseDown(x, y)
+    Functions.PreHook.Add(alertSystem, "onMouseDown", function(self, x, y)
         if y <= 32 then
             local click = 0
             if (x >= self.alertLeftX + 8 and x <= self.alertLeftX + 24) then click = -1 end
@@ -170,24 +165,20 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
                 self:markCurrentAlertAsSeen()
             end
         end
-        return original_onMouseDown(self, x, y)
-    end
+    end)
 
-    local original_onMouseWheel = alertSystem.onMouseWheel
-    function alertSystem:onMouseWheel(del)
+    Functions.PreHook.Add(alertSystem, "onMouseWheel", function(self)
         local x, y = self:getMouseX(), self:getMouseY()
         if x >= self.alertLeftX and x <= self.alertLeftX + self.alertBarSpan and y >= 10 and y <= 10 + 12 then
             self:markCurrentAlertAsSeen()
         end
-        return original_onMouseWheel(self, del)
-    end
+    end)
 
-    local original_onClickCollapse = alertSystem.onClickCollapse
-    function alertSystem:onClickCollapse(...)
-        original_onClickCollapse(self, ...); if self.collapsed then
+    Functions.PostHook.Add(alertSystem, "onClickCollapse", function(self)
+        if self.collapsed then
             self:markCurrentAlertAsSeen()
         end
-    end
+    end)
 
     function alertSystem:processUpdates()
         local twoWeeksAgo = os.time() - 14 * 24 * 60 * 60
@@ -265,10 +256,7 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
         end
     end
 
-    local original_initialise = alertSystem.initialise
-    function alertSystem:initialise()
-        original_initialise(self)
-
+    Functions.PostHook.Add(alertSystem, "initialise", function(self)
         self.alertContentPanel:removeFromUIManager()
         self:removeChild(self.alertContentPanel)
 
@@ -320,7 +308,7 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
                 end
             end)
         end
-    end
+    end)
 
     function alertSystem:prerender()
         ISPanelJoypad.prerender(self)
@@ -429,13 +417,10 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
         end
     end
 
-    local original_display = alertSystem.display
-    function alertSystem.display(visible)
-        original_display(visible)
-
+    Functions.PostHook.Add(alertSystem, "display", function()
         local instance = MainScreen.instance and MainScreen.instance.alertSystem
         if instance and not instance.collapsed then
             instance:markCurrentAlertAsSeen()
         end
-    end
+    end)
 end
