@@ -9,7 +9,7 @@ local FONT_HGT_LARGE = getTextManager():getFontHeight(UIFont.Large)
 local UI_BORDER_SPACING = 10
 local BUTTON_HGT = FONT_HGT_SMALL + 6
 local JOYPAD_TEX_SIZE = 32
-local BUTTON_PADDING = JOYPAD_TEX_SIZE + UI_BORDER_SPACING*2
+local BUTTON_PADDING = JOYPAD_TEX_SIZE + UI_BORDER_SPACING * 2
 
 function ISButton:enableBlueColor()
     local r, g, b = 0.168, 0.615, 0.952
@@ -39,9 +39,10 @@ function MainScreen:onKeyRelease(key)
 end
 
 function ModSelector:create()
-    local listY = UI_BORDER_SPACING*2 + math.max(FONT_HGT_LARGE, BUTTON_HGT) + 1
-    local listHgt = self.height - listY - BUTTON_HGT - UI_BORDER_SPACING*2 - 1
-    self.modListPanel = ModSelector.ModListPanel:new(UI_BORDER_SPACING+1, listY, self.width/2-UI_BORDER_SPACING, listHgt, self.model)
+    local listY = UI_BORDER_SPACING * 2 + math.max(FONT_HGT_LARGE, BUTTON_HGT) + 1
+    local listHgt = self.height - listY - BUTTON_HGT - UI_BORDER_SPACING * 2 - 1
+    self.modListPanel = ModSelector.ModListPanel:new(UI_BORDER_SPACING + 1, listY, self.width / 2 - UI_BORDER_SPACING,
+        listHgt, self.model)
     self.modListPanel:initialise()
     self.modListPanel:instantiate()
     self.modListPanel:setAnchorLeft(true)
@@ -58,7 +59,8 @@ function ModSelector:create()
     self.modInfoPanel:setVisible(false)
 
     local btnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_back"))
-    self.backButton = ISButton:new(UI_BORDER_SPACING+1, self.height - BUTTON_HGT - UI_BORDER_SPACING - 1, btnWidth, BUTTON_HGT, getText("UI_btn_back"), self, ModSelector.onOptionMouseDown);
+    self.backButton = ISButton:new(UI_BORDER_SPACING + 1, self.height - BUTTON_HGT - UI_BORDER_SPACING - 1, btnWidth,
+        BUTTON_HGT, getText("UI_btn_back"), self, ModSelector.onOptionMouseDown);
     self.backButton.internal = "BACK";
     self.backButton:initialise();
     self.backButton:instantiate();
@@ -73,7 +75,8 @@ function ModSelector:create()
     self:addChild(self.backButton);
 
     local presetWidth = self.modListPanel:getRight() - self.backButton:getRight() - UI_BORDER_SPACING
-    self.presetPanel = ModListPresets:new(self.backButton:getRight() + UI_BORDER_SPACING, self.backButton.y, presetWidth, BUTTON_HGT, self.model)
+    self.presetPanel = ModListPresets:new(self.backButton:getRight() + UI_BORDER_SPACING, self.backButton.y, presetWidth,
+        BUTTON_HGT, self.model)
     self.presetPanel:setAnchorLeft(true);
     self.presetPanel:setAnchorRight(false);
     self.presetPanel:setAnchorTop(false);
@@ -83,7 +86,8 @@ function ModSelector:create()
     self:addChild(self.presetPanel)
 
     btnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_accept"))
-    self.acceptButton = ISButton:new(self.width - UI_BORDER_SPACING - btnWidth - 1, self.backButton.y, btnWidth, BUTTON_HGT, getText("UI_btn_accept"), self, ModSelector.onOptionMouseDown);
+    self.acceptButton = ISButton:new(self.width - UI_BORDER_SPACING - btnWidth - 1, self.backButton.y, btnWidth,
+        BUTTON_HGT, getText("UI_btn_accept"), self, ModSelector.onOptionMouseDown);
     self.acceptButton.internal = "ACCEPT";
     self.acceptButton:initialise();
     self.acceptButton:instantiate();
@@ -98,7 +102,8 @@ function ModSelector:create()
     self:addChild(self.acceptButton);
 
     btnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_sort_apply"))
-    self.sortAndApplyButton = ISButton:new(self.acceptButton.x - btnWidth - UI_BORDER_SPACING, self.backButton.y, btnWidth, BUTTON_HGT, getText("UI_btn_sort_apply"), self, self.onSortAndApply);
+    self.sortAndApplyButton = ISButton:new(self.acceptButton.x - btnWidth - UI_BORDER_SPACING, self.backButton.y,
+        btnWidth, BUTTON_HGT, getText("UI_btn_sort_apply"), self, self.onSortAndApply);
     self.sortAndApplyButton:initialise();
     self.sortAndApplyButton:instantiate();
     self.sortAndApplyButton:setAnchorLeft(false);
@@ -112,7 +117,8 @@ function ModSelector:create()
     self:addChild(self.sortAndApplyButton);
 
     btnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_mods_ModsOrder"))
-    self.modOrderbtn = ISButton:new(self.sortAndApplyButton.x - btnWidth - UI_BORDER_SPACING, self.backButton.y, btnWidth, BUTTON_HGT, getText("UI_mods_ModsOrder"), self, ModSelector.onOptionMouseDown);
+    self.modOrderbtn = ISButton:new(self.sortAndApplyButton.x - btnWidth - UI_BORDER_SPACING, self.backButton.y, btnWidth,
+        BUTTON_HGT, getText("UI_mods_ModsOrder"), self, ModSelector.onOptionMouseDown);
     self.modOrderbtn.internal = "MODSORDER";
     self.modOrderbtn:initialise();
     self.modOrderbtn:instantiate();
@@ -120,45 +126,48 @@ function ModSelector:create()
     self.modOrderbtn:setAnchorRight(true);
     self.modOrderbtn:setAnchorTop(false);
     self.modOrderbtn:setAnchorBottom(true);
-    self.modOrderbtn.borderColor = {r=1, g=1, b=1, a=0.1};
+    self.modOrderbtn.borderColor = { r = 1, g = 1, b = 1, a = 0.1 };
     self.modOrderbtn:setFont(UIFont.Small);
     self.modOrderbtn:ignoreWidthChange();
     self.modOrderbtn:ignoreHeightChange();
     self:addChild(self.modOrderbtn);
 
     btnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_mods_MapsOrder"))
-    self.mapOrderbtn = ISButton:new(self.modOrderbtn.x - btnWidth - UI_BORDER_SPACING, self.backButton.y, btnWidth, BUTTON_HGT, getText("UI_mods_MapsOrder"), self, ModSelector.onOptionMouseDown);
+    self.mapOrderbtn = ISButton:new(self.modOrderbtn.x - btnWidth - UI_BORDER_SPACING, self.backButton.y, btnWidth,
+        BUTTON_HGT, getText("UI_mods_MapsOrder"), self, ModSelector.onOptionMouseDown);
     self.mapOrderbtn.internal = "MAPSORDER";
-    self.mapOrderbtn.textColor = {r=1.0, g=0.4, b=0.05, a=1.0}
+    self.mapOrderbtn.textColor = { r = 1.0, g = 0.4, b = 0.05, a = 1.0 }
     self.mapOrderbtn:initialise();
     self.mapOrderbtn:instantiate();
     self.mapOrderbtn:setAnchorLeft(false);
     self.mapOrderbtn:setAnchorRight(true);
     self.mapOrderbtn:setAnchorTop(false);
     self.mapOrderbtn:setAnchorBottom(true);
-    self.mapOrderbtn.borderColor = {r=1, g=1, b=1, a=0.1};
+    self.mapOrderbtn.borderColor = { r = 1, g = 1, b = 1, a = 0.1 };
     self.mapOrderbtn:setFont(UIFont.Small);
     self.mapOrderbtn:ignoreWidthChange();
     self.mapOrderbtn:ignoreHeightChange();
     self:addChild(self.mapOrderbtn);
 
     btnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_ResetLua"))
-    self.reloadLuaButton = ISButton:new(self.width - btnWidth - UI_BORDER_SPACING-1, UI_BORDER_SPACING+1, btnWidth, BUTTON_HGT, getText("UI_ResetLua") , self, function() getCore():ResetLua("default", "Force") end);
+    self.reloadLuaButton = ISButton:new(self.width - btnWidth - UI_BORDER_SPACING - 1, UI_BORDER_SPACING + 1, btnWidth,
+        BUTTON_HGT, getText("UI_ResetLua"), self, function() getCore():ResetLua("default", "Force") end);
     self.reloadLuaButton:initialise();
     self.reloadLuaButton:instantiate();
     self.reloadLuaButton:setAnchorLeft(false);
     self.reloadLuaButton:setAnchorRight(true);
     self.reloadLuaButton:setAnchorTop(true);
     self.reloadLuaButton:setAnchorBottom(false);
-    self.reloadLuaButton.borderColor = {r=0.2, g=0.8, b=1, a=1};
-    self.reloadLuaButton.textColor = {r=0.2, g=0.8, b=1, a=1};
+    self.reloadLuaButton.borderColor = { r = 0.2, g = 0.8, b = 1, a = 1 };
+    self.reloadLuaButton.textColor = { r = 0.2, g = 0.8, b = 1, a = 1 };
     self.reloadLuaButton:setFont(UIFont.Small);
     self.reloadLuaButton:ignoreWidthChange();
     self.reloadLuaButton:ignoreHeightChange();
     self:addChild(self.reloadLuaButton);
 
     btnWidth = BUTTON_PADDING + getTextManager():MeasureStringX(UIFont.Small, getText("UI_btn_help"))
-    self.helpButton = ISButton:new(self.reloadLuaButton.x - btnWidth - UI_BORDER_SPACING, self.reloadLuaButton.y, btnWidth, BUTTON_HGT, getText("UI_btn_help"), self, ModSelector.onOptionMouseDown);
+    self.helpButton = ISButton:new(self.reloadLuaButton.x - btnWidth - UI_BORDER_SPACING, self.reloadLuaButton.y,
+        btnWidth, BUTTON_HGT, getText("UI_btn_help"), self, ModSelector.onOptionMouseDown);
     self.helpButton.internal = "HELP";
     self.helpButton:initialise();
     self.helpButton:instantiate();
@@ -166,7 +175,7 @@ function ModSelector:create()
     self.helpButton:setAnchorRight(true);
     self.helpButton:setAnchorTop(true);
     self.helpButton:setAnchorBottom(false);
-    self.helpButton.borderColor = {r=1, g=1, b=1, a=0.1};
+    self.helpButton.borderColor = { r = 1, g = 1, b = 1, a = 0.1 };
     self.helpButton:setFont(UIFont.Small);
     self.helpButton:ignoreWidthChange();
     self.helpButton:ignoreHeightChange();
@@ -174,7 +183,8 @@ function ModSelector:create()
 end
 
 function ModSelector:prerender()
-    self:drawRect(0, 0, self.width, self.height, self.backgroundColor.a, self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b)
+    self:drawRect(0, 0, self.width, self.height, self.backgroundColor.a, self.backgroundColor.r, self.backgroundColor.g,
+        self.backgroundColor.b)
     ISPanelJoypad.prerender(self)
     self:drawTextCentre(getText("UI_mods_SelectMods"), self.width / 2, 10, 1, 1, 1, 1, UIFont.Large)
 
@@ -188,8 +198,6 @@ function ModSelector:prerender()
             if not mod.isActive and mod.defaultActive then disabled = disabled + 1 end
         end
     end
-
-    local diff = current - active
 
     local txtX, txtY, font = UI_BORDER_SPACING + 1, 15, UIFont.Medium
 
@@ -275,7 +283,7 @@ function ModSelector:onSortAndApply()
     for _, modId in ipairs(sortedModIDs) do
         modArray:add(modId)
     end
-    
+
     self:onAccept()
 end
 
@@ -310,10 +318,10 @@ function ModSelector:update()
             else
                 modList.selected = math.min(#modList.items, modList.selected + step)
             end
-            
+
             local selectedItem = modList.items[modList.selected].item
             if selectedItem and selectedItem.modInfo then
-                 self.modInfoPanel:updateView(selectedItem.modInfo)
+                self.modInfoPanel:updateView(selectedItem.modInfo)
             end
 
             modList:ensureVisible(modList.selected)
