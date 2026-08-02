@@ -178,13 +178,14 @@ function ModSelector:prerender()
     ISPanelJoypad.prerender(self)
     self:drawTextCentre(getText("UI_mods_SelectMods"), self.width / 2, 10, 1, 1, 1, 1, UIFont.Large)
 
-    local total, active, current = 0, 0, 0
+    local total, active, enabled, disabled = 0, 0, 0, 0
 
     if self.model and self.model.mods then
         for _, mod in pairs(self.model.mods) do
             total = total + 1
             if mod.defaultActive then active = active + 1 end
-            if mod.isActive then current = current + 1 end
+            if mod.isActive and not mod.defaultActive then enabled = enabled + 1 end
+            if not mod.isActive and mod.defaultActive then disabled = disabled + 1 end
         end
     end
 
@@ -196,20 +197,27 @@ function ModSelector:prerender()
     self:drawText(str1, txtX, txtY, 1, 1, 1, 1, font)
     txtX = txtX + getTextManager():MeasureStringX(font, str1 .. " ")
 
-    if diff ~= 0 then
-        local str2 = ""
-        local r, g, b = 1, 1, 1
+    if enabled ~= 0 or disabled ~= 0 then
+        local prefix = " ("
+        local sep = " / "
+        local suffix = ") "
 
-        if diff > 0 then
-            str2 = " + " .. diff .. " "
-            r, g, b = 0.2, 0.8, 1
-        else
-            str2 = " - " .. math.abs(diff) .. " "
-            r, g, b = 1.0, 0.2, 0.2
-        end
+        self:drawText(prefix, txtX, txtY, 1, 1, 1, 1, font)
+        txtX = txtX + getTextManager():MeasureStringX(font, prefix)
 
-        self:drawText(str2, txtX, txtY, r, g, b, 1, font)
-        txtX = txtX + getTextManager():MeasureStringX(font, str2)
+        local plusPart = "+ " .. enabled .. " "
+        self:drawText(plusPart, txtX, txtY, 0.2, 0.8, 0.2, 1, font)
+        txtX = txtX + getTextManager():MeasureStringX(font, plusPart)
+
+        self:drawText(sep, txtX, txtY, 1, 1, 1, 1, font)
+        txtX = txtX + getTextManager():MeasureStringX(font, sep)
+
+        local minusPart = "- " .. disabled .. " "
+        self:drawText(minusPart, txtX, txtY, 1.0, 0.2, 0.2, 1, font)
+        txtX = txtX + getTextManager():MeasureStringX(font, minusPart)
+
+        self:drawText(suffix, txtX, txtY, 1, 1, 1, 1, font)
+        txtX = txtX + getTextManager():MeasureStringX(font, suffix)
     end
 
     local str3 = " " .. getText("UI_modselector_separator") .. " " .. total
