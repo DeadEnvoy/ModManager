@@ -1,52 +1,36 @@
 {
     "UI_mainscreen_btn_configs": "KONFIGOK",
-
     "UI_modselector_separator": "/",
-
     "UI_modselector_showEnabledMods": "Aktív modok mutatása",
     "UI_modselector_showDisabledMods": "Inaktív modok mutatása",
     "UI_modselector_showHiddenMods": "Rejtett modok mutatása",
-
     "UI_modselector_disableWarningTitle": "FIGYELEM!",
     "UI_modselector_disableWarningText": "Ezen mod letiltása a következőket is letiltja:",
-
     "UI_modlistpanel_sortBy": "Rendezés:",
     "UI_modlistpanel_sortBy_name": "Név (A-Z)",
     "UI_modlistpanel_sortBy_date": "Hozzáadás dátuma",
     "UI_modlistpanel_sortBy_dateUpdated": "Frissítés dátuma",
-
     "UI_modselector_status_installed": "Naprakész",
     "UI_modselector_status_needsUpdate": "Frissítés elérhető!",
-
     "UI_modoptions_title": "MOD BEÁLLÍTÁSOK",
-
     "UI_btn_sort_apply": "RENDEZÉS ÉS ALKALMAZ",
-
     "UI_modpresets_title": "PRESET LISTA",
-
     "UI_modpresets_presetsTab": "PRESET-EK",
     "UI_modpresets_historyTab": "ELŐZMÉNYEK",
-
     "UI_modpresets_copy": "MÁSOLÁS",
-
     "UI_btn_select": "VÁLASZT",
     "UI_btn_deleteAll": "ÖSSZES TÖRLÉSE",
-
     "UI_modpresets_deleteAll_dialog": "Törlöd a teljes előzményt?",
-
     "UI_modselector_btn_hide": "ELREJTÉS",
     "UI_modselector_btn_show": "MEGJELENÍTÉS",
     "UI_modselector_btn_favorite": "KEDVENC",
     "UI_modselector_btn_unfavorite": "KEDVENC TÖRLÉSE",
     "UI_modselector_btn_enable": "ENGEDÉLYEZÉS",
     "UI_modselector_btn_disable": "LETILTÁS",
-
     "UI_modselector_LocalMod_tooltip": "Ez a mod nem lesz letöltve a kliens oldalon.\n\nOk: Workshop ID nem található (helyi mod).\n\nHa te vagy a mod szerzője, közzé kell tenned a Workshopon és fel kell rá iratkoznod.",
-
     "UI_ServerSettings_SpawnRegions": "A szerver által használt spawn régiók:",
     "UI_ServerSettings_AddSpawnRegion": "Elérhető spawn régió hozzáadása a listához:",
     "UI_ServerOption_SpawnPoint": "Spawn pont:",
-
     "UI_modinfopanel_Status": "Állapot",
     "UI_modinfopanel_Version": "Verzió",
     "UI_modinfopanel_Category": "Kategória",
@@ -62,7 +46,6 @@
     "UI_modinfopanel_Changelog": "Változásnapló",
     "UI_modinfopanel_SetCategory": "Hozzárendelés...",
     "UI_modinfopanel_SelectCategory": "Kategória választása",
-
     "UI_modinfopanel_Category_None": "Nincs",
     "UI_modinfopanel_Category_Animals": "Állatok",
     "UI_modinfopanel_Category_Animations": "Animációk",
@@ -104,15 +87,12 @@
     "UI_modinfopanel_Category_Voices": "Hangok",
     "UI_modinfopanel_Category_Weapons": "Fegyverek",
     "UI_modinfopanel_Category_Zombies": "Zombik",
-
     "UI_modinfopanel_TimeFormat_Today": "Ma, {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_Yesterday": "Tegnap, {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_ThisYear": "{month} {day}., {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_OtherYears": "{year}. {month} {day}., {hour24}:{min}",
-
     "UI_modinfopanel_AM": "DE",
     "UI_modinfopanel_PM": "DU",
-
     "UI_modinfopanel_Month_Short_1": "jan.",
     "UI_modinfopanel_Month_Short_2": "febr.",
     "UI_modinfopanel_Month_Short_3": "márc.",
@@ -125,6 +105,9 @@
     "UI_modinfopanel_Month_Short_10": "okt.",
     "UI_modinfopanel_Month_Short_11": "nov.",
     "UI_modinfopanel_Month_Short_12": "dec.",
-
-    "UI_alertSystem_noUpdates": "Az elmúlt két hétben nem volt mod-frissítés."
+    "UI_alertSystem_noUpdates": "Az elmúlt két hétben nem volt mod-frissítés.",
+    "UI_ServerSettings_ButtonEditBasic": "Szerkesztés (Alap)",
+    "UI_ServerSettings_ButtonEditAdvanced": "Szerkesztés (Haladó)",
+    "UI_ServerSettings_ButtonEditBasic_tooltip": "Csak a fő szerverbeállítások szerkesztése. Ebben a módban a modlisták, térképek, kezdőpontok és a homokozó opciói nem módosíthatók.",
+    "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Minden szerverbeállítás korlátozás nélküli szerkesztése.\n\nLua visszaállítása szükséges."
 }

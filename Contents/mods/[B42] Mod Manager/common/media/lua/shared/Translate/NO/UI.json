@@ -1,52 +1,36 @@
 {
     "UI_mainscreen_btn_configs": "INNSTILLINGER",
-
     "UI_modselector_separator": "av",
-
     "UI_modselector_showEnabledMods": "Vis aktiverte mods",
     "UI_modselector_showDisabledMods": "Vis deaktiverte mods",
     "UI_modselector_showHiddenMods": "Vis skjulte mods",
-
     "UI_modselector_disableWarningTitle": "ADVARSEL!",
     "UI_modselector_disableWarningText": "Å deaktivere denne modden vil også deaktivere:",
-
     "UI_modlistpanel_sortBy": "Sorter etter:",
     "UI_modlistpanel_sortBy_name": "Navn (A-Z)",
     "UI_modlistpanel_sortBy_date": "Nyeste først",
     "UI_modlistpanel_sortBy_dateUpdated": "Sist oppdatert",
-
     "UI_modselector_status_installed": "Oppdatert",
     "UI_modselector_status_needsUpdate": "Oppdatering tilgjengelig!",
-
     "UI_modoptions_title": "MOD-INNSTILLINGER",
-
     "UI_btn_sort_apply": "SORTER OG BRUK",
-
     "UI_modpresets_title": "PRESET-LISTE",
-
     "UI_modpresets_presetsTab": "PRESETS",
     "UI_modpresets_historyTab": "HISTORIKK",
-
     "UI_modpresets_copy": "KOPIER",
-
     "UI_btn_select": "VELG",
     "UI_btn_deleteAll": "SLETT ALT",
-
     "UI_modpresets_deleteAll_dialog": "Slette hele historikken?",
-
     "UI_modselector_btn_hide": "SKJUL",
     "UI_modselector_btn_show": "VIS",
     "UI_modselector_btn_favorite": "FAVORITT",
     "UI_modselector_btn_unfavorite": "FJERN FAVORITT",
     "UI_modselector_btn_enable": "AKTIVER",
     "UI_modselector_btn_disable": "DEAKTIVER",
-
     "UI_modselector_LocalMod_tooltip": "Denne modden vil ikke bli lastet ned på klientsiden.\n\nÅrsak: Workshop ID ikke funnet (lokal mod).\n\nHvis du er forfatteren av denne modden, må du publisere den på Workshop og abonnere på den.",
-
     "UI_ServerSettings_SpawnRegions": "Spawn-regioner brukt av denne serveren:",
     "UI_ServerSettings_AddSpawnRegion": "Legg til en tilgjengelig spawn-region til listen:",
     "UI_ServerOption_SpawnPoint": "Spawn-punkt:",
-
     "UI_modinfopanel_Status": "Status",
     "UI_modinfopanel_Version": "Versjon",
     "UI_modinfopanel_Category": "Kategori",
@@ -62,7 +46,6 @@
     "UI_modinfopanel_Changelog": "Endringslogg",
     "UI_modinfopanel_SetCategory": "Tildel...",
     "UI_modinfopanel_SelectCategory": "Velg kategori",
-
     "UI_modinfopanel_Category_None": "Ingen",
     "UI_modinfopanel_Category_Animals": "Dyr",
     "UI_modinfopanel_Category_Animations": "Animasjoner",
@@ -104,15 +87,12 @@
     "UI_modinfopanel_Category_Voices": "Stemmer",
     "UI_modinfopanel_Category_Weapons": "Våpen",
     "UI_modinfopanel_Category_Zombies": "Zombier",
-
     "UI_modinfopanel_TimeFormat_Today": "I dag kl. {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_Yesterday": "I går kl. {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_ThisYear": "{day}. {month} kl. {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_OtherYears": "{day}. {month} {year} kl. {hour24}:{min}",
-
     "UI_modinfopanel_AM": "AM",
     "UI_modinfopanel_PM": "PM",
-
     "UI_modinfopanel_Month_Short_1": "jan.",
     "UI_modinfopanel_Month_Short_2": "feb.",
     "UI_modinfopanel_Month_Short_3": "mars",
@@ -125,6 +105,9 @@
     "UI_modinfopanel_Month_Short_10": "okt.",
     "UI_modinfopanel_Month_Short_11": "nov.",
     "UI_modinfopanel_Month_Short_12": "des.",
-
-    "UI_alertSystem_noUpdates": "Ingen modoppdateringer de siste to ukene."
+    "UI_alertSystem_noUpdates": "Ingen modoppdateringer de siste to ukene.",
+    "UI_ServerSettings_ButtonEditBasic": "Rediger (Grunnleggende)",
+    "UI_ServerSettings_ButtonEditAdvanced": "Rediger (Avansert)",
+    "UI_ServerSettings_ButtonEditBasic_tooltip": "Rediger bare hovedinnstillingene for serveren. Endring av mod-liste, kart, spawn-steder og sandbox-alternativer er deaktivert i denne modusen.",
+    "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Rediger alle serverinnstillinger uten begrensninger.\n\nKrever Reset Lua."
 }

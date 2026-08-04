@@ -1,52 +1,36 @@
 {
     "UI_mainscreen_btn_configs": "CONFIGS",
-
     "UI_modselector_separator": "de",
-
     "UI_modselector_showEnabledMods": "Mostrar mods habilitados",
     "UI_modselector_showDisabledMods": "Mostrar mods desabilitados",
     "UI_modselector_showHiddenMods": "Mostrar mods ocultos",
-
     "UI_modselector_disableWarningTitle": "AVISO!",
     "UI_modselector_disableWarningText": "Desabilitar esta modificação também desabilitará as seguintes:",
-
     "UI_modlistpanel_sortBy": "Ordenar por:",
     "UI_modlistpanel_sortBy_name": "Nome (A-Z)",
     "UI_modlistpanel_sortBy_date": "Mais recentes",
     "UI_modlistpanel_sortBy_dateUpdated": "Última atualização",
-
     "UI_modselector_status_installed": "Atualizado",
     "UI_modselector_status_needsUpdate": "Atualização disponível!",
-
     "UI_modoptions_title": "OPÇÕES DE MODS",
-
     "UI_btn_sort_apply": "ORDENAR E ACEITAR",
-
     "UI_modpresets_title": "LISTA DE PRESETS",
-
     "UI_modpresets_presetsTab": "PRESETS",
     "UI_modpresets_historyTab": "HISTÓRICO",
-
     "UI_modpresets_copy": "COPIAR",
-
     "UI_btn_select": "SELECIONAR",
     "UI_btn_deleteAll": "EXCLUIR TUDO",
-
     "UI_modpresets_deleteAll_dialog": "Excluir todo o histórico?",
-
     "UI_modselector_btn_hide": "OCULTAR",
     "UI_modselector_btn_show": "MOSTRAR",
     "UI_modselector_btn_favorite": "FAVORITO",
     "UI_modselector_btn_unfavorite": "DESFAVORITAR",
     "UI_modselector_btn_enable": "HABILITAR",
     "UI_modselector_btn_disable": "DESABILITAR",
-
     "UI_modselector_LocalMod_tooltip": "Este mod não será baixado no lado do cliente.\n\nMotivo: Workshop ID não encontrado (mod local).\n\nSe você é o autor deste mod, precisa publicá-lo no Workshop e se inscrever nele.",
-
     "UI_ServerSettings_SpawnRegions": "Regiões de spawn usadas por este servidor:",
     "UI_ServerSettings_AddSpawnRegion": "Adicionar uma região de spawn disponível à lista:",
     "UI_ServerOption_SpawnPoint": "Ponto de spawn:",
-
     "UI_modinfopanel_Status": "Status",
     "UI_modinfopanel_Version": "Versão",
     "UI_modinfopanel_Category": "Categoria",
@@ -62,7 +46,6 @@
     "UI_modinfopanel_Changelog": "Notas de atualização",
     "UI_modinfopanel_SetCategory": "Atribuir...",
     "UI_modinfopanel_SelectCategory": "Selecionar categoria",
-
     "UI_modinfopanel_Category_None": "Nenhuma",
     "UI_modinfopanel_Category_Animals": "Animais",
     "UI_modinfopanel_Category_Animations": "Animações",
@@ -104,15 +87,12 @@
     "UI_modinfopanel_Category_Voices": "Vozes",
     "UI_modinfopanel_Category_Weapons": "Armas",
     "UI_modinfopanel_Category_Zombies": "Zumbis",
-
     "UI_modinfopanel_TimeFormat_Today": "Hoje às {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_Yesterday": "Ontem às {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_ThisYear": "{day} de {month} às {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_OtherYears": "{day}/{month}/{year} às {hour24}:{min}",
-
     "UI_modinfopanel_AM": "AM",
     "UI_modinfopanel_PM": "PM",
-
     "UI_modinfopanel_Month_Short_1": "jan.",
     "UI_modinfopanel_Month_Short_2": "fev.",
     "UI_modinfopanel_Month_Short_3": "mar.",
@@ -125,6 +105,9 @@
     "UI_modinfopanel_Month_Short_10": "out.",
     "UI_modinfopanel_Month_Short_11": "nov.",
     "UI_modinfopanel_Month_Short_12": "Dez",
-
-    "UI_alertSystem_noUpdates": "Nenhuma atualização de mod nas últimas duas semanas."
+    "UI_alertSystem_noUpdates": "Nenhuma atualização de mod nas últimas duas semanas.",
+    "UI_ServerSettings_ButtonEditBasic": "Editar (Básico)",
+    "UI_ServerSettings_ButtonEditAdvanced": "Editar (Avançado)",
+    "UI_ServerSettings_ButtonEditBasic_tooltip": "Edita apenas as configurações principais do servidor. A alteração da lista de mods, mapas, pontos de renascimento e opções do modo sandbox está desativada neste modo.",
+    "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Edita todas as configurações do servidor sem restrições.\n\nRequer reiniciar Lua."
 }

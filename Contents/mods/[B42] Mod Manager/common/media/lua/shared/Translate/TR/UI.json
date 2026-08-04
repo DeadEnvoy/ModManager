@@ -1,52 +1,36 @@
 {
     "UI_mainscreen_btn_configs": "AYARLAR",
-
     "UI_modselector_separator": "/",
-
     "UI_modselector_showEnabledMods": "Etkin modları göster",
     "UI_modselector_showDisabledMods": "Devre dışı modları göster",
     "UI_modselector_showHiddenMods": "Gizli modları göster",
-
     "UI_modselector_disableWarningTitle": "UYARI!",
     "UI_modselector_disableWarningText": "Bu modu kapatırsanız, şunlar da kapanacak:",
-
     "UI_modlistpanel_sortBy": "Sırala:",
     "UI_modlistpanel_sortBy_name": "İsim (A-Z)",
     "UI_modlistpanel_sortBy_date": "En yeni",
     "UI_modlistpanel_sortBy_dateUpdated": "Güncelleme tarihi",
-
     "UI_modselector_status_installed": "Güncel",
     "UI_modselector_status_needsUpdate": "Güncelleme mevcut!",
-
     "UI_modoptions_title": "MOD SEÇENEKLERİ",
-
     "UI_btn_sort_apply": "SIRALA VE KABUL ET",
-
     "UI_modpresets_title": "ÖNAYAR LİSTESİ",
-
     "UI_modpresets_presetsTab": "ÖNAYARLAR",
     "UI_modpresets_historyTab": "GEÇMİŞ",
-
     "UI_modpresets_copy": "KOPYALA",
-
     "UI_btn_select": "SEÇ",
     "UI_btn_deleteAll": "TÜMÜNÜ SİL",
-
     "UI_modpresets_deleteAll_dialog": "Tüm geçmiş silinsin mi?",
-
     "UI_modselector_btn_hide": "GİZLE",
     "UI_modselector_btn_show": "GÖSTER",
     "UI_modselector_btn_favorite": "FAVORİ",
     "UI_modselector_btn_unfavorite": "FAVORİDEN ÇIKAR",
     "UI_modselector_btn_enable": "AÇ",
     "UI_modselector_btn_disable": "KAPAT",
-
     "UI_modselector_LocalMod_tooltip": "Bu mod istemci tarafında indirilmeyecek.\n\nNeden: Workshop ID bulunamadı (yerel mod).\n\nBu modun yazarıysanız, Workshop'ta yayınlamanız ve abone olmanız gerekir.",
-
     "UI_ServerSettings_SpawnRegions": "Bu sunucunun spawn bölgeleri:",
     "UI_ServerSettings_AddSpawnRegion": "Listeye spawn bölgesi ekle:",
     "UI_ServerOption_SpawnPoint": "Spawn noktası:",
-
     "UI_modinfopanel_Status": "Durum",
     "UI_modinfopanel_Version": "Sürüm",
     "UI_modinfopanel_Category": "Kategori",
@@ -62,7 +46,6 @@
     "UI_modinfopanel_Changelog": "Değişiklik notları",
     "UI_modinfopanel_SetCategory": "Ata...",
     "UI_modinfopanel_SelectCategory": "Kategori seç",
-
     "UI_modinfopanel_Category_None": "Yok",
     "UI_modinfopanel_Category_Animals": "Hayvanlar",
     "UI_modinfopanel_Category_Animations": "Animasyonlar",
@@ -104,15 +87,12 @@
     "UI_modinfopanel_Category_Voices": "Sesler",
     "UI_modinfopanel_Category_Weapons": "Silahlar",
     "UI_modinfopanel_Category_Zombies": "Zombiler",
-
     "UI_modinfopanel_TimeFormat_Today": "Bugün @ {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_Yesterday": "Dün @ {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_ThisYear": "{day} {month} @ {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_OtherYears": "{day} {month} {year} @ {hour24}:{min}",
-
     "UI_modinfopanel_AM": "ÖÖ",
     "UI_modinfopanel_PM": "ÖS",
-
     "UI_modinfopanel_Month_Short_1": "Oca",
     "UI_modinfopanel_Month_Short_2": "Şub",
     "UI_modinfopanel_Month_Short_3": "Mar",
@@ -125,6 +105,9 @@
     "UI_modinfopanel_Month_Short_10": "Eki",
     "UI_modinfopanel_Month_Short_11": "Kas",
     "UI_modinfopanel_Month_Short_12": "Ara",
-
-    "UI_alertSystem_noUpdates": "Son iki haftada mod güncellemesi yok."
+    "UI_alertSystem_noUpdates": "Son iki haftada mod güncellemesi yok.",
+    "UI_ServerSettings_ButtonEditBasic": "Düzenle (Temel)",
+    "UI_ServerSettings_ButtonEditAdvanced": "Düzenle (Gelişmiş)",
+    "UI_ServerSettings_ButtonEditBasic_tooltip": "Yalnızca ana sunucu ayarlarını düzenler. Bu modda mod listesi, haritalar, doğma noktaları ve korumalı alan seçeneklerini değiştirmek devre dışıdır.",
+    "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Tüm sunucu ayarlarını kısıtlama olmaksızın düzenler.\n\nLua'yı Sıfırla gerektirir."
 }

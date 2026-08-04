@@ -1,52 +1,36 @@
 {
     "UI_mainscreen_btn_configs": "설정",
-
     "UI_modselector_separator": "/",
-
     "UI_modselector_showEnabledMods": "활성화된 모드 표시",
     "UI_modselector_showDisabledMods": "비활성화된 모드 표시",
     "UI_modselector_showHiddenMods": "숨겨진 모드 표시",
-
     "UI_modselector_disableWarningTitle": "경고!",
     "UI_modselector_disableWarningText": "이 모드를 비활성화하면 다음 모드도 비활성화됩니다:",
-
     "UI_modlistpanel_sortBy": "정렬 기준:",
     "UI_modlistpanel_sortBy_name": "이름 (A-Z)",
     "UI_modlistpanel_sortBy_date": "최신순",
     "UI_modlistpanel_sortBy_dateUpdated": "업데이트 날짜",
-
     "UI_modselector_status_installed": "최신",
     "UI_modselector_status_needsUpdate": "업데이트 가능!",
-
     "UI_modoptions_title": "모드 옵션",
-
     "UI_btn_sort_apply": "정렬 후 적용",
-
     "UI_modpresets_title": "프리셋 목록",
-
     "UI_modpresets_presetsTab": "프리셋",
     "UI_modpresets_historyTab": "기록",
-
     "UI_modpresets_copy": "복사",
-
     "UI_btn_select": "선택",
     "UI_btn_deleteAll": "모두 삭제",
-
     "UI_modpresets_deleteAll_dialog": "전체 기록을 삭제하시겠습니까?",
-
     "UI_modselector_btn_hide": "숨기기",
     "UI_modselector_btn_show": "보이기",
     "UI_modselector_btn_favorite": "즐겨찾기",
     "UI_modselector_btn_unfavorite": "즐겨찾기 해제",
     "UI_modselector_btn_enable": "활성화",
     "UI_modselector_btn_disable": "비활성화",
-
     "UI_modselector_LocalMod_tooltip": "이 모드는 클라이언트 측에서 다운로드되지 않습니다.\n\n이유: Workshop ID를 찾을 수 없음 (로컬 모드).\n\n이 모드의 제작자인 경우 워크샵에 게시하고 구독해야 합니다.",
-
     "UI_ServerSettings_SpawnRegions": "이 서버에서 사용하는 스폰 지역:",
     "UI_ServerSettings_AddSpawnRegion": "사용 가능한 스폰 지역을 목록에 추가:",
     "UI_ServerOption_SpawnPoint": "스폰 지점:",
-
     "UI_modinfopanel_Status": "상태",
     "UI_modinfopanel_Version": "버전",
     "UI_modinfopanel_Category": "카테고리",
@@ -62,7 +46,6 @@
     "UI_modinfopanel_Changelog": "업데이트 내역",
     "UI_modinfopanel_SetCategory": "할당...",
     "UI_modinfopanel_SelectCategory": "카테고리 선택",
-
     "UI_modinfopanel_Category_None": "없음",
     "UI_modinfopanel_Category_Animals": "동물",
     "UI_modinfopanel_Category_Animations": "애니메이션",
@@ -104,15 +87,12 @@
     "UI_modinfopanel_Category_Voices": "음성",
     "UI_modinfopanel_Category_Weapons": "무기",
     "UI_modinfopanel_Category_Zombies": "좀비",
-
     "UI_modinfopanel_TimeFormat_Today": "오늘 {ampm} {hour12}시 {min}분",
     "UI_modinfopanel_TimeFormat_Yesterday": "어제 {ampm} {hour12}시 {min}분",
     "UI_modinfopanel_TimeFormat_ThisYear": "{month}월 {day}일 {ampm} {hour12}시 {min}분",
     "UI_modinfopanel_TimeFormat_OtherYears": "{year}년 {month}월 {day}일 {ampm} {hour12}시 {min}분",
-
     "UI_modinfopanel_AM": "오전",
     "UI_modinfopanel_PM": "오후",
-
     "UI_modinfopanel_Month_Short_1": "1",
     "UI_modinfopanel_Month_Short_2": "2",
     "UI_modinfopanel_Month_Short_3": "3",
@@ -125,6 +105,9 @@
     "UI_modinfopanel_Month_Short_10": "10",
     "UI_modinfopanel_Month_Short_11": "11",
     "UI_modinfopanel_Month_Short_12": "12",
-
-    "UI_alertSystem_noUpdates": "지난 2주 동안 모드 업데이트가 없습니다."
+    "UI_alertSystem_noUpdates": "지난 2주 동안 모드 업데이트가 없습니다.",
+    "UI_ServerSettings_ButtonEditBasic": "편집 (기본)",
+    "UI_ServerSettings_ButtonEditAdvanced": "편집 (고급)",
+    "UI_ServerSettings_ButtonEditBasic_tooltip": "주요 서버 설정만 편집합니다. 이 모드에서는 모드 목록, 지도, 스폰 지역 및 샌드박스 옵션을 변경할 수 없습니다.",
+    "UI_ServerSettings_ButtonEditAdvanced_tooltip": "모든 서버 설정을 제한 없이 편집합니다.\n\nLua 리셋이 필요합니다."
 }

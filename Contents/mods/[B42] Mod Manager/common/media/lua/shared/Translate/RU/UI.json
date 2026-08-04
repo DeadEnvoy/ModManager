@@ -1,49 +1,36 @@
 {
-    "UI_mainscreen_btn_configs": "КОНФИГУРАЦИИ",    
-
-    "UI_modselector_separator": "из",   
-
+    "UI_mainscreen_btn_configs": "КОНФИГУРАЦИИ",
+    "UI_modselector_separator": "из",
     "UI_modselector_showEnabledMods": "Показать включенные",
     "UI_modselector_showDisabledMods": "Показать отключенные",
-    "UI_modselector_showHiddenMods": "Показать скрытые",    
-
+    "UI_modselector_showHiddenMods": "Показать скрытые",
     "UI_modselector_disableWarningTitle": "ВНИМАНИЕ!",
-    "UI_modselector_disableWarningText": "Отключение данной модификации так-же приведёт к отключению следующих:",   
-
+    "UI_modselector_disableWarningText": "Отключение данной модификации так-же приведёт к отключению следующих:",
     "UI_modlistpanel_sortBy": "Сортировка:",
     "UI_modlistpanel_sortBy_name": "По имени (А-Я)",
     "UI_modlistpanel_sortBy_date": "По дате добавления",
-    "UI_modlistpanel_sortBy_dateUpdated": "По дате обновления", 
-
+    "UI_modlistpanel_sortBy_dateUpdated": "По дате обновления",
     "UI_modselector_status_installed": "Актуальная",
-    "UI_modselector_status_needsUpdate": "Доступно обновление!",    
-
-    "UI_modoptions_title": "НАСТРОЙКИ МОДИФИКАЦИЙ", 
-
-    "UI_btn_sort_apply": "СОРТИРОВАТЬ И ПРИНЯТЬ",   
-
-    "UI_modpresets_title": "СПИСОК ПРЕСЕТОВ",   
+    "UI_modselector_status_needsUpdate": "Доступно обновление!",
+    "UI_modoptions_title": "НАСТРОЙКИ МОДИФИКАЦИЙ",
+    "UI_btn_sort_apply": "СОРТИРОВАТЬ И ПРИНЯТЬ",
+    "UI_modpresets_title": "СПИСОК ПРЕСЕТОВ",
     "UI_modpresets_presetsTab": "ПРЕСЕТЫ",
-    "UI_modpresets_historyTab": "ИСТОРИЯ",  
-    "UI_modpresets_copy": "КОПИРОВАТЬ", 
-
+    "UI_modpresets_historyTab": "ИСТОРИЯ",
+    "UI_modpresets_copy": "КОПИРОВАТЬ",
     "UI_btn_select": "ВЫБРАТЬ",
-    "UI_btn_deleteAll": "УДАЛИТЬ ВСЁ",  
-
-    "UI_modpresets_deleteAll_dialog": "Удалить всю историю?", 
+    "UI_btn_deleteAll": "УДАЛИТЬ ВСЁ",
+    "UI_modpresets_deleteAll_dialog": "Удалить всю историю?",
     "UI_modselector_btn_hide": "СКРЫТЬ",
     "UI_modselector_btn_show": "ПОКАЗАТЬ",
     "UI_modselector_btn_favorite": "В ИЗБРАННОЕ",
     "UI_modselector_btn_unfavorite": "ИЗ ИЗБРАННОГО",
     "UI_modselector_btn_enable": "ВКЛЮЧИТЬ",
     "UI_modselector_btn_disable": "ОТКЛЮЧИТЬ",
-
     "UI_modselector_LocalMod_tooltip": "Модификация не будет загружена на стороне клиента.\n\nПричина: Workshop ID не был найден (локальная модификация).\n\nЕсли Вы являетесь автором этой модификации, то Вам необходимо опубликовать её в мастерской и подписаться на неё.",
-
     "UI_ServerSettings_SpawnRegions": "Регионы спавна, используемые этим сервером:",
     "UI_ServerSettings_AddSpawnRegion": "Добавить доступный регион спавна в список:",
     "UI_ServerOption_SpawnPoint": "Точка спавна:",
-
     "UI_modinfopanel_Status": "Статус",
     "UI_modinfopanel_Version": "Версия",
     "UI_modinfopanel_Category": "Категория",
@@ -59,7 +46,6 @@
     "UI_modinfopanel_Changelog": "Список изменений",
     "UI_modinfopanel_SetCategory": "Назначить...",
     "UI_modinfopanel_SelectCategory": "Выберите категорию",
-
     "UI_modinfopanel_Category_None": "Отсутствует",
     "UI_modinfopanel_Category_Animals": "Животные",
     "UI_modinfopanel_Category_Animations": "Анимации",
@@ -101,15 +87,12 @@
     "UI_modinfopanel_Category_Voices": "Голоса",
     "UI_modinfopanel_Category_Weapons": "Оружие",
     "UI_modinfopanel_Category_Zombies": "Зомби",
-
     "UI_modinfopanel_TimeFormat_Today": "Сегодня в {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_Yesterday": "Вчера в {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_ThisYear": "{day} {month} в {hour24}:{min}",
-    "UI_modinfopanel_TimeFormat_OtherYears": "{day} {month} {year} г. в {hour24}:{min}",  
-
+    "UI_modinfopanel_TimeFormat_OtherYears": "{day} {month} {year} г. в {hour24}:{min}",
     "UI_modinfopanel_AM": "AM",
-    "UI_modinfopanel_PM": "PM", 
-
+    "UI_modinfopanel_PM": "PM",
     "UI_modinfopanel_Month_Short_1": "янв.",
     "UI_modinfopanel_Month_Short_2": "февр.",
     "UI_modinfopanel_Month_Short_3": "марта",
@@ -122,6 +105,9 @@
     "UI_modinfopanel_Month_Short_10": "окт.",
     "UI_modinfopanel_Month_Short_11": "нояб.",
     "UI_modinfopanel_Month_Short_12": "дек.",
-
-    "UI_alertSystem_noUpdates": "Обновлений модов за последние две недели не было."
+    "UI_alertSystem_noUpdates": "Обновлений модов за последние две недели не было.",
+    "UI_ServerSettings_ButtonEditBasic": "Изменить (базовые)",
+    "UI_ServerSettings_ButtonEditAdvanced": "Изменить (расширенные)",
+    "UI_ServerSettings_ButtonEditBasic_tooltip": "Редактирование только основных настроек сервера. Изменение списка модов, карт, точек спавна и опций песочницы недоступно в этом режиме.",
+    "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Редактирование всех настроек сервера без ограничений.\n\nТребуется перезагрузка Lua."
 }

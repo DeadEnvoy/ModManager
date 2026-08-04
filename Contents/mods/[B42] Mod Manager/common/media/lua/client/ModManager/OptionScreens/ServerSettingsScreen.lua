@@ -175,6 +175,38 @@ local function applyModsDiff(pageEdit, settings, addedMods, removedMods)
     end
 end
 
+local function showPageEdit(pageEdit, settings, joyfocus, modArray, addedMods, removedMods)
+    pageEdit.settings = settings;
+    pageEdit:aboutToShow();
+    pageEdit:setVisible(true, joyfocus);
+
+    applyModsDiff(pageEdit, settings, addedMods, removedMods);
+
+    local modsPanel = nil;
+    for _, panel in ipairs(pageEdit.customui) do
+        if panel.Type == "ServerSettingsScreenModsPanel" then
+            modsPanel = panel;
+            break
+        end
+    end
+
+    ---@diagnostic disable-next-line: need-check-nil
+    modsPanel.listbox:clear();
+    for i = 0, modArray:size() - 1 do
+        local item = {};
+        item.modID = modArray:get(i);
+        ---@diagnostic disable-next-line: need-check-nil
+        item.modInfo = modsPanel.modInfoByID[modArray:get(i)];
+        if item.modInfo then
+            ---@diagnostic disable-next-line: need-check-nil
+            modsPanel.listbox:addItem(item.modInfo:getName(), item);
+        else
+            ---@diagnostic disable-next-line: need-check-nil
+            modsPanel.listbox:addItem(item.modID, item);
+        end
+    end
+end
+
 local function onModsPanelButtonChoose(self)
     local pageEdit = self.pageEdit;
     local settings = pageEdit.settings;
@@ -605,10 +637,7 @@ local function layoutSpawnRegionsPanel(self)
     positionVScroll(self.listbox, listW, listHeight);
 end
 
-local original_create = ServerSettingsScreen.create;
-function ServerSettingsScreen:create(...)
-    original_create(self, ...);
-
+Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
     if self.pageEdit and self.pageEdit.listbox then
         local workshopIndex = nil;
         for i, item in ipairs(self.pageEdit.listbox.items) do
@@ -644,8 +673,11 @@ function ServerSettingsScreen:create(...)
                 end
 
                 function panel:prerender()
-                    if self.button and not self.button:isVisible() then
-                        self.button:setVisible(true);
+                    if self.button then
+                        if not self.button:isVisible() then
+                            self.button:setVisible(true);
+                        end
+                        self.button:setEnable(not self.pageEdit.quickSetupMode);
                     end
                     original_prerender(self);
                 end
@@ -655,10 +687,10 @@ function ServerSettingsScreen:create(...)
                 end
 
                 if not panel.button then
-                    local buttonWid = UI_BORDER_SPACING * 2 + getTextManager():MeasureStringX(UIFont.Medium, getText("UI_NewGame_ChooseMods"));
+                    local buttonWid = UI_BORDER_SPACING * 2 +  getTextManager():MeasureStringX(UIFont.Medium, getText("UI_NewGame_ChooseMods"));
                     panel.button = ISButton:new(0, 0, buttonWid, BUTTON_HGT, getText("UI_NewGame_ChooseMods"), panel, onModsPanelButtonChoose);
                     panel.button:initialise();
-                    panel.button.borderColor = {r=1, g=1, b=1, a=0.2};
+                    panel.button.borderColor = { r = 1, g = 1, b = 1, a = 0.2 };
                     panel.button:setFont(UIFont.Medium);
                     panel:addChild(panel.button);
                     panel:addJoypadColumn({ panel.button });
@@ -666,7 +698,7 @@ function ServerSettingsScreen:create(...)
                 end
                 panel.button:setOnClick(onModsPanelButtonChoose, panel);
 
-                local warningTexture = getTexture("media/ui/ModManager/Icons/Warning_" .. FONT_HGT_SMALL ..".png");
+                local warningTexture = getTexture("media/ui/ModManager/Icons/Warning_" .. FONT_HGT_SMALL .. ".png");
                 panel.listbox.mouseOverButtonIndex = nil;
                 panel.listbox.modsPanel = panel;
 
@@ -697,7 +729,7 @@ function ServerSettingsScreen:create(...)
                         if warningTexture then
                             local iconY = y + (self.itemheight - FONT_HGT_SMALL) / 2;
                             self:drawTextureScaledAspect(warningTexture, textX, iconY, FONT_HGT_SMALL, FONT_HGT_SMALL, 1);
-                            item.warningIconRect = {x = textX, y = iconY, w = FONT_HGT_SMALL, h = FONT_HGT_SMALL};
+                            item.warningIconRect = { x = textX, y = iconY, w = FONT_HGT_SMALL, h = FONT_HGT_SMALL };
                             textX = textX + FONT_HGT_SMALL + 6;
                         end
                     end
@@ -724,7 +756,7 @@ function ServerSettingsScreen:create(...)
                         self:drawText("[" .. workshopID .. "]", x, y + dy, 0.6, 0.6, 0.6, 0.9, UIFont.Small);
                     end
 
-                    if self.mouseoverselected == item.index and not self:isMouseOverScrollBar() then
+                    if self.mouseoverselected == item.index and not self:isMouseOverScrollBar() and not self.modsPanel.pageEdit.quickSetupMode then
                         local textRemove = getText("UI_btn_remove");
                         local textRemoveWid = getTextManager():MeasureStringX(UIFont.Small, textRemove);
                         local btnWid = 8 + textRemoveWid + 8;
@@ -812,6 +844,52 @@ function ServerSettingsScreen:create(...)
                     end
                 end
 
+                panel.listbox.mouseOverButtonIndex = nil;
+                panel.listbox.mapsPanel = panel;
+
+                function panel.listbox:doDrawItem(y, item, _)
+                    self:drawRectBorder(0, y, self:getWidth(), self.itemheight - 1, 0.5, self.borderColor.r,
+                        self.borderColor.g, self.borderColor.b);
+
+                    if self.selected == item.index then
+                        self:drawRect(0, y, self:getWidth(), self.itemheight - 1, 0.3, 0.7, 0.35, 0.15);
+                    elseif self.mouseoverselected == item.index and not self:isMouseOverScrollBar() then
+                        self:drawRect(1, y + 1, self:getWidth() - 2, item.height - 4, 0.95, 0.05, 0.05, 0.05);
+                    end
+
+                    local smallFontHgt = FONT_LINE_HGT_SMALL;
+
+                    local dy = (self.itemheight - getTextManager():getFontFromEnum(self.font):getLineHeight()) / 2;
+                    self:drawText(item.text, 8, y + dy, 0.9, 0.9, 0.9, 0.9, self.font);
+                    if item.item.otherText then
+                        local x = 8 + getTextManager():MeasureStringX(self.font, item.text) + 8;
+                        dy = (self.itemheight - smallFontHgt) / 2;
+                        self:drawText("[" .. item.item.otherText .. "]", x, y + dy, 0.6, 0.6, 0.6, 0.9, UIFont.Small);
+                    end
+
+                    if self.mouseoverselected == item.index and not self:isMouseOverScrollBar()
+                        and not self.mapsPanel.pageEdit.quickSetupMode then
+                        local textRemove = getText("UI_btn_remove");
+                        local textRemoveWid = getTextManager():MeasureStringX(UIFont.Small, textRemove);
+                        local btnWid = 8 + textRemoveWid + 8;
+                        local btnHgt = smallFontHgt + 4;
+                        local scrollBarWid = self:isVScrollBarVisible() and 13 or 0;
+                        local btnX = self.width - 4 - scrollBarWid - btnWid;
+                        local btnY = y + (item.height - btnHgt) / 2;
+                        local isMouseOverButton = (self:getMouseX() > btnX - 8);
+                        if isMouseOverButton then
+                            self:drawRect(btnX, btnY, btnWid, btnHgt, 1, 0.85, 0, 0);
+                            self.mouseOverButtonIndex = item.index;
+                        else
+                            self:drawRect(btnX, btnY, btnWid, btnHgt, 1, 0.50, 0.50, 0.50);
+                        end
+                        self:drawTextCentre(textRemove, btnX + btnWid / 2, y + (item.height - smallFontHgt) / 2, 0, 0, 0,
+                            1, UIFont.Small);
+                    end
+
+                    return y + item.height
+                end
+
                 function panel:onResolutionChange()
                     layoutMapsPanel(self);
                 end
@@ -874,6 +952,9 @@ function ServerSettingsScreen:create(...)
                     ISPanelJoypad.prerender(self);
                     self.buttonMoveUp:setEnable(self:canMoveUp());
                     self.buttonMoveDown:setEnable(self:canMoveDown());
+                    if self.pageEdit.quickSetupMode then
+                        self.comboBox:setEnabled(false);
+                    end
                 end
 
                 function panel:fillComboBox(modsString)
@@ -1033,7 +1114,6 @@ function ServerSettingsScreen:create(...)
                         self:fillComboBox(modsString);
                     end
                 end
-
             elseif panel.Type == "SpawnRegionsPanel" then
                 local buttonWid = UI_BORDER_SPACING * 2 + math.max(
                     getTextManager():MeasureStringX(UIFont.Medium, getText("UI_ServerSettings_ButtonMoveUp")),
@@ -1042,14 +1122,14 @@ function ServerSettingsScreen:create(...)
 
                 local button = ISButton:new(0, 0, buttonWid, BUTTON_HGT, getText("UI_ServerSettings_ButtonMoveUp"), panel, nil);
                 button:initialise();
-                button.borderColor = {r=1, g=1, b=1, a=0.2};
+                button.borderColor = { r = 1, g = 1, b = 1, a = 0.2 };
                 button:setFont(UIFont.Medium);
                 panel:addChild(button);
                 panel.buttonMoveUp = button;
 
                 button = ISButton:new(0, 0, buttonWid, BUTTON_HGT, getText("UI_ServerSettings_ButtonMoveDown"), panel, nil);
                 button:initialise();
-                button.borderColor = {r=1, g=1, b=1, a=0.2};
+                button.borderColor = { r = 1, g = 1, b = 1, a = 0.2 };
                 button:setFont(UIFont.Medium);
                 panel:addChild(button);
                 panel.buttonMoveDown = button;
@@ -1129,6 +1209,9 @@ function ServerSettingsScreen:create(...)
                     ISPanelJoypad.prerender(self);
                     self.buttonMoveUp:setEnable(self.listbox.selected > 1);
                     self.buttonMoveDown:setEnable(self.listbox.selected < #self.listbox.items);
+                    if self.pageEdit.quickSetupMode then
+                        self.spawnComboBox:setEnabled(false);
+                    end
                 end
 
                 function panel:setSettings(settings)
@@ -1238,7 +1321,7 @@ function ServerSettingsScreen:create(...)
                     local dy = (self.itemheight - getTextManager():getFontFromEnum(self.font):getLineHeight()) / 2;
                     self:drawText(item.item.name, 8, y + dy, 0.9, 0.9, 0.9, 0.9, self.font);
 
-                    if self.mouseoverselected == item.index and not self:isMouseOverScrollBar() then
+                    if self.mouseoverselected == item.index and not self:isMouseOverScrollBar() and not self.spawnPanel.pageEdit.quickSetupMode then
                         local smallFontHgt = FONT_LINE_HGT_SMALL;
                         local textRemove = getText("UI_btn_remove");
                         local textRemoveWid = getTextManager():MeasureStringX(UIFont.Small, textRemove);
@@ -1283,9 +1366,198 @@ function ServerSettingsScreen:create(...)
             end
         end
     end
-end
 
----@diagnostic disable: need-check-nil
+    local pageStart = self.pageStart;
+    local editBtn = pageStart.buttonEdit;
+
+    editBtn:setTitle(getText("UI_ServerSettings_ButtonEditAdvanced"));
+    editBtn.tooltip = getText("UI_ServerSettings_ButtonEditAdvanced_tooltip");
+
+    local minHalfW = math.max(
+        getTextManager():MeasureStringX(UIFont.Medium, getText("UI_ServerSettings_ButtonEditBasic")),
+        getTextManager():MeasureStringX(UIFont.Medium, getText("UI_ServerSettings_ButtonEditAdvanced"))
+    ) + UI_BORDER_SPACING * 2;
+    local buttonWid = math.max(pageStart.buttonNew:getWidth(), minHalfW * 2 + UI_BORDER_SPACING);
+    local halfW = (buttonWid - UI_BORDER_SPACING) / 2;
+
+    pageStart.listbox:setWidth(buttonWid);
+    pageStart.listbox:setX((pageStart.width - UI_BORDER_SPACING) / 2 - buttonWid);
+    local buttonX = pageStart.listbox:getRight() + UI_BORDER_SPACING;
+
+    for _, btn in ipairs({ pageStart.buttonNew, pageStart.buttonDuplicate, pageStart.buttonRename, pageStart.buttonDelete }) do
+        if btn then
+            btn:setWidth(buttonWid);
+            btn:setX(buttonX);
+        end
+    end
+
+    editBtn:setWidth(halfW);
+    editBtn:setX(buttonX + halfW + UI_BORDER_SPACING);
+
+    local basicBtn = ISButton:new(buttonX, editBtn:getY(), halfW, editBtn:getHeight(), getText("UI_ServerSettings_ButtonEditBasic"), pageStart, nil);
+    basicBtn:initialise();
+    basicBtn:setAnchorLeft(true);
+    basicBtn:setAnchorTop(false);
+    basicBtn:setAnchorBottom(false);
+    basicBtn.borderColor = editBtn.borderColor;
+    basicBtn:setFont(UIFont.Medium);
+    basicBtn.tooltip = getText("UI_ServerSettings_ButtonEditBasic_tooltip");
+    pageStart:addChild(basicBtn);
+    pageStart.buttonEditBasic = basicBtn;
+
+    pageStart.joypadButtonsY = {};
+    pageStart:insertNewLineOfButtons(pageStart.buttonNew);
+    pageStart:insertNewLineOfButtons(pageStart.buttonEditBasic, pageStart.buttonEdit);
+    pageStart:insertNewLineOfButtons(pageStart.buttonDuplicate);
+    pageStart:insertNewLineOfButtons(pageStart.buttonRename);
+    pageStart:insertNewLineOfButtons(pageStart.buttonDelete);
+    pageStart.joypadIndex = 1;
+    pageStart.joypadIndexY = 1;
+
+    local pageEdit = self.pageEdit;
+    pageStart.onButtonEditBasic = function(self_)
+        if not self_.listbox.items[self_.listbox.selected] then return end
+
+        self_:setVisible(false);
+
+        local settings = self_.listbox.items[self_.listbox.selected].item;
+        settings:loadFiles();
+
+        local activeMods = ActiveMods.getById("serversettings");
+        local modArray = activeMods:getMods();
+        modArray:clear();
+        local modIDList = {};
+        local modsString = settings:getServerOptions():getOptionByName("Mods"):getValue();
+        for _, modID in ipairs(string.split(modsString, ";")) do
+            if modID ~= "" then
+                modArray:add(modID);
+                table.insert(modIDList, modID);
+            end
+        end
+
+        local addedMods, removedMods = updateServerSettingsMods(settings, modIDList);
+
+        pageEdit.quickSetupMode = true;
+
+        showPageEdit(pageEdit, settings, JoypadState.getMainMenuJoypad(), modArray, addedMods, removedMods);
+
+        local edit = pageEdit;
+
+        local removeIndexes = {};
+        local currentCategoryName = nil;
+        for i, listItem in ipairs(edit.listbox.items) do
+            local item = listItem.item;
+            if item.category and not item.page then
+                currentCategoryName = item.category.name;
+                if currentCategoryName == "Sandbox" then
+                    table.insert(removeIndexes, i);
+                end
+            elseif item.page and currentCategoryName == "Sandbox" then
+                table.insert(removeIndexes, i);
+            end
+        end
+
+        for idx = #removeIndexes, 1, -1 do
+            local i = removeIndexes[idx];
+            local item = edit.listbox.items[i].item;
+            if item.page and edit.currentPanel == item.panel then
+                edit:removeChild(edit.currentPanel);
+                edit.currentPanel = nil;
+            end
+            edit.listbox:removeItemByIndex(i);
+        end
+
+        for i, listItem in ipairs(edit.listbox.items) do
+            if listItem.item.page then
+                edit.listbox.selected = i;
+                edit:onMouseDownListBox(listItem.item);
+                break
+            end
+        end
+    end
+    pageStart.buttonEditBasic:setOnClick(pageStart.onButtonEditBasic, pageStart);
+
+    pageStart.onButtonEditAdvanced = function(self_)
+        if not self_.listbox.items[self_.listbox.selected] then return end
+
+        self_:setVisible(false);
+
+        local settings = self_.listbox.items[self_.listbox.selected].item;
+        settings:loadFiles();
+
+        local activeMods = ActiveMods.getById("serversettings");
+        local modArray = activeMods:getMods();
+        modArray:clear();
+        local modIDList = {};
+        local modsString = settings:getServerOptions():getOptionByName("Mods"):getValue();
+        for _, modID in ipairs(string.split(modsString, ";")) do
+            if modID ~= "" then
+                modArray:add(modID);
+                table.insert(modIDList, modID);
+            end
+        end
+
+        local addedMods, removedMods = updateServerSettingsMods(settings, modIDList);
+
+        local reason = "ServerSettingsChange" .. "=" .. settings:getName();
+        if ActiveMods.requiresResetLua(activeMods) then
+            getCore():ResetLua("serversettings", reason);
+            return;
+        end
+
+        showPageEdit(pageEdit, settings, JoypadState.getMainMenuJoypad(), modArray, addedMods, removedMods);
+    end
+    pageStart.buttonEdit:setOnClick(pageStart.onButtonEditAdvanced, pageStart);
+
+    local Page1Class = getmetatable(pageStart);
+    if Page1Class then
+        Functions.PostHook.Add(Page1Class, "updateWhenVisible", function(self_)
+            local itemSelected = self_.listbox.items[self_.listbox.selected] ~= nil;
+            if self_.buttonEditBasic then
+                self_.buttonEditBasic:setEnable(itemSelected);
+            end
+        end)
+
+        Functions.PostHook.Add(Page1Class, "onResolutionChange", function(self_)
+            if self_.buttonEditBasic then
+                self_.listbox:setX((self_.width - UI_BORDER_SPACING) / 2 - self_.listbox.width);
+                local buttonX = self_.listbox:getRight() + UI_BORDER_SPACING;
+                local buttonsToUpdate = { self_.buttonNew, self_.buttonDuplicate, self_.buttonRename, self_.buttonDelete };
+                for _, btn in ipairs(buttonsToUpdate) do
+                    if btn then
+                        btn:setX(buttonX);
+                    end
+                end
+                self_.buttonEditBasic:setX(buttonX);
+                self_.buttonEdit:setX(buttonX + self_.buttonEditBasic:getWidth() + UI_BORDER_SPACING);
+            end
+        end)
+    end
+end)
+
+Functions.PostHook.Add(ServerSettingsScreen, "onResetLua", function(self, reason)
+    if not luautils.stringStarts(reason, "ServerSettingsChange") then
+        return;
+    end
+
+    local pageEdit = self.pageEdit;
+    if not pageEdit or not pageEdit.settings then
+        return;
+    end
+
+    local modsString = pageEdit.settings:getServerOptions():getOptionByName("Mods"):getValue();
+    local addedMods = {};
+    for _, modID in ipairs(string.split(modsString, ";")) do
+        if modID ~= "" then
+            table.insert(addedMods, modID);
+        end
+    end
+
+    if #addedMods > 0 then
+        applyModsDiff(pageEdit, pageEdit.settings, addedMods, {});
+    end
+end)
+
 Events.OnMainMenuEnter.Add(function()
     local pageEdit = ServerSettingsScreen.instance.pageEdit;
     local chooseModsWindow = pageEdit.chooseModsWindow;
@@ -1304,47 +1576,54 @@ Events.OnMainMenuEnter.Add(function()
 
         local addedMods, removedMods = updateServerSettingsMods(self_.settings, modIDList);
 
-        self_.parent.pageEdit.settings = self_.settings;
-        self_.parent.pageEdit:aboutToShow();
-        self_.parent.pageEdit:setVisible(true, self_.joyfocus);
+        self_.settings:getServerOptions():saveServerTextFile(self_.settings:getName());
 
-        applyModsDiff(self_.parent.pageEdit, self_.settings, addedMods, removedMods);
-
-        local modsPanel = nil;
-        for _, panel in ipairs(self_.parent.pageEdit.customui) do
-            if panel.Type == "ServerSettingsScreenModsPanel" then
-                modsPanel = panel;
-                break
-            end
+        local reason = "ServerSettingsChange" .. "=" .. self_.settings:getName();
+        if ActiveMods.requiresResetLua(activeMods) then
+            getCore():ResetLua("serversettings", reason);
+            return;
         end
 
-        modsPanel.listbox:clear();
-        for i = 0, modArray:size() - 1 do
-            local item = {};
-            item.modID = modArray:get(i);
-            item.modInfo = modsPanel.modInfoByID[modArray:get(i)];
-            if item.modInfo then
-                modsPanel.listbox:addItem(item.modInfo:getName(), item);
-            else
-                modsPanel.listbox:addItem(item.modID, item);
-            end
-        end
+        showPageEdit(pageEdit, self_.settings, self_.joyfocus, modArray, addedMods, removedMods);
     end
     chooseModsWindow.buttonAccept:setOnClick(chooseModsWindow.onButtonNext, chooseModsWindow);
 
     pageEdit.onButtonCancel = function(self_)
+        if not serverFileExists(self_.settings:getName() .. "_SandboxVars.lua") and not self_.quickSetupMode then
+            self_.settings:saveFiles();
+        end
         self_:setVisible(false);
         self_.parent.pageStart:setVisible(true, JoypadState.getMainMenuJoypad());
+        self_.quickSetupMode = false;
+        local activeMods = ActiveMods.getById("default");
+        if ActiveMods.requiresResetLua(activeMods) then
+            getCore():ResetLua("default", "ServerSettingsReturnToDefault");
+        end
     end
     pageEdit.buttonCancel:setOnClick(pageEdit.onButtonCancel, pageEdit);
 
     pageEdit.onButtonSave = function(self_)
-        self_:settingsFromUI();
-        self_.settings:saveFiles();
+        if self_.quickSetupMode then
+            self_:settingsFromUIAux("INI", self_.settings:getServerOptions());
+            for _, panel in ipairs(self_.customui) do
+                if panel.settingsFromUI then
+                    panel:settingsFromUI();
+                end
+            end
+            self_.settings:getServerOptions():saveServerTextFile(self_.settings:getName());
+        else
+            self_:settingsFromUI();
+            self_.settings:saveFiles();
+        end
         self_:setVisible(false);
         self_.parent.initialSelectedSettings = self_.settings:getName();
         self_.parent.pageStart:aboutToShow();
         self_.parent.pageStart:setVisible(true, JoypadState.getMainMenuJoypad());
+        self_.quickSetupMode = false;
+        local activeMods = ActiveMods.getById("default");
+        if ActiveMods.requiresResetLua(activeMods) then
+            getCore():ResetLua("default", "ServerSettingsReturnToDefault");
+        end
     end
     pageEdit.buttonAccept:setOnClick(pageEdit.onButtonSave, pageEdit);
 end);

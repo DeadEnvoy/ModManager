@@ -1,52 +1,36 @@
 {
     "UI_mainscreen_btn_configs": "KONFIGURACJE",
-
     "UI_modselector_separator": "z",
-
     "UI_modselector_showEnabledMods": "Pokaż włączone mody",
     "UI_modselector_showDisabledMods": "Pokaż wyłączone mody",
     "UI_modselector_showHiddenMods": "Pokaż ukryte mody",
-
     "UI_modselector_disableWarningTitle": "UWAGA!",
     "UI_modselector_disableWarningText": "Wyłączenie tej modyfikacji spowoduje również wyłączenie następujących:",
-
     "UI_modlistpanel_sortBy": "Sortuj według:",
     "UI_modlistpanel_sortBy_name": "Nazwa (A-Z)",
     "UI_modlistpanel_sortBy_date": "Data dodania",
     "UI_modlistpanel_sortBy_dateUpdated": "Data aktualizacji",
-
     "UI_modselector_status_installed": "Aktualny",
     "UI_modselector_status_needsUpdate": "Dostępna aktualizacja!",
-
     "UI_modoptions_title": "OPCJE MODÓW",
-
     "UI_btn_sort_apply": "SORTUJ I ZASTOSUJ",
-
     "UI_modpresets_title": "LISTA PRESETÓW",
-
     "UI_modpresets_presetsTab": "PRESETY",
     "UI_modpresets_historyTab": "HISTORIA",
-
     "UI_modpresets_copy": "KOPIUJ",
-
     "UI_btn_select": "WYBIERZ",
     "UI_btn_deleteAll": "USUŃ WSZYSTKO",
-
     "UI_modpresets_deleteAll_dialog": "Usunąć całą historię?",
-
     "UI_modselector_btn_hide": "UKRYJ",
     "UI_modselector_btn_show": "POKAŻ",
     "UI_modselector_btn_favorite": "ULUBIONE",
     "UI_modselector_btn_unfavorite": "USUŃ Z ULUBIONYCH",
     "UI_modselector_btn_enable": "WŁĄCZ",
     "UI_modselector_btn_disable": "WYŁĄCZ",
-
     "UI_modselector_LocalMod_tooltip": "Ten mod nie zostanie pobrany po stronie klienta.\n\nPowód: Nie znaleziono Workshop ID (mod lokalny).\n\nJeśli jesteś autorem tego moda, musisz opublikować go w Warsztacie i zasubskrybować.",
-
     "UI_ServerSettings_SpawnRegions": "Regiony spawnu używane przez ten serwer:",
     "UI_ServerSettings_AddSpawnRegion": "Dodaj dostępny region spawnu do listy:",
     "UI_ServerOption_SpawnPoint": "Punkt spawnu:",
-
     "UI_modinfopanel_Status": "Status",
     "UI_modinfopanel_Version": "Wersja",
     "UI_modinfopanel_Category": "Kategoria",
@@ -62,7 +46,6 @@
     "UI_modinfopanel_Changelog": "Lista zmian",
     "UI_modinfopanel_SetCategory": "Przypisz...",
     "UI_modinfopanel_SelectCategory": "Wybierz kategorię",
-
     "UI_modinfopanel_Category_None": "Brak",
     "UI_modinfopanel_Category_Animals": "Zwierzęta",
     "UI_modinfopanel_Category_Animations": "Animacje",
@@ -104,15 +87,12 @@
     "UI_modinfopanel_Category_Voices": "Głosy",
     "UI_modinfopanel_Category_Weapons": "Broń",
     "UI_modinfopanel_Category_Zombies": "Zombie",
-
     "UI_modinfopanel_TimeFormat_Today": "Dzisiaj o {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_Yesterday": "Wczoraj o {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_ThisYear": "{day} {month} o {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_OtherYears": "{day} {month} {year} o {hour24}:{min}",
-
     "UI_modinfopanel_AM": "AM",
     "UI_modinfopanel_PM": "PM",
-
     "UI_modinfopanel_Month_Short_1": "stycznia",
     "UI_modinfopanel_Month_Short_2": "lutego",
     "UI_modinfopanel_Month_Short_3": "marca",
@@ -125,6 +105,9 @@
     "UI_modinfopanel_Month_Short_10": "października",
     "UI_modinfopanel_Month_Short_11": "listopada",
     "UI_modinfopanel_Month_Short_12": "grudnia",
-
-    "UI_alertSystem_noUpdates": "Brak aktualizacji modów w ciągu ostatnich dwóch tygodni."
+    "UI_alertSystem_noUpdates": "Brak aktualizacji modów w ciągu ostatnich dwóch tygodni.",
+    "UI_ServerSettings_ButtonEditBasic": "Edytuj (podstawowe)",
+    "UI_ServerSettings_ButtonEditAdvanced": "Edytuj (zaawansowane)",
+    "UI_ServerSettings_ButtonEditBasic_tooltip": "Edycja tylko głównych ustawień serwera. Zmiana listy modów, map, punktów odradzania i opcji piaskownicy jest niedostępna w tym trybie.",
+    "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Edycja wszystkich ustawień serwera bez ograniczeń.\n\nWymaga: Zresetuj Lua."
 }

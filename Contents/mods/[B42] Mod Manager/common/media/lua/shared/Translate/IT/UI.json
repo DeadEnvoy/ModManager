@@ -1,52 +1,36 @@
 {
     "UI_mainscreen_btn_configs": "CONFIGURAZIONI",
-
     "UI_modselector_separator": "di",
-
     "UI_modselector_showEnabledMods": "Mostra mod abilitati",
     "UI_modselector_showDisabledMods": "Mostra mod disabilitati",
     "UI_modselector_showHiddenMods": "Mostra mod nascosti",
-
     "UI_modselector_disableWarningTitle": "ATTENZIONE!",
     "UI_modselector_disableWarningText": "Disabilitando questa mod verranno disabilitate anche le seguenti:",
-
     "UI_modlistpanel_sortBy": "Ordina per:",
     "UI_modlistpanel_sortBy_name": "Nome (A-Z)",
     "UI_modlistpanel_sortBy_date": "Più recenti",
     "UI_modlistpanel_sortBy_dateUpdated": "Data aggiornamento",
-
     "UI_modselector_status_installed": "Aggiornata",
     "UI_modselector_status_needsUpdate": "Aggiornamento disponibile!",
-
     "UI_modoptions_title": "OPZIONI MOD",
-
     "UI_btn_sort_apply": "ORDINA E APPLICA",
-
     "UI_modpresets_title": "LISTA PRESET",
-
     "UI_modpresets_presetsTab": "PRESET",
     "UI_modpresets_historyTab": "STORICO",
-
     "UI_modpresets_copy": "COPIA",
-
     "UI_btn_select": "SELEZIONA",
     "UI_btn_deleteAll": "ELIMINA TUTTO",
-
     "UI_modpresets_deleteAll_dialog": "Eliminare l'intero storico?",
-
     "UI_modselector_btn_hide": "NASCONDI",
     "UI_modselector_btn_show": "MOSTRA",
     "UI_modselector_btn_favorite": "PREFERITO",
     "UI_modselector_btn_unfavorite": "RIMUOVI DAI PREFERITI",
     "UI_modselector_btn_enable": "ABILITA",
     "UI_modselector_btn_disable": "DISABILITA",
-
     "UI_modselector_LocalMod_tooltip": "Questa mod non verrà scaricata dal client.\n\nMotivo: Workshop ID non trovato (mod locale).\n\nSe sei l'autore di questa mod, devi pubblicarla sul Workshop e iscriverti ad essa.",
-
     "UI_ServerSettings_SpawnRegions": "Regioni di spawn utilizzate da questo server:",
     "UI_ServerSettings_AddSpawnRegion": "Aggiungi una regione di spawn disponibile alla lista:",
     "UI_ServerOption_SpawnPoint": "Punto di spawn:",
-
     "UI_modinfopanel_Status": "Stato",
     "UI_modinfopanel_Version": "Versione",
     "UI_modinfopanel_Category": "Categoria",
@@ -62,7 +46,6 @@
     "UI_modinfopanel_Changelog": "Note di versione",
     "UI_modinfopanel_SetCategory": "Assegna...",
     "UI_modinfopanel_SelectCategory": "Seleziona categoria",
-
     "UI_modinfopanel_Category_None": "Nessuna",
     "UI_modinfopanel_Category_Animals": "Animali",
     "UI_modinfopanel_Category_Animations": "Animazioni",
@@ -104,15 +87,12 @@
     "UI_modinfopanel_Category_Voices": "Voci",
     "UI_modinfopanel_Category_Weapons": "Armi",
     "UI_modinfopanel_Category_Zombies": "Zombi",
-
     "UI_modinfopanel_TimeFormat_Today": "Oggi alle {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_Yesterday": "Ieri alle {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_ThisYear": "{day} {month} alle {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_OtherYears": "{day} {month} {year} alle {hour24}:{min}",
-
     "UI_modinfopanel_AM": "AM",
     "UI_modinfopanel_PM": "PM",
-
     "UI_modinfopanel_Month_Short_1": "gen",
     "UI_modinfopanel_Month_Short_2": "feb",
     "UI_modinfopanel_Month_Short_3": "mar",
@@ -125,6 +105,9 @@
     "UI_modinfopanel_Month_Short_10": "ott",
     "UI_modinfopanel_Month_Short_11": "nov",
     "UI_modinfopanel_Month_Short_12": "Dic",
-
-    "UI_alertSystem_noUpdates": "Nessun aggiornamento di mod nelle ultime due settimane."
+    "UI_alertSystem_noUpdates": "Nessun aggiornamento di mod nelle ultime due settimane.",
+    "UI_ServerSettings_ButtonEditBasic": "Modifica (Base)",
+    "UI_ServerSettings_ButtonEditAdvanced": "Modifica (Avanzata)",
+    "UI_ServerSettings_ButtonEditBasic_tooltip": "Modifica solo le impostazioni principali del server. In questa modalità la modifica dell'elenco delle mod, delle mappe, dei punti di rientro e delle opzioni sandbox non è disponibile.",
+    "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Modifica tutte le impostazioni del server senza restrizioni.\n\nRichiede azzeramento Lua."
 }

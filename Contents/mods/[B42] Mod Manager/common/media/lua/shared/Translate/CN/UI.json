@@ -1,52 +1,36 @@
 {
     "UI_mainscreen_btn_configs": "配置",
-
     "UI_modselector_separator": "/",
-
     "UI_modselector_showEnabledMods": "显示已启用",
     "UI_modselector_showDisabledMods": "显示已禁用",
     "UI_modselector_showHiddenMods": "显示已隐藏",
-
     "UI_modselector_disableWarningTitle": "警告：",
     "UI_modselector_disableWarningText": "禁用此模组也会禁用以下内容：",
-
     "UI_modlistpanel_sortBy": "排序方式：",
     "UI_modlistpanel_sortBy_name": "名称 (A-Z)",
     "UI_modlistpanel_sortBy_date": "最新添加",
     "UI_modlistpanel_sortBy_dateUpdated": "更新日期",
-
     "UI_modselector_status_installed": "已是最新",
     "UI_modselector_status_needsUpdate": "可更新！",
-
     "UI_modoptions_title": "模组设置",
-
     "UI_btn_sort_apply": "排序并应用",
-
     "UI_modpresets_title": "预设列表",
-
     "UI_modpresets_presetsTab": "预设",
     "UI_modpresets_historyTab": "历史",
-
     "UI_modpresets_copy": "复制",
-
     "UI_btn_select": "选择",
     "UI_btn_deleteAll": "全部删除",
-
     "UI_modpresets_deleteAll_dialog": "删除全部历史？",
-
     "UI_modselector_btn_hide": "隐藏",
     "UI_modselector_btn_show": "显示",
     "UI_modselector_btn_favorite": "收藏",
     "UI_modselector_btn_unfavorite": "取消收藏",
     "UI_modselector_btn_enable": "启用",
     "UI_modselector_btn_disable": "禁用",
-
     "UI_modselector_LocalMod_tooltip": "此模组不会在客户端下载。\n\n原因：未找到 Workshop ID（本地模组）。\n\n如果你是作者，请将其发布到创意工坊并订阅。",
-
     "UI_ServerSettings_SpawnRegions": "此服务器的重生区域：",
     "UI_ServerSettings_AddSpawnRegion": "添加可用重生区域：",
     "UI_ServerOption_SpawnPoint": "重生点：",
-
     "UI_modinfopanel_Status": "状态",
     "UI_modinfopanel_Version": "版本",
     "UI_modinfopanel_Category": "类别",
@@ -62,7 +46,6 @@
     "UI_modinfopanel_Changelog": "更新日志",
     "UI_modinfopanel_SetCategory": "分配...",
     "UI_modinfopanel_SelectCategory": "选择类别",
-
     "UI_modinfopanel_Category_None": "无",
     "UI_modinfopanel_Category_Animals": "动物",
     "UI_modinfopanel_Category_Animations": "动画",
@@ -104,15 +87,12 @@
     "UI_modinfopanel_Category_Voices": "语音",
     "UI_modinfopanel_Category_Weapons": "武器",
     "UI_modinfopanel_Category_Zombies": "僵尸",
-
     "UI_modinfopanel_TimeFormat_Today": "今天 {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_Yesterday": "昨天 {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_ThisYear": "{month}月{day}日 {hour24}:{min}",
     "UI_modinfopanel_TimeFormat_OtherYears": "{year}年{month}月{day}日 {hour24}:{min}",
-
     "UI_modinfopanel_AM": "上午",
     "UI_modinfopanel_PM": "下午",
-
     "UI_modinfopanel_Month_Short_1": "1月",
     "UI_modinfopanel_Month_Short_2": "2月",
     "UI_modinfopanel_Month_Short_3": "3月",
@@ -125,6 +105,9 @@
     "UI_modinfopanel_Month_Short_10": "10月",
     "UI_modinfopanel_Month_Short_11": "11月",
     "UI_modinfopanel_Month_Short_12": "12月",
-
-    "UI_alertSystem_noUpdates": "过去两周内没有模组更新。"
+    "UI_alertSystem_noUpdates": "过去两周内没有模组更新。",
+    "UI_ServerSettings_ButtonEditBasic": "编辑（基础）",
+    "UI_ServerSettings_ButtonEditAdvanced": "编辑（高级）",
+    "UI_ServerSettings_ButtonEditBasic_tooltip": "仅编辑主要服务器设置。在此模式下无法修改模组列表、地图、出生点和沙盒选项。",
+    "UI_ServerSettings_ButtonEditAdvanced_tooltip": "无限制地编辑所有服务器设置。\n\n需要重置 Lua。"
 }
