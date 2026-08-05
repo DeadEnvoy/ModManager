@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "Nov",
     "UI_modinfopanel_Month_Short_12": "Dec",
     "UI_alertSystem_noUpdates": "No mod updates in the last two weeks.",
-    "UI_ServerSettings_ButtonEditBasic": "Edit (Basic)",
-    "UI_ServerSettings_ButtonEditAdvanced": "Edit (Advanced)",
+    "UI_ServerSettings_ButtonEditBasic": "Quick Edit",
+    "UI_ServerSettings_ButtonEditAdvanced": "Full Edit",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "Edit main server settings only. Changing active mods, maps, spawn points, and sandbox options is disabled in this mode.",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Edit all server settings without restrictions.\n\nRequires Reset Lua."
 }

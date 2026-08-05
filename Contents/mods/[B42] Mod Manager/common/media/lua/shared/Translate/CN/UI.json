@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "11月",
     "UI_modinfopanel_Month_Short_12": "12月",
     "UI_alertSystem_noUpdates": "过去两周内没有模组更新。",
-    "UI_ServerSettings_ButtonEditBasic": "编辑（基础）",
-    "UI_ServerSettings_ButtonEditAdvanced": "编辑（高级）",
+    "UI_ServerSettings_ButtonEditBasic": "快速编辑",
+    "UI_ServerSettings_ButtonEditAdvanced": "完整编辑",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "仅编辑主要服务器设置。在此模式下无法修改模组列表、地图、出生点和沙盒选项。",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "无限制地编辑所有服务器设置。\n\n需要重置 Lua。"
 }

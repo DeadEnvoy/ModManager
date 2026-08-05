@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "nov.",
     "UI_modinfopanel_Month_Short_12": "Déc",
     "UI_alertSystem_noUpdates": "Aucune mise à jour de mod ces deux dernières semaines.",
-    "UI_ServerSettings_ButtonEditBasic": "Modifier (Basique)",
-    "UI_ServerSettings_ButtonEditAdvanced": "Modifier (Avancé)",
+    "UI_ServerSettings_ButtonEditBasic": "Modification rapide",
+    "UI_ServerSettings_ButtonEditAdvanced": "Modification complète",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "Modifier uniquement les paramètres principaux du serveur. Dans ce mode, la modification de la liste des mods, des cartes, des points d'apparition et des options du bac à sable est désactivée.",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Modifier tous les paramètres du serveur sans restriction.\n\nNécessite de réinitialiser Lua."
 }

@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "nov.",
     "UI_modinfopanel_Month_Short_12": "Dez",
     "UI_alertSystem_noUpdates": "Nenhuma atualização de mod nas últimas duas semanas.",
-    "UI_ServerSettings_ButtonEditBasic": "Editar (Básico)",
-    "UI_ServerSettings_ButtonEditAdvanced": "Editar (Avançado)",
+    "UI_ServerSettings_ButtonEditBasic": "Edição rápida",
+    "UI_ServerSettings_ButtonEditAdvanced": "Edição completa",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "Edita apenas as configurações principais do servidor. A alteração da lista de mods, mapas, pontos de renascimento e opções do modo sandbox está desativada neste modo.",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Edita todas as configurações do servidor sem restrições.\n\nRequer reiniciar Lua."
 }

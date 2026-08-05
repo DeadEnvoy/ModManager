@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "11",
     "UI_modinfopanel_Month_Short_12": "12",
     "UI_alertSystem_noUpdates": "지난 2주 동안 모드 업데이트가 없습니다.",
-    "UI_ServerSettings_ButtonEditBasic": "편집 (기본)",
-    "UI_ServerSettings_ButtonEditAdvanced": "편집 (고급)",
+    "UI_ServerSettings_ButtonEditBasic": "빠른 편집",
+    "UI_ServerSettings_ButtonEditAdvanced": "전체 편집",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "주요 서버 설정만 편집합니다. 이 모드에서는 모드 목록, 지도, 스폰 지역 및 샌드박스 옵션을 변경할 수 없습니다.",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "모든 서버 설정을 제한 없이 편집합니다.\n\nLua 리셋이 필요합니다."
 }

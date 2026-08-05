@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "nov.",
     "UI_modinfopanel_Month_Short_12": "dec.",
     "UI_alertSystem_noUpdates": "Az elmúlt két hétben nem volt mod-frissítés.",
-    "UI_ServerSettings_ButtonEditBasic": "Szerkesztés (Alap)",
-    "UI_ServerSettings_ButtonEditAdvanced": "Szerkesztés (Haladó)",
+    "UI_ServerSettings_ButtonEditBasic": "Gyors szerkesztés",
+    "UI_ServerSettings_ButtonEditAdvanced": "Teljes szerkesztés",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "Csak a fő szerverbeállítások szerkesztése. Ebben a módban a modlisták, térképek, kezdőpontok és a homokozó opciói nem módosíthatók.",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Minden szerverbeállítás korlátozás nélküli szerkesztése.\n\nLua visszaállítása szükséges."
 }

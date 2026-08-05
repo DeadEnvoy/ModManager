@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "nov.",
     "UI_modinfopanel_Month_Short_12": "Dic",
     "UI_alertSystem_noUpdates": "No hay actualizaciones de mods en las últimas dos semanas.",
-    "UI_ServerSettings_ButtonEditBasic": "Editar (Básico)",
-    "UI_ServerSettings_ButtonEditAdvanced": "Editar (Avanzado)",
+    "UI_ServerSettings_ButtonEditBasic": "Edición rápida",
+    "UI_ServerSettings_ButtonEditAdvanced": "Edición completa",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "Edita solo los ajustes principales del servidor. En este modo no se pueden modificar listas de mods, mapas, puntos de reaparición ni opciones de sandbox.",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Edita todos los ajustes del servidor sin restricciones.\n\nRequiere reiniciar Lua."
 }

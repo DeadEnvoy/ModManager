@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "nov",
     "UI_modinfopanel_Month_Short_12": "Dic",
     "UI_alertSystem_noUpdates": "Nessun aggiornamento di mod nelle ultime due settimane.",
-    "UI_ServerSettings_ButtonEditBasic": "Modifica (Base)",
-    "UI_ServerSettings_ButtonEditAdvanced": "Modifica (Avanzata)",
+    "UI_ServerSettings_ButtonEditBasic": "Modifica rapida",
+    "UI_ServerSettings_ButtonEditAdvanced": "Modifica completa",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "Modifica solo le impostazioni principali del server. In questa modalità la modifica dell'elenco delle mod, delle mappe, dei punti di rientro e delle opzioni sandbox non è disponibile.",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Modifica tutte le impostazioni del server senza restrizioni.\n\nRichiede azzeramento Lua."
 }

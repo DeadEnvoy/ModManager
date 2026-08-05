@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "nov.",
     "UI_modinfopanel_Month_Short_12": "des.",
     "UI_alertSystem_noUpdates": "Ingen modoppdateringer de siste to ukene.",
-    "UI_ServerSettings_ButtonEditBasic": "Rediger (Grunnleggende)",
-    "UI_ServerSettings_ButtonEditAdvanced": "Rediger (Avansert)",
+    "UI_ServerSettings_ButtonEditBasic": "Hurtigredigering",
+    "UI_ServerSettings_ButtonEditAdvanced": "Full redigering",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "Rediger bare hovedinnstillingene for serveren. Endring av mod-liste, kart, spawn-steder og sandbox-alternativer er deaktivert i denne modusen.",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Rediger alle serverinnstillinger uten begrensninger.\n\nKrever Reset Lua."
 }

@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "нояб.",
     "UI_modinfopanel_Month_Short_12": "дек.",
     "UI_alertSystem_noUpdates": "Обновлений модов за последние две недели не было.",
-    "UI_ServerSettings_ButtonEditBasic": "Изменить (базовые)",
-    "UI_ServerSettings_ButtonEditAdvanced": "Изменить (расширенные)",
+    "UI_ServerSettings_ButtonEditBasic": "Быстрая настройка",
+    "UI_ServerSettings_ButtonEditAdvanced": "Полная настройка",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "Редактирование только основных настроек сервера. Изменение списка модов, карт, точек спавна и опций песочницы недоступно в этом режиме.",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Редактирование всех настроек сервера без ограничений.\n\nТребуется перезагрузка Lua."
 }

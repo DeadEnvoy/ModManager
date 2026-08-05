@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "Kas",
     "UI_modinfopanel_Month_Short_12": "Ara",
     "UI_alertSystem_noUpdates": "Son iki haftada mod güncellemesi yok.",
-    "UI_ServerSettings_ButtonEditBasic": "Düzenle (Temel)",
-    "UI_ServerSettings_ButtonEditAdvanced": "Düzenle (Gelişmiş)",
+    "UI_ServerSettings_ButtonEditBasic": "Hızlı düzenleme",
+    "UI_ServerSettings_ButtonEditAdvanced": "Tam düzenleme",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "Yalnızca ana sunucu ayarlarını düzenler. Bu modda mod listesi, haritalar, doğma noktaları ve korumalı alan seçeneklerini değiştirmek devre dışıdır.",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Tüm sunucu ayarlarını kısıtlama olmaksızın düzenler.\n\nLua'yı Sıfırla gerektirir."
 }

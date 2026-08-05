@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "Nov.",
     "UI_modinfopanel_Month_Short_12": "Dez",
     "UI_alertSystem_noUpdates": "Keine Mod-Updates in den letzten zwei Wochen.",
-    "UI_ServerSettings_ButtonEditBasic": "Bearbeiten (Basis)",
-    "UI_ServerSettings_ButtonEditAdvanced": "Bearbeiten (Erweitert)",
+    "UI_ServerSettings_ButtonEditBasic": "Schnellbearbeitung",
+    "UI_ServerSettings_ButtonEditAdvanced": "Vollständige Bearbeitung",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "Nur Haupt-Servereinstellungen bearbeiten. Das Ändern von Mod-Liste, Karten, Spawnpunkten und Sandbox-Optionen ist in diesem Modus deaktiviert.",
-    "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Alle Servereinstellungen ohne Einschränkungen bearbeiten.\n\nErfordert: Lua zurücksetzen."
+    "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Alle Servereinstellungen ohne Einschränkungen bearbeiten.\n\nErfordert einen Lua-Neustart."
 }

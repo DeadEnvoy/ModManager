@@ -106,8 +106,8 @@
     "UI_modinfopanel_Month_Short_11": "listopada",
     "UI_modinfopanel_Month_Short_12": "grudnia",
     "UI_alertSystem_noUpdates": "Brak aktualizacji modów w ciągu ostatnich dwóch tygodni.",
-    "UI_ServerSettings_ButtonEditBasic": "Edytuj (podstawowe)",
-    "UI_ServerSettings_ButtonEditAdvanced": "Edytuj (zaawansowane)",
+    "UI_ServerSettings_ButtonEditBasic": "Szybka edycja",
+    "UI_ServerSettings_ButtonEditAdvanced": "Pełna edycja",
     "UI_ServerSettings_ButtonEditBasic_tooltip": "Edycja tylko głównych ustawień serwera. Zmiana listy modów, map, punktów odradzania i opcji piaskownicy jest niedostępna w tym trybie.",
     "UI_ServerSettings_ButtonEditAdvanced_tooltip": "Edycja wszystkich ustawień serwera bez ograniczeń.\n\nWymaga: Zresetuj Lua."
 }

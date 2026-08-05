@@ -424,7 +424,7 @@ local function getVanillaMapFolders()
         local mapFolder = mapFolders:get(i - 1);
         if mapFolder ~= "challengemaps" and isVanillaMap(mapFolder) then
             local info = getMapInfo(mapFolder);
-            if info and not (info.only_for_game_mode and info.only_for_game_mode ~= "Multiplayer") then
+            if info and not info.only_for_game_mode then
                 if MapsOrder then
                     local sorted = false;
                     for orderIndex, orderedMap in ipairs(MapsOrder) do
@@ -664,30 +664,24 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
     if self.pageEdit and self.pageEdit.customui then
         for _, panel in ipairs(self.pageEdit.customui) do
             if panel.Type == "ServerSettingsScreenModsPanel" then
-                local original_createChildren = panel.createChildren;
-                local original_prerender = panel.prerender;
-
-                function panel:createChildren()
-                    original_createChildren(self);
-                    layoutModsPanel(self);
-                end
-
-                function panel:prerender()
+                Functions.PostHook.Add(panel, "createChildren", layoutModsPanel);
+                ---@diagnostic disable-next-line: redefined-local
+                Functions.PreHook.Add(panel, "prerender", function(self)
                     if self.button then
                         if not self.button:isVisible() then
                             self.button:setVisible(true);
                         end
                         self.button:setEnable(not self.pageEdit.quickSetupMode);
                     end
-                    original_prerender(self);
-                end
+                end)
 
                 function panel:onResolutionChange()
                     layoutModsPanel(self);
                 end
 
                 if not panel.button then
-                    local buttonWid = UI_BORDER_SPACING * 2 +  getTextManager():MeasureStringX(UIFont.Medium, getText("UI_NewGame_ChooseMods"));
+                    local buttonWid = UI_BORDER_SPACING * 2 +
+                    getTextManager():MeasureStringX(UIFont.Medium, getText("UI_NewGame_ChooseMods"));
                     panel.button = ISButton:new(0, 0, buttonWid, BUTTON_HGT, getText("UI_NewGame_ChooseMods"), panel, onModsPanelButtonChoose);
                     panel.button:initialise();
                     panel.button.borderColor = { r = 1, g = 1, b = 1, a = 0.2 };
@@ -833,16 +827,13 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
                     end
                 end
             elseif panel.Type == "ServerSettingsScreenMapsPanel" then
-                local original_createChildren = panel.createChildren;
-                local original_setSettings = panel.setSettings;
-
-                function panel:createChildren()
-                    original_createChildren(self);
+                ---@diagnostic disable-next-line: redefined-local
+                Functions.PostHook.Add(panel, "createChildren", function(self)
                     layoutMapsPanel(self);
                     if self.buttonRemove then
                         self.multiColumnUI[2] = { self.buttonMoveUp, self.buttonMoveDown };
                     end
-                end
+                end)
 
                 panel.listbox.mouseOverButtonIndex = nil;
                 panel.listbox.mapsPanel = panel;
@@ -894,11 +885,11 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
                     layoutMapsPanel(self);
                 end
 
-                function panel:setSettings(settings)
-                    original_setSettings(self, settings);
+                ---@diagnostic disable-next-line: redefined-local
+                Functions.PostHook.Add(panel, "setSettings", function(self, settings)
                     local modsString = settings:getServerOptions():getOptionByName("Mods"):getValue();
                     self:fillComboBox(modsString);
-                end
+                end)
 
                 function panel:canMoveUp()
                     if self.listbox.selected <= 1 then return false end
@@ -1223,7 +1214,7 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
                         local file = settings:getSpawnRegionFile(i - 1);
                         if isVanillaMap(name) then
                             local info = getMapInfo(name);
-                            if info and not (info.only_for_game_mode and info.only_for_game_mode ~= "Multiplayer") then
+                            if info and not info.only_for_game_mode then
                                 self:addToList(name, file);
                             end
                         else
@@ -1415,12 +1406,13 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
     pageStart.joypadIndexY = 1;
 
     local pageEdit = self.pageEdit;
-    pageStart.onButtonEditBasic = function(self_)
-        if not self_.listbox.items[self_.listbox.selected] then return end
+    ---@diagnostic disable-next-line: redefined-local
+    pageStart.onButtonEditBasic = function(self)
+        if not self.listbox.items[self.listbox.selected] then return end
 
-        self_:setVisible(false);
+        self:setVisible(false);
 
-        local settings = self_.listbox.items[self_.listbox.selected].item;
+        local settings = self.listbox.items[self.listbox.selected].item;
         settings:loadFiles();
 
         local activeMods = ActiveMods.getById("serversettings");
@@ -1477,12 +1469,13 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
     end
     pageStart.buttonEditBasic:setOnClick(pageStart.onButtonEditBasic, pageStart);
 
-    pageStart.onButtonEditAdvanced = function(self_)
-        if not self_.listbox.items[self_.listbox.selected] then return end
+    ---@diagnostic disable-next-line: redefined-local
+    pageStart.onButtonEditAdvanced = function(self)
+        if not self.listbox.items[self.listbox.selected] then return end
 
-        self_:setVisible(false);
+        self:setVisible(false);
 
-        local settings = self_.listbox.items[self_.listbox.selected].item;
+        local settings = self.listbox.items[self.listbox.selected].item;
         settings:loadFiles();
 
         local activeMods = ActiveMods.getById("serversettings");
@@ -1511,25 +1504,28 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
 
     local Page1Class = getmetatable(pageStart);
     if Page1Class then
-        Functions.PostHook.Add(Page1Class, "updateWhenVisible", function(self_)
-            local itemSelected = self_.listbox.items[self_.listbox.selected] ~= nil;
-            if self_.buttonEditBasic then
-                self_.buttonEditBasic:setEnable(itemSelected);
+        ---@diagnostic disable-next-line: redefined-local
+        Functions.PostHook.Add(Page1Class, "updateWhenVisible", function(self)
+            local itemSelected = self.listbox.items[self.listbox.selected] ~= nil;
+            if self.buttonEditBasic then
+                self.buttonEditBasic:setEnable(itemSelected);
             end
         end)
 
-        Functions.PostHook.Add(Page1Class, "onResolutionChange", function(self_)
-            if self_.buttonEditBasic then
-                self_.listbox:setX((self_.width - UI_BORDER_SPACING) / 2 - self_.listbox.width);
-                local buttonX = self_.listbox:getRight() + UI_BORDER_SPACING;
-                local buttonsToUpdate = { self_.buttonNew, self_.buttonDuplicate, self_.buttonRename, self_.buttonDelete };
+        ---@diagnostic disable-next-line: redefined-local
+        Functions.PostHook.Add(Page1Class, "onResolutionChange", function(self)
+            if self.buttonEditBasic then
+                self.listbox:setX((self.width - UI_BORDER_SPACING) / 2 - self.listbox.width);
+                ---@diagnostic disable-next-line: redefined-local
+                local buttonX = self.listbox:getRight() + UI_BORDER_SPACING;
+                local buttonsToUpdate = { self.buttonNew, self.buttonDuplicate, self.buttonRename, self.buttonDelete };
                 for _, btn in ipairs(buttonsToUpdate) do
                     if btn then
                         btn:setX(buttonX);
                     end
                 end
-                self_.buttonEditBasic:setX(buttonX);
-                self_.buttonEdit:setX(buttonX + self_.buttonEditBasic:getWidth() + UI_BORDER_SPACING);
+                self.buttonEditBasic:setX(buttonX);
+                self.buttonEdit:setX(buttonX + self.buttonEditBasic:getWidth() + UI_BORDER_SPACING);
             end
         end)
     end
@@ -1562,39 +1558,41 @@ Events.OnMainMenuEnter.Add(function()
     local pageEdit = ServerSettingsScreen.instance.pageEdit;
     local chooseModsWindow = pageEdit.chooseModsWindow;
 
-    chooseModsWindow.onButtonNext = function(self_)
-        self_:setVisible(false);
+    chooseModsWindow.onButtonNext = function(self)
+        self:setVisible(false);
 
         local activeMods = ActiveMods.getById("serversettings");
         local modArray = activeMods:getMods();
         modArray:clear();
         local modIDList = {};
-        for _, item in ipairs(self_.listbox.items) do
+        for _, item in ipairs(self.listbox.items) do
             modArray:add(item.item.modID);
             table.insert(modIDList, item.item.modID);
         end
 
-        local addedMods, removedMods = updateServerSettingsMods(self_.settings, modIDList);
+        local addedMods, removedMods = updateServerSettingsMods(self.settings, modIDList);
 
-        self_.settings:getServerOptions():saveServerTextFile(self_.settings:getName());
+        self.settings:getServerOptions():saveServerTextFile(self.settings:getName());
 
-        local reason = "ServerSettingsChange" .. "=" .. self_.settings:getName();
+        local reason = "ServerSettingsChange" .. "=" .. self.settings:getName();
         if ActiveMods.requiresResetLua(activeMods) then
             getCore():ResetLua("serversettings", reason);
             return;
         end
 
-        showPageEdit(pageEdit, self_.settings, self_.joyfocus, modArray, addedMods, removedMods);
+        showPageEdit(pageEdit, self.settings, self.joyfocus, modArray, addedMods, removedMods);
     end
     chooseModsWindow.buttonAccept:setOnClick(chooseModsWindow.onButtonNext, chooseModsWindow);
 
-    pageEdit.onButtonCancel = function(self_)
-        if not serverFileExists(self_.settings:getName() .. "_SandboxVars.lua") and not self_.quickSetupMode then
-            self_.settings:saveFiles();
+    pageEdit.onButtonCancel = function(self)
+        if not serverFileExists(self.settings:getName() .. "_SandboxVars.lua") and not self.quickSetupMode then
+            self.settings:saveFiles();
         end
-        self_:setVisible(false);
-        self_.parent.pageStart:setVisible(true, JoypadState.getMainMenuJoypad());
-        self_.quickSetupMode = false;
+        self:setVisible(false);
+        self.parent.initialSelectedSettings = self.settings:getName();
+        self.parent.pageStart:aboutToShow();
+        self.parent.pageStart:setVisible(true, JoypadState.getMainMenuJoypad());
+        self.quickSetupMode = false;
         local activeMods = ActiveMods.getById("default");
         if ActiveMods.requiresResetLua(activeMods) then
             getCore():ResetLua("default", "ServerSettingsReturnToDefault");
@@ -1602,24 +1600,24 @@ Events.OnMainMenuEnter.Add(function()
     end
     pageEdit.buttonCancel:setOnClick(pageEdit.onButtonCancel, pageEdit);
 
-    pageEdit.onButtonSave = function(self_)
-        if self_.quickSetupMode then
-            self_:settingsFromUIAux("INI", self_.settings:getServerOptions());
-            for _, panel in ipairs(self_.customui) do
+    pageEdit.onButtonSave = function(self)
+        if self.quickSetupMode then
+            self:settingsFromUIAux("INI", self.settings:getServerOptions());
+            for _, panel in ipairs(self.customui) do
                 if panel.settingsFromUI then
                     panel:settingsFromUI();
                 end
             end
-            self_.settings:getServerOptions():saveServerTextFile(self_.settings:getName());
+            self.settings:getServerOptions():saveServerTextFile(self.settings:getName());
         else
-            self_:settingsFromUI();
-            self_.settings:saveFiles();
+            self:settingsFromUI();
+            self.settings:saveFiles();
         end
-        self_:setVisible(false);
-        self_.parent.initialSelectedSettings = self_.settings:getName();
-        self_.parent.pageStart:aboutToShow();
-        self_.parent.pageStart:setVisible(true, JoypadState.getMainMenuJoypad());
-        self_.quickSetupMode = false;
+        self:setVisible(false);
+        self.parent.initialSelectedSettings = self.settings:getName();
+        self.parent.pageStart:aboutToShow();
+        self.parent.pageStart:setVisible(true, JoypadState.getMainMenuJoypad());
+        self.quickSetupMode = false;
         local activeMods = ActiveMods.getById("default");
         if ActiveMods.requiresResetLua(activeMods) then
             getCore():ResetLua("default", "ServerSettingsReturnToDefault");
