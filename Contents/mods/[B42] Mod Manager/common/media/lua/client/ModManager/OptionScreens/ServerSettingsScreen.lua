@@ -10,14 +10,11 @@ local BUTTON_HGT = FONT_HGT_SMALL + 6;
 local ModListData = require("ModManager/Utils/ModListData");
 
 local function resolveWorkshopID(modID, modInfo)
-    local workshopID = modInfo and modInfo:getWorkshopID() or nil;
-    if not workshopID or workshopID == "" then
-        local cachedData = ModListData:getModWorkshopInfo(modID);
-        if cachedData and cachedData.workshopID then
-            workshopID = tostring(cachedData.workshopID);
-        end
+    local workshopInfo = ModListData:getModWorkshopInfo(modID);
+    if not workshopInfo or not workshopInfo.lastUpdate or workshopInfo.lastUpdate == 0 then
+        return nil;
     end
-    return workshopID
+    return tostring(workshopInfo.workshopID);
 end
 
 local function positionVScroll(listbox, listW, listHeight)
@@ -708,8 +705,7 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
                 end
 
                 if not panel.button then
-                    local buttonWid = UI_BORDER_SPACING * 2 +
-                    getTextManager():MeasureStringX(UIFont.Medium, getText("UI_NewGame_ChooseMods"));
+                    local buttonWid = UI_BORDER_SPACING * 2 + getTextManager():MeasureStringX(UIFont.Medium, getText("UI_NewGame_ChooseMods"));
                     panel.button = ISButton:new(0, 0, buttonWid, BUTTON_HGT, getText("UI_NewGame_ChooseMods"), panel, onModsPanelButtonChoose);
                     panel.button:initialise();
                     panel.button.borderColor = { r = 1, g = 1, b = 1, a = 0.2 };
