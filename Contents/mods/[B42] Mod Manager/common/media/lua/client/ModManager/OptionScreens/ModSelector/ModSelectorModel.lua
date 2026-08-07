@@ -53,12 +53,12 @@ CATEGORY_LOOKUP["vehicle"] = "Vehicles";
 CATEGORY_LOOKUP["utilities"] = "Utility";
 
 local SUPPORT_SERVICES = {
-    { key = "tribute", name = "Tribute", urlPrefix = "https://web.tribute.tg/" },
-    { key = "ko-fi", name = "Ko-fi", urlPrefix = "https://ko-fi.com/" },
+    { key = "tribute",         name = "Tribute",         urlPrefix = "https://web.tribute.tg/" },
+    { key = "ko-fi",           name = "Ko-fi",           urlPrefix = "https://ko-fi.com/" },
     { key = "buy-me-a-coffee", name = "Buy Me a Coffee", urlPrefix = "https://buymeacoffee.com/" },
-    { key = "donationalerts", name = "DonationAlerts", urlPrefix = "https://www.donationalerts.com/" },
-    { key = "patreon", name = "Patreon", urlPrefix = "https://www.patreon.com/" },
-    { key = "boosty", name = "Boosty", urlPrefix = "https://boosty.to/" }
+    { key = "donationalerts",  name = "DonationAlerts",  urlPrefix = "https://www.donationalerts.com/" },
+    { key = "patreon",         name = "Patreon",         urlPrefix = "https://www.patreon.com/" },
+    { key = "boosty",          name = "Boosty",          urlPrefix = "https://boosty.to/" }
 }
 
 local function getSupportLinks(modID)
@@ -150,7 +150,7 @@ function ModSelector.Model:getCategory(id)
         return self.mods[id].category
     end
     local modData = ModListData.data.mods[id]
-    return modData and modData.category or ""
+    return modData and modData.category or nil
 end
 
 function ModSelector.Model:setCategory(id, category)
@@ -220,9 +220,9 @@ function ModSelector.Model:reloadMods()
                 local rawCategory = modInfo:getCategory()
                 if rawCategory ~= "" then
                     local primary = rawCategory:match("^%s*([^,]-)%s*[,]") or rawCategory:match("^%s*(.-)%s*$")
-                    data.category = CATEGORY_LOOKUP[string.lower(primary)] or ""
+                    data.category = CATEGORY_LOOKUP[string.lower(primary)]
                 else
-                    data.category = ""
+                    data.category = nil
                 end
                 data.defaultActive = self:isModActive(modId)
                 data.defaultFav = self.favs[modId]
@@ -230,16 +230,15 @@ function ModSelector.Model:reloadMods()
                 data.supportLinks = getSupportLinks(modId)
                 data.hasSupportLinks = #data.supportLinks > 0
 
-                local workshopID = modInfoFromDir:getWorkshopID()
-                data.workshopIDStr = (workshopID and workshopID ~= "") and tostring(workshopID) or ""
-
-                local cachedData = ModListData:getModWorkshopInfo(modId)
-                if data.workshopIDStr == "" and cachedData and cachedData.workshopID then
-                    data.workshopIDStr = tostring(cachedData.workshopID)
+                local workshopInfo = ModListData:getModWorkshopInfo(modId)
+                if workshopInfo and workshopInfo.lastUpdate and workshopInfo.lastUpdate ~= 0 then
+                    data.workshopIDStr = tostring(workshopInfo.workshopID)
+                else
+                    data.workshopIDStr = ""
                 end
 
-                data.timeUpdated = (cachedData and cachedData.lastUpdate) or 0
-                data.workshopState = (cachedData and cachedData.state) or ""
+                data.timeUpdated = (workshopInfo and workshopInfo.lastUpdate) or 0
+                data.workshopState = (workshopInfo and workshopInfo.state) or ""
 
                 data.source = modInfo:getSource()
 
@@ -425,26 +424,31 @@ function ModSelector.Model:trackMods()
         end
     end
 
-    local newCacheMods = {}
+    local reindexedMods = {}
     local currentIndex = 1
 
     for _, mod in ipairs(storedModsList) do
         if not delModsSet[mod.id] then
-            newCacheMods[mod.id] = { hidden = mod.hidden, category = mod.category, index = currentIndex }
+            local entry = { hidden = mod.hidden, category = mod.category, index = currentIndex }
+            local oldData = modListData.mods[mod.id]
+            if oldData and oldData.workshop then
+                entry.workshop = oldData.workshop
+            end
+            reindexedMods[mod.id] = entry
             currentIndex = currentIndex + 1
         end
     end
     for _, modID in ipairs(addMods) do
-        newCacheMods[modID] = { hidden = false, index = currentIndex }
+        reindexedMods[modID] = { hidden = false, index = currentIndex }
         currentIndex = currentIndex + 1
     end
 
-    ModListData.data.mods = newCacheMods
+    ModListData.data.mods = reindexedMods
     ModListData:save()
 
     self.modsByDateAdded = {}
     local sorted = {}
-    for modID, data in pairs(newCacheMods) do
+    for modID, data in pairs(reindexedMods) do
         table.insert(sorted, { id = modID, index = data.index })
     end
     table.sort(sorted, function(a, b) return (a.index or 0) < (b.index or 0) end)
@@ -601,7 +605,7 @@ function ModSelector.Model:forceActivateMods(modInfo, activate, bypassConfirm, s
             if #dependents > 0 then
                 local dependentData = {}
                 for _, depInfo in ipairs(dependents) do
-                    table.insert(dependentData, { name = depInfo:getName(), id = depInfo:getWorkshopID(), modId = depInfo:getId() })
+                    table.insert(dependentData, { name = depInfo:getName(), modId = depInfo:getId() })
                 end
                 local screenW = getCore():getScreenWidth()
                 local screenH = getCore():getScreenHeight()

@@ -40,6 +40,7 @@
     "UI_modinfopanel_WorkshopID": "Workshop ID",
     "UI_modinfopanel_LocalPath": "로컬 경로",
     "UI_modinfopanel_LastUpdate": "마지막 업데이트",
+    "UI_modinfopanel_NoData": "데이터를 가져올 수 없습니다",
     "UI_modinfopanel_ZomboidVersion": "게임 버전",
     "UI_modinfopanel_Dependencies": "필수 모드",
     "UI_modinfopanel_IncompatibleWith": "비호환 모드",

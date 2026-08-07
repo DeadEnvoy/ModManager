@@ -40,6 +40,7 @@
     "UI_modinfopanel_WorkshopID": "Workshop ID",
     "UI_modinfopanel_LocalPath": "Chemin local",
     "UI_modinfopanel_LastUpdate": "Dernière mise à jour",
+    "UI_modinfopanel_NoData": "Impossible d'obtenir les données",
     "UI_modinfopanel_ZomboidVersion": "Version du jeu",
     "UI_modinfopanel_Dependencies": "Dépendances",
     "UI_modinfopanel_IncompatibleWith": "Incompatible avec",

@@ -28,9 +28,10 @@ function ModPresetsShare:createChildren()
     local mpModIds = {}
     local workshopIds = {}
     for _, modId in ipairs(modIds) do
-        if self.model.mods[modId] and self.model.mods[modId].workshopIDStr and self.model.mods[modId].workshopIDStr ~= "" then
+        local modData = self.model.mods[modId]
+        if modData and modData.workshopIDStr and modData.workshopIDStr ~= "" and (modData.timeUpdated or 0) ~= 0 then
             table.insert(mpModIds, modId)
-            table.insert(workshopIds, self.model.mods[modId].workshopIDStr)
+            table.insert(workshopIds, modData.workshopIDStr)
         end
     end
 
@@ -155,8 +156,8 @@ function ModPresetsShare:new(x, y, width, height, model, presetName, presetData)
     local o = ISPanelJoypad:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
-    o.borderColor = {r=1, g=1, b=1, a=0.2}
-    o.backgroundColor = {r=0, g=0, b=0, a=0.9}
+    o.borderColor = { r = 1, g = 1, b = 1, a = 0.2 }
+    o.backgroundColor = { r = 0, g = 0, b = 0, a = 0.9 }
     o.model = model
     o.presetName = presetName
     o.presetData = presetData

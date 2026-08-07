@@ -45,12 +45,12 @@ function ModInfoPanel:createChildren()
     self.supportPanel:setVisible(false)
     self:addChild(self.supportPanel)
 
-    self.dependenciesPanel = ModInfoPanel.InteractionParam:new(0, prevPanel:getBottom()-1, self.width, "Dependencies")
+    self.dependenciesPanel = ModInfoPanel.InteractionParam:new(0, prevPanel:getBottom() - 1, self.width, "Dependencies")
     self.dependenciesPanel:initialise()
     self.dependenciesPanel:instantiate()
     self:addChild(self.dependenciesPanel)
 
-    self.incompatiblePanel = ModInfoPanel.IncompatibleParam:new(0, self.dependenciesPanel:getBottom()-1, self.width, "IncompatibleWith")
+    self.incompatiblePanel = ModInfoPanel.IncompatibleParam:new(0, self.dependenciesPanel:getBottom() - 1, self.width, "IncompatibleWith")
     self.incompatiblePanel:initialise()
     self.incompatiblePanel:instantiate()
     self:addChild(self.incompatiblePanel)
@@ -72,10 +72,17 @@ function ModInfoPanel:updateView(modInfo)
     local prevPanel = self.thumbnailPanel
     for _, param in ipairs(self.modInfoParams) do
         local panel = self[param]
-        panel:setVisible(true)
-        panel:setY(prevPanel:getBottom() - 1)
         panel:setModInfo(modInfo)
-        prevPanel = panel
+
+        local visible = true
+        if param == "LastUpdate" then
+            visible = self.WorkshopID:hasWorkshopID() and self.LastUpdate:hasLastUpdate()
+        end
+        panel:setVisible(visible)
+        if visible then
+            panel:setY(prevPanel:getBottom() - 1)
+            prevPanel = panel
+        end
 
         if param == "Author" and self.supportPanel:hasLinks() then
             self.supportPanel:setVisible(true)
@@ -85,10 +92,10 @@ function ModInfoPanel:updateView(modInfo)
     end
 
     self.supportPanel:setVisible(self.supportPanel:hasLinks())
-    self.dependenciesPanel:setY(prevPanel:getBottom()-1)
+    self.dependenciesPanel:setY(prevPanel:getBottom() - 1)
     self.dependenciesPanel:setModInfo(modInfo)
     self.incompatiblePanel:setModInfo(modInfo)
-    self.incompatiblePanel:setY(self.dependenciesPanel:getBottom()-1)
+    self.incompatiblePanel:setY(self.dependenciesPanel:getBottom() - 1)
     self.incompatiblePanel:setHeight(BUTTON_HGT)
 
     self.changelogPanel:setY(self.incompatiblePanel:getBottom() - 1)
@@ -117,9 +124,9 @@ end
 function ModInfoPanel:drawCustomRectBorder(x, y, w, h, r, g, b, a)
     if self.javaObject ~= nil then
         self.javaObject:DrawTextureScaledColor(nil, x, y, 2, h, r, g, b, a);
-        self.javaObject:DrawTextureScaledColor(nil, x+2, y, w-4, 2, r, g, b, a);
-        self.javaObject:DrawTextureScaledColor(nil, x+w-2, y, 2, h, r, g, b, a);
-        self.javaObject:DrawTextureScaledColor(nil, x+2, y+h-2, w-4, 2, r, g, b, a);
+        self.javaObject:DrawTextureScaledColor(nil, x + 2, y, w - 4, 2, r, g, b, a);
+        self.javaObject:DrawTextureScaledColor(nil, x + w - 2, y, 2, h, r, g, b, a);
+        self.javaObject:DrawTextureScaledColor(nil, x + 2, y + h - 2, w - 4, 2, r, g, b, a);
     end
 end
 
@@ -127,7 +134,7 @@ function ModInfoPanel:render()
     if self.thumbnailPreviewImage then
         local h = self.height - self.thumbnailPanel:getBottom() - 100
         local w = self.thumbnailPreviewImage:getWidth() * (h / self.thumbnailPreviewImage:getHeight())
-        self:drawTextureScaledAspect(self.thumbnailPreviewImage, (self.width - w)/2, self.thumbnailPanel:getBottom() + 16, w, h, 1, 1, 1, 1)
+        self:drawTextureScaledAspect(self.thumbnailPreviewImage, (self.width - w) / 2, self.thumbnailPanel:getBottom() + 16, w, h, 1, 1, 1, 1)
     end
     self:renderJoypadFocus()
 end
@@ -136,7 +143,7 @@ function ModInfoPanel:new(x, y, width, height)
     local o = ISPanelJoypad:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
-    o.modInfoParams = {"Status", "Version", "Category", "Author", "ModID", "WorkshopID", "LastUpdate", "ZomboidVersion"}
+    o.modInfoParams = { "Status", "Version", "Category", "Author", "ModID", "WorkshopID", "LastUpdate", "ZomboidVersion" }
     o.thumbnailPreviewImage = nil
     return o
 end

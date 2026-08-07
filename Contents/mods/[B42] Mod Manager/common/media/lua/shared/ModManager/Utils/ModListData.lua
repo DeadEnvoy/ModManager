@@ -1,16 +1,9 @@
 if isServer() then return; end
 
 local defaultData = {
-    version = 1,
+    version = 2,
     mods = {},
     alerts = {},
-    workshop = {
-        usage = {
-            time = 0,
-            requests = 0,
-        },
-        mods = {}
-    }
 }
 
 local function deepCopy(t)
@@ -59,56 +52,79 @@ end
 function ModListData:load()
     self.data = deepCopy(defaultData)
 
-    local isLegacy, content = false, nil
+    local hasMainFile = false
 
     local mainContent = readFileContent("ModManager/ModListData.ini")
     if mainContent then
         local res = tryParseContent(mainContent)
         if res and type(res) == "table" then
-            content = mainContent
+            hasMainFile = true
             self.data = res
         else
-            content = readFileContent("ModManager/ModListData.tmp.ini")
-            if content then
-                local tmpRes = tryParseContent(content)
+            local tmpContent = readFileContent("ModManager/ModListData.tmp.ini")
+            if tmpContent then
+                local tmpRes = tryParseContent(tmpContent)
                 if tmpRes and type(tmpRes) == "table" then
+                    hasMainFile = true
                     self.data = tmpRes
                 end
             end
         end
     else
-        content = readFileContent("ModManager/ModListData.tmp.ini")
-        if content then
-            local tmpRes = tryParseContent(content)
+        local tmpContent = readFileContent("ModManager/ModListData.tmp.ini")
+        if tmpContent then
+            local tmpRes = tryParseContent(tmpContent)
             if tmpRes and type(tmpRes) == "table" then
+                hasMainFile = true
                 self.data = tmpRes
             end
         end
     end
 
-    if not content then
-        local legacyContent = readFileContent("ModManager/ModListData.lua") or readFileContent("ModManager/ModListData.tmp")
+    if not hasMainFile then
+        local legacyContent = readFileContent("ModManager/ModListData.lua") or
+        readFileContent("ModManager/ModListData.tmp")
         if legacyContent then
             local legacyRes = tryParseContent(legacyContent)
             if legacyRes and type(legacyRes) == "table" then
                 self.data = legacyRes
-                isLegacy = true
             end
         end
     end
 
-    self.data.version = self.data.version or defaultData.version
+    self.data.version = self.data.version or 1
     self.data.mods = self.data.mods or {}
     self.data.alerts = self.data.alerts or {}
-    self.data.workshop = self.data.workshop or { usage = { time = 0, requests = 0 }, mods = {} }
-    self.data.workshop.usage = self.data.workshop.usage or { time = 0, requests = 0 }
-    self.data.workshop.mods = self.data.workshop.mods or {}
 
-    if isLegacy then
+    if self.data.version < 2 then
+        self:migrateToV2()
         self:save()
     end
 
     return self.data
+end
+
+function ModListData:migrateToV2()
+    for _, modData in pairs(self.data.mods) do
+        if modData.category == "" then
+            modData.category = nil
+        end
+    end
+
+    if self.data.workshop and self.data.workshop.mods then
+        for modID, wsData in pairs(self.data.workshop.mods) do
+            if wsData.lastUpdate and wsData.lastUpdate ~= 0 and self.data.mods[modID] then
+                self.data.mods[modID].workshop = {
+                    workshopID = wsData.workshopID,
+                    lastUpdate = wsData.lastUpdate,
+                    state = wsData.state,
+                }
+            end
+        end
+        self.data.workshop.mods = nil
+    end
+
+    self.data.version = 2
 end
 
 local function quoteStr(s)
@@ -130,9 +146,18 @@ function ModListData:save()
 
     for _, item in ipairs(sortedMods) do
         table.insert(content, "        [" .. quoteStr(item.id) .. "] = {\r\n")
-        table.insert(content, "            category = " .. quoteStr(item.data.category) .. ",\r\n")
-        table.insert(content, "            hidden = " .. tostring(item.data.hidden) .. ",\r\n")
         table.insert(content, "            index = " .. tostring(item.data.index) .. ",\r\n")
+        table.insert(content,
+            "            category = " .. (item.data.category == nil and "nil" or quoteStr(item.data.category)) .. ",\r\n")
+        if item.data.workshop then
+            local ws = item.data.workshop
+            table.insert(content, "            workshop = {\r\n")
+            table.insert(content, "                workshopID = " .. string.format("%.0f", ws.workshopID or 0) .. ",\r\n")
+            table.insert(content, "                lastUpdate = " .. string.format("%.0f", ws.lastUpdate or 0) .. ",\r\n")
+            table.insert(content, "                state = " .. quoteStr(ws.state) .. ",\r\n")
+            table.insert(content, "            },\r\n")
+        end
+        table.insert(content, "            hidden = " .. tostring(item.data.hidden) .. ",\r\n")
         table.insert(content, "        },\r\n")
     end
     table.insert(content, "    },\r\n")
@@ -151,28 +176,6 @@ function ModListData:save()
     end
     table.insert(content, "    },\r\n")
 
-    table.insert(content, "    workshop = {\r\n")
-    table.insert(content, "        usage = {\r\n")
-    local usage = self.data.workshop and self.data.workshop.usage or { time = 0, requests = 0 }
-    table.insert(content, "            time = " .. string.format("%.0f", usage.time or 0) .. ",\r\n")
-    table.insert(content, "            requests = " .. string.format("%.0f", usage.requests or 0) .. ",\r\n")
-    table.insert(content, "        },\r\n")
-
-    table.insert(content, "        mods = {\r\n")
-    local wsMods = self.data.workshop and self.data.workshop.mods or {}
-    local wsKeys = {}
-    for k in pairs(wsMods) do table.insert(wsKeys, k) end
-    table.sort(wsKeys)
-    for _, modID in ipairs(wsKeys) do
-        local data = wsMods[modID]
-        table.insert(content, "            [" .. quoteStr(modID) .. "] = {\r\n")
-        table.insert(content, "                workshopID = " .. string.format("%.0f", data.workshopID or 0) .. ",\r\n")
-        table.insert(content, "                lastUpdate = " .. string.format("%.0f", data.lastUpdate or 0) .. ",\r\n")
-        table.insert(content, "                state = " .. quoteStr(data.state) .. ",\r\n")
-        table.insert(content, "            },\r\n")
-    end
-    table.insert(content, "        }\r\n")
-    table.insert(content, "    }\r\n")
     table.insert(content, "}\r\n")
 
     local finalContent = table.concat(content)
@@ -196,57 +199,37 @@ function ModListData:save()
     return true
 end
 
-function ModListData:getWorkshopData()
-    return self.data and self.data.workshop
-end
-
 function ModListData:getAlertsData()
     return self.data and self.data.alerts
 end
 
 function ModListData:getModWorkshopInfo(modID)
-    return self.data.workshop.mods[modID]
+    local modData = self.data.mods[modID]
+    return modData and modData.workshop
 end
 
 function ModListData:updateWorkshopData(steamInfo, modMap)
-    if not self.data.workshop then
-        self.data.workshop = { usage = { time = 0, requests = 0 }, mods = {} }
-    end
-    if not self.data.workshop.mods then
-        self.data.workshop.mods = {}
-    end
-
     for i = 0, steamInfo:size() - 1 do
         local details = steamInfo:get(i)
-        local wid = details:getIDString()
-        local mods = modMap and modMap[wid]
+        local lastUpdate = details:getTimeUpdated()
+        if lastUpdate ~= 0 then
+            local wid = details:getIDString()
+            local mods = modMap and modMap[wid]
 
-        if mods then
-            for _, modInfo in ipairs(mods) do
-                local modID = modInfo:getId()
-                self.data.workshop.mods[modID] = {
-                    workshopID = tonumber(wid),
-                    lastUpdate = details:getTimeUpdated(),
-                    state = details:getState(),
-                }
+            if mods then
+                for _, modInfo in ipairs(mods) do
+                    local modID = modInfo:getId()
+                    if self.data.mods[modID] then
+                        self.data.mods[modID].workshop = {
+                            workshopID = tonumber(wid),
+                            lastUpdate = lastUpdate,
+                            state = details:getState(),
+                        }
+                    end
+                end
             end
         end
     end
-end
-
-function ModListData:updateUsageStats(numRequests)
-    if not self.data.workshop then self:load() end
-    if not self.data.workshop.usage then
-        self.data.workshop.usage = { time = 0, requests = 0 }
-    end
-
-    local now = os.time()
-    if now - (self.data.workshop.usage.time or 0) > 3600 then
-        self.data.workshop.usage.requests = 0
-    end
-
-    self.data.workshop.usage.time = now
-    self.data.workshop.usage.requests = (self.data.workshop.usage.requests or 0) + numRequests
 end
 
 ModListData:load()

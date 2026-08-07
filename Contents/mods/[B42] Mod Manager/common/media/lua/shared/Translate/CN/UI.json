@@ -40,6 +40,7 @@
     "UI_modinfopanel_WorkshopID": "Workshop ID",
     "UI_modinfopanel_LocalPath": "本地路径",
     "UI_modinfopanel_LastUpdate": "最后更新",
+    "UI_modinfopanel_NoData": "无法获取数据",
     "UI_modinfopanel_ZomboidVersion": "游戏版本",
     "UI_modinfopanel_Dependencies": "依赖项",
     "UI_modinfopanel_IncompatibleWith": "不兼容",

@@ -184,24 +184,27 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
         local twoWeeksAgo = os.time() - 14 * 24 * 60 * 60
         local existingAlerts = ModListData:getAlertsData() or {}
         local newAlerts = {}
-        local workshopMods = ModListData.data.workshop and ModListData.data.workshop.mods or {}
+        local allMods = ModListData.data.mods or {}
 
-        for modID, wsData in pairs(workshopMods) do
-            local ts = wsData.lastUpdate
-            if ts and ts >= twoWeeksAgo then
-                local modInfo = getModInfoByID(modID)
-                if modInfo then
-                    local alerts = changelog_handler.fetchMod(modID)
-                    if alerts and #alerts > 0 then
-                        local currentEntry = existingAlerts[modID]
-                        if currentEntry then
-                            if currentEntry.lastUpdate ~= ts then
-                                newAlerts[modID] = { workshopID = wsData.workshopID, lastUpdate = ts, seen = false }
+        for modID, modData in pairs(allMods) do
+            local wsData = modData.workshop
+            if wsData then
+                local ts = wsData.lastUpdate
+                if ts and ts >= twoWeeksAgo then
+                    local modInfo = getModInfoByID(modID)
+                    if modInfo then
+                        local alerts = changelog_handler.fetchMod(modID)
+                        if alerts and #alerts > 0 then
+                            local currentEntry = existingAlerts[modID]
+                            if currentEntry then
+                                if currentEntry.lastUpdate ~= ts then
+                                    newAlerts[modID] = { workshopID = wsData.workshopID, lastUpdate = ts, seen = false }
+                                else
+                                    newAlerts[modID] = currentEntry
+                                end
                             else
-                                newAlerts[modID] = currentEntry
+                                newAlerts[modID] = { workshopID = wsData.workshopID, lastUpdate = ts, seen = false }
                             end
-                        else
-                            newAlerts[modID] = { workshopID = wsData.workshopID, lastUpdate = ts, seen = false }
                         end
                     end
                 end
@@ -296,10 +299,6 @@ if (ok1 and ok2) and (alertSystem and changelog_handler) then
         alertSystem.alertsLayout = {}
 
         if getSteamModeActive() then
-            if not ModListData.data.workshop then
-                ModListData:load()
-            end
-
             self:processUpdates()
 
             Events.OnWorkshopUpdate.Add(function()

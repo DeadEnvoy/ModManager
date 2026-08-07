@@ -41,7 +41,7 @@ function ModInfoPanel.CategoryParam:setModInfo(modInfo)
         self.isChangeLink = false
         self.isLocked = true
     else
-        if category and category ~= "" then
+        if category then
             self.categoryText = getText("UI_modinfopanel_Category_" .. category)
             self.isChangeLink = false
         else
@@ -157,7 +157,7 @@ function CategorySelectPanel:createChildren()
     local sortedCategories = {}
     for _, catName in ipairs(ModSelector.Model.CATEGORIES) do
         local localizedName = getText("UI_modinfopanel_Category_" .. catName)
-        table.insert(sortedCategories, {value = catName, label = localizedName})
+        table.insert(sortedCategories, { value = catName, label = localizedName })
     end
     table.sort(sortedCategories, function(a, b) return a.label < b.label end)
 

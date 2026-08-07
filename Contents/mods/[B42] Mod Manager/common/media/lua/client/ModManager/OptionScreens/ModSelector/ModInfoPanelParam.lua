@@ -17,9 +17,9 @@ function ModInfoPanel.Param:render()
 
     if self.type == "Status" then
         if self.parent.parent.model:isModActive(self.modInfo:getId()) then
-            self:drawText(getText("UI_mods_ModEnabled"), self.borderX+UI_BORDER_SPACING, 2, 0.0, 0.9, 0.0, 0.9, UIFont.Small)
+            self:drawText(getText("UI_mods_ModEnabled"), self.borderX + UI_BORDER_SPACING, 2, 0.0, 0.9, 0.0, 0.9, UIFont.Small)
         else
-            self:drawText(getText("UI_mods_ModDisabled"), self.borderX+UI_BORDER_SPACING, 2, 0.9, 0.0, 0.0, 0.9, UIFont.Small)
+            self:drawText(getText("UI_mods_ModDisabled"), self.borderX + UI_BORDER_SPACING, 2, 0.9, 0.0, 0.0, 0.9, UIFont.Small)
         end
     elseif self.type == "Version" then
         local versionText = self.modInfo:getModVersion() or ""
@@ -88,17 +88,23 @@ function ModInfoPanel.Param:render()
                 activateSteamOverlayToWorkshopItem(self.workshopID)
             end
         end
-
     elseif self.type == "Author" then
-        self:drawText(self.modInfo:getAuthor(), self.borderX+UI_BORDER_SPACING, 2, 0.9, 0.9, 0.9, 0.9, UIFont.Small)
+        self:drawText(self.modInfo:getAuthor(), self.borderX + UI_BORDER_SPACING, 2, 0.9, 0.9, 0.9, 0.9, UIFont.Small)
     elseif self.type == "ModID" then
-        self:drawText(self.modInfo:getId(), self.borderX+UI_BORDER_SPACING, 2, 0.9, 0.9, 0.9, 0.9, UIFont.Small)
+        self:drawText(self.modInfo:getId(), self.borderX + UI_BORDER_SPACING, 2, 0.9, 0.9, 0.9, 0.9, UIFont.Small)
     elseif self.type == "WorkshopID" then
-        self:drawText(self.workshopID, self.borderX+UI_BORDER_SPACING, 2, 0.2, 0.6, 1.0, 0.9, UIFont.Small)
-        if self.workshopID ~= "" and not (self:isMouseOver() and self:getMouseX() > self.borderX+UI_BORDER_SPACING and self:getMouseX() < self.borderX+UI_BORDER_SPACING + self.workshopIDLen
-                and self:getMouseY() > 2 and self:getMouseY() < 2 + FONT_HGT_SMALL + 1) then
-            self:drawRectBorder(self.borderX+UI_BORDER_SPACING, 1+FONT_HGT_SMALL, self.workshopIDLen, 1, 0.9, 0.2, 0.6, 1.0)
-        elseif self.workshopID ~= "" and self.pressed then
+        local displayText = self.workshopID
+        local r, g, b = 0.2, 0.6, 1.0
+        if self.isNoData then
+            displayText = getText("UI_modinfopanel_NoData")
+            r, g, b = 0.5, 0.5, 0.5
+        end
+        self:drawText(displayText, self.borderX + UI_BORDER_SPACING, 2, r, g, b, 0.9, UIFont.Small)
+        if not self.isNoData and not (self:isMouseOver() and self:getMouseX() > self.borderX + UI_BORDER_SPACING and self:getMouseX() < self.borderX + UI_BORDER_SPACING + self.workshopIDLen and self:getMouseY() > 2 and self:getMouseY() < 2 + FONT_HGT_SMALL + 1) then
+            self:drawRectBorder(self.borderX + UI_BORDER_SPACING, 1 + FONT_HGT_SMALL, self.workshopIDLen, 1, 0.9, 0.2, 0.6, 1.0)
+        elseif self.isNoData and not (self:isMouseOver() and self:getMouseX() > self.borderX + UI_BORDER_SPACING and self:getMouseX() < self.borderX + UI_BORDER_SPACING + self.workshopIDLen and self:getMouseY() > 2 and self:getMouseY() < 2 + FONT_HGT_SMALL + 1) then
+            self:drawRectBorder(self.borderX + UI_BORDER_SPACING, 1 + FONT_HGT_SMALL, self.workshopIDLen, 1, 0.9, 0.5, 0.5, 0.5)
+        elseif self.pressed then
             local source = self.modInfo:getSource()
             if source == "Workshop" or source == "Mods" then
                 showFolderInDesktop(self.modInfo:getDir())
@@ -129,9 +135,9 @@ function ModInfoPanel.Param:render()
         end
     elseif self.type == "ZomboidVersion" then
         if self.modInfo:isAvailableSelf() then
-            self:drawText(self.zomboidVersion, self.borderX+UI_BORDER_SPACING, 2, 0.9, 0.9, 0.9, 0.9, UIFont.Small)
+            self:drawText(self.zomboidVersion, self.borderX + UI_BORDER_SPACING, 2, 0.9, 0.9, 0.9, 0.9, UIFont.Small)
         else
-            self:drawText("AVAILABLE ONLY IN DEBUG (mod must be updated to " .. getBreakModGameVersion():toString() .. "+ version)", self.borderX+UI_BORDER_SPACING, 2, 0.9, 0.0, 0.0, 0.9, UIFont.Small)
+            self:drawText("AVAILABLE ONLY IN DEBUG (mod must be updated to " .. getBreakModGameVersion():toString() .. "+ version)", self.borderX + UI_BORDER_SPACING, 2, 0.9, 0.0, 0.0, 0.9, UIFont.Small)
         end
     end
     self.pressed = false
@@ -145,6 +151,14 @@ end
 
 function ModInfoPanel.Param:onMouseDown(x, y)
     self.pressed = true
+end
+
+function ModInfoPanel.Param:hasWorkshopID()
+    return self.workshopID ~= ""
+end
+
+function ModInfoPanel.Param:hasLastUpdate()
+    return self.formattedDate ~= ""
 end
 
 function ModInfoPanel.Param:formatDate(seconds)
@@ -201,6 +215,7 @@ end
 
 function ModInfoPanel.Param:setModInfo(modInfo)
     self.modInfo = modInfo
+    self.isNoData = false
 
     self.zomboidVersion = (self.modInfo:getVersionMin() and self.modInfo:getVersionMin():toString() or "**") .. " - " .. (self.modInfo:getVersionMax() and self.modInfo:getVersionMax():toString() or "**")
 
@@ -227,6 +242,7 @@ function ModInfoPanel.Param:setModInfo(modInfo)
             self.workshopID = self.modInfo:getDir()
         else
             self.name = getText("UI_modinfopanel_WorkshopID")
+            self.isNoData = self.formattedDate == ""
         end
         self.labelWidth = getTextManager():MeasureStringX(UIFont.Small, self.name)
     end
@@ -240,7 +256,7 @@ function ModInfoPanel.Param:setModInfo(modInfo)
         self.workshopID = self.workshopID .. "..."
     end
 
-    self.workshopIDLen = getTextManager():MeasureStringX(UIFont.Small, self.workshopID)
+    self.workshopIDLen = getTextManager():MeasureStringX(UIFont.Small, self.isNoData and getText("UI_modinfopanel_NoData") or self.workshopID)
 end
 
 function ModInfoPanel.Param:new(x, y, width, type)
@@ -254,6 +270,7 @@ function ModInfoPanel.Param:new(x, y, width, type)
     o.zomboidVersion = ""
     o.workshopID = ""
     o.workshopIDLen = 0
+    o.isNoData = false
     o.borderX = width / 4.0
     return o
 end

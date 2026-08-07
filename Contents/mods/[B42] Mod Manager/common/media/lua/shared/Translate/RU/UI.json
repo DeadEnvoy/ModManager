@@ -40,6 +40,7 @@
     "UI_modinfopanel_WorkshopID": "Workshop ID",
     "UI_modinfopanel_LocalPath": "Путь к папке",
     "UI_modinfopanel_LastUpdate": "Последнее обновление",
+    "UI_modinfopanel_NoData": "Не удалось получить данные",
     "UI_modinfopanel_ZomboidVersion": "Версия игры",
     "UI_modinfopanel_Dependencies": "Зависимости",
     "UI_modinfopanel_IncompatibleWith": "Несовместимости",

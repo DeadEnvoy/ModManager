@@ -40,6 +40,7 @@
     "UI_modinfopanel_WorkshopID": "Workshop ID",
     "UI_modinfopanel_LocalPath": "Helyi elérési út",
     "UI_modinfopanel_LastUpdate": "Utolsó frissítés",
+    "UI_modinfopanel_NoData": "Nem sikerült lekérni az adatokat",
     "UI_modinfopanel_ZomboidVersion": "Játékverzió",
     "UI_modinfopanel_Dependencies": "Függőségek",
     "UI_modinfopanel_IncompatibleWith": "Összeférhetetlen",
