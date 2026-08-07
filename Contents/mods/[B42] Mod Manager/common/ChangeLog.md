@@ -1,7 +1,34 @@
+# 1.6.0
+**UI**
+- The server profile creation and configuration process has been reworked.
+    - Lua reset when navigating to the server settings screen has been restored to correctly display all sandbox options.
+    - Server profile editing is now split into quick and full modes.
+        - Quick: allows editing only the core server settings without the ability to change the mod list, available maps, or spawn regions.
+        - Full: the standard server settings editing mode with no restrictions (requires a Lua reset).
+- Visual display of invalid mods in the server settings has been improved.
+    - Mods that cannot be downloaded by clients (local-only) are now highlighted in red.
+    - Added a mod counter showing the total number of mods used by the server along with a local/non-local breakdown.
+- The mod counter now shows separately how many mods were enabled and disabled relative to the saved state.
+
+**FIXES**
+- Removed reference to a non-existent file ([#7](https://github.com/DeadEnvoy/ModManager/issues/7)).
+- Fixed ModOptionsScreen crash on translations with % characters ([#11](https://github.com/DeadEnvoy/ModManager/issues/11)).
+
+**MODDING**
+- Integrated the "ZLib" library.
+    - Added **Functions** hook system: **PreHook** and **PostHook** allow subscribing to method calls in observer mode.
+
+**TECHNICAL**
+- Workshop data storage and retrieval have been reworked.
+    - The hourly rate limit for fetching mod data from the Steam Workshop has been removed.
+        - Since all requests go directly through the Steamworks SDK and no documented rate limits could be found for them (unlike HTTP), the decision was made to drop the limit entirely.
+    - Mods that were downloaded but later removed from the Workshop now show that status and cannot be added to the server export list (Mods and WorkshopItems).
+    - Workshop data is now fetched once per session instead of on every main menu entry.
+
 # 1.5.7
 **FIXES**
-- Fixed a bug where mod data could not be saved or updated.
-    - The 42.20.0 update restricted getFileWriter to a whitelist of extensions (ini, cfg, txt, log) — .lua files are no longer writable. Existing data is migrated to .ini automatically on first launch.
+- Fixed a bug where mod data could not be saved or updated ([#5](https://github.com/DeadEnvoy/ModManager/issues/5)).
+    - The 42.20.0 update restricted **getFileWriter** to a whitelist of extensions (ini, cfg, txt, log) — .lua files are no longer writable. Existing data is migrated to .ini automatically on first launch.
 
 # 1.5.6
 **UI**
