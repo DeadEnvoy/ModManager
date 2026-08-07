@@ -148,9 +148,9 @@ function ModOptionsScreen:onSortChanged()
             for _, option in ipairs(options.data) do
                 if option.element then
                     if option.type == "textentry" then
-                         option.pendingValue = option.element:getInternalText()
+                        option.pendingValue = option.element:getInternalText()
                     elseif option.type == "tickbox" then
-                         option.pendingValue = option.element:isSelected(1)
+                        option.pendingValue = option.element:isSelected(1)
                     elseif option.type == "multipletickbox" and option.values then
                         for i = 1, #option.element.options do
                             if option.values[i] then
@@ -195,8 +195,8 @@ function ModOptionsScreen:sortAndRefillListbox()
         end)
     else
         table.sort(sortedModOptions, function(a, b)
-            local nameA = a.name and getText(a.name) or a.name or ""
-            local nameB = b.name and getText(b.name) or b.name or ""
+            local nameA = a.name and getTextOrNull(a.name) or a.name or ""
+            local nameB = b.name and getTextOrNull(b.name) or b.name or ""
             return nameA < nameB
         end)
     end
@@ -206,7 +206,7 @@ function ModOptionsScreen:sortAndRefillListbox()
             local item = {}
             item.page = options
             item.panel = panel
-            local displayName = options.name and getText(options.name) or options.name or options.modOptionsID
+            local displayName = options.name and getTextOrNull(options.name) or options.name or options.modOptionsID
             self.listbox:addItem(displayName, item)
         end
     end
@@ -352,7 +352,7 @@ function ModOptionsScreen:doSearch()
             local panelHasMatch = false
             local modNameMatches = false
             if searchWord ~= "" then
-                local modName = item.item.page.name and getText(item.item.page.name) or item.item.page.name or ""
+                local modName = item.item.page.name and getTextOrNull(item.item.page.name) or item.item.page.name or ""
                 modNameMatches = string.find(string.lower(modName), searchWord, 1, true) ~= nil
                 panelHasMatch = modNameMatches
             end
@@ -424,7 +424,7 @@ function ModOptionsScreen:createOptionControls(option, page)
         return nil, nil
     end
 
-    local label = ISLabel:new(0, 0, entryHgt, option.name and getText(option.name) or "", 1, 1, 1, 1, UIFont.Medium)
+    local label = ISLabel:new(0, 0, entryHgt, option.name and (getTextOrNull(option.name) or option.name) or "", 1, 1, 1, 1, UIFont.Medium)
     label:initialise()
     local control = nil
 
@@ -437,16 +437,18 @@ function ModOptionsScreen:createOptionControls(option, page)
         control:setSelected(1, val)
         option.element = control
         control.changeOptionMethod = function(_, _, selected)
-             option.pendingValue = selected
-             self.optionsChanged = true
-             if option.onChange then option.onChange(option, selected) end
+            option.pendingValue = selected
+            self.optionsChanged = true
+            if option.onChange then
+                option.onChange(option, selected)
+            end
         end
     elseif option.type == "multipletickbox" then
         control = ISTickBox:new(0, 0, buttonHgt, buttonHgt, "")
         control:initialise()
         if option.values then
             for i, value in ipairs(option.values) do
-                control:addOption(value.name and getText(value.name) or "", value.name)
+                control:addOption(value.name and (getTextOrNull(value.name) or value.name) or "", value.name)
                 local val = value.value
                 if value.pendingValue ~= nil then val = value.pendingValue end
                 control:setSelected(i, val)
@@ -465,7 +467,7 @@ function ModOptionsScreen:createOptionControls(option, page)
         control:initialise()
         if option.values then
             for _, v in ipairs(option.values) do
-                control:addOption(getText(v))
+                control:addOption(getTextOrNull(v) or v)
             end
         end
         control.selected = option.pendingValue or option.selected or 1
@@ -496,8 +498,8 @@ function ModOptionsScreen:createOptionControls(option, page)
         if not option.modOptionsID then option.modOptionsID = page.modOptionsID end
         control = ISButton:new(0, 0, entryHgt * 2, entryHgt, "", self, self.onModColorPick)
         control:initialise()
-        local initialColor = option.pendingColor or option.color or {r=1, g=1, b=1, a=1}
-        control.backgroundColor = {r=initialColor.r, g=initialColor.g, b=initialColor.b, a=initialColor.a}
+        local initialColor = option.pendingColor or option.color or { r = 1, g = 1, b = 1, a = 1 }
+        control.backgroundColor = { r = initialColor.r, g = initialColor.g, b = initialColor.b, a = initialColor.a }
         control.option = option
         control.colorPicker = ISColorPicker:new(0, 0)
         control.colorPicker:initialise()
@@ -518,8 +520,12 @@ function ModOptionsScreen:createOptionControls(option, page)
     elseif option.type == "keybind" then
         local val = option.pendingValue or option.value
         if val == nil then
-            if option.key ~= nil then val = tostring(option.key)
-            elseif option.defaultkey ~= nil then val = tostring(option.defaultkey); option.key = option.defaultkey end
+            if option.key ~= nil then
+                val = tostring(option.key)
+            elseif option.defaultkey ~= nil then
+                val = tostring(option.defaultkey)
+                option.key = option.defaultkey
+            end
         end
         local keyValue = tonumber(val) or 0
         local keyName = (keyValue > 0) and getKeyName(keyValue) or "None"
@@ -576,7 +582,7 @@ function ModOptionsScreen:layoutControlsOnPanel(panel, addControlsTo, page, labe
     for i = 1, #page.data do
         local option = page.data[i]
         if option.type == "title" then
-            local title = ISLabel:new(0, currentY + 10, entryHgt, option.name and getText(option.name) or "", 1, 1, 1, 1, UIFont.Large)
+            local title = ISLabel:new(0, currentY + 10, entryHgt, option.name and (getTextOrNull(option.name) or option.name) or "", 1, 1, 1, 1, UIFont.Large)
             title:initialise()
             addControlsTo:addChild(title)
             title:setX((panel.width - title:getWidth()) / 2)
@@ -584,7 +590,7 @@ function ModOptionsScreen:layoutControlsOnPanel(panel, addControlsTo, page, labe
         elseif option.type == "separator" then
             local hLine = ISPanel:new(10, currentY, panel.width - 20 - 13, 1)
             hLine:initialise()
-            hLine.backgroundColor = {r=0.5, g=0.5, b=0.5, a=1.0}
+            hLine.backgroundColor = { r = 0.5, g = 0.5, b = 0.5, a = 1.0 }
             addControlsTo:addChild(hLine)
             currentY = currentY + hLine:getHeight() + 10
         elseif option.type == "description" then
@@ -594,12 +600,12 @@ function ModOptionsScreen:layoutControlsOnPanel(panel, addControlsTo, page, labe
             richText.marginLeft = 0
             richText:initialise()
             addControlsTo:addChild(richText)
-            richText:setText("<RGB:0.8,0.8,0.8>" .. (option.text and getText(option.text) or ""))
+            richText:setText("<RGB:0.8,0.8,0.8>" .. (option.text and (getTextOrNull(option.text) or option.text) or ""))
             richText:paginate()
             richText.onMouseWheel = function() return false end
             currentY = currentY + richText:getHeight() + 10
         elseif option.type == "button" then
-            local button = ISButton:new(0, currentY, controlWidth, entryHgt, option.name and getText(option.name) or "")
+            local button = ISButton:new(0, currentY, controlWidth, entryHgt, option.name and (getTextOrNull(option.name) or option.name) or "")
             button:initialise()
             addControlsTo:addChild(button)
             button:setX(xOffset + labelWidth + 10)
@@ -797,7 +803,7 @@ end
 
 function ModOptionsScreen:pickedModColor(button, color)
     if not button or not button.option or not color then return end
-    button.backgroundColor = {r=color.r, g=color.g, b=color.b, a=1}
+    button.backgroundColor = { r = color.r, g = color.g, b = color.b, a = 1 }
     button.option.pendingColor = button.backgroundColor
     self.optionsChanged = true
     if button.option.onChange then
@@ -864,9 +870,9 @@ function ModOptionsScreen:apply(closeAfter)
 
             if option.element and option.type ~= "keybind" and option.type ~= "colorpicker" and option.type ~= "slider" then
                 if option.type == "textentry" then
-                     option.value = option.element:getInternalText()
+                    option.value = option.element:getInternalText()
                 elseif option.type == "tickbox" then
-                     option.value = option.element:isSelected(1)
+                    option.value = option.element:isSelected(1)
                 elseif option.type == "combobox" then
                     option.selected = option.element.selected
                 end
@@ -900,9 +906,9 @@ function ModOptionsScreen:toUI()
 
             if option.element then
                 if option.type == "textentry" then
-                     option.element:setText(option.value or "")
+                    option.element:setText(option.value or "")
                 elseif option.type == "tickbox" then
-                     option.element:setSelected(1, option.value or false)
+                    option.element:setSelected(1, option.value or false)
                 elseif option.type == "multipletickbox" and option.values then
                     for i = 1, #option.element.options do
                         if option.values[i] then
@@ -919,7 +925,7 @@ function ModOptionsScreen:toUI()
                     option.element.label:setName(tostring(value))
                     option.element:setCurrentValue(value, true)
                 elseif option.type == "colorpicker" then
-                     if option.color then option.element.backgroundColor = option.color end
+                    if option.color then option.element.backgroundColor = option.color end
                 elseif option.type == "keybind" then
                     local keyNum = tonumber(option.key or option.value) or 0
                     local keyName = (keyNum > 0) and getKeyName(keyNum) or "None"
@@ -1004,8 +1010,8 @@ end
 
 function ModOptionsScreen:new(x, y, width, height)
     local o = ISPanelJoypad.new(self, x, y, width, height)
-    o.backgroundColor = {r=0, g=0, b=0, a=0.8}
-    o.borderColor = {r=1, g=1, b=1, a=0.2}
+    o.backgroundColor = { r = 0, g = 0, b = 0, a = 0.8 }
+    o.borderColor = { r = 1, g = 1, b = 1, a = 0.2 }
     o.modsByDateAdded = {}
     return o
 end
