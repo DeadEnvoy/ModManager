@@ -309,6 +309,33 @@ local function layoutModsPanel(self)
     self.button:setVisible(true);
 end
 
+local function updateModsCountLabel(panel)
+    local label = nil;
+    for _, child in pairs(panel:getChildren()) do
+        if child.Type == "ISLabel" then
+            label = child;
+            break
+        end
+    end
+    if not label then return end
+
+    local total = 0;
+    local validCount = 0;
+    for _, item in ipairs(panel.listbox.items) do
+        total = total + 1;
+        local modID = item.item.modID;
+        local workshopID = resolveWorkshopID(modID, item.item.modInfo);
+        if workshopID then
+            validCount = validCount + 1;
+        end
+    end
+
+    local newText = getText("UI_ServerSettings_ListOfMods", validCount, total);
+    if label.name ~= newText then
+        label:setNameWithoutMoving(newText);
+    end
+end
+
 local function layoutMapsPanel(self)
     if self.buttonRemove then
         self.buttonRemove:setVisible(false);
@@ -673,6 +700,7 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
                         end
                         self.button:setEnable(not self.pageEdit.quickSetupMode);
                     end
+                    updateModsCountLabel(self);
                 end)
 
                 function panel:onResolutionChange()
