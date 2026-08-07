@@ -729,7 +729,7 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
                     end
 
                     local dy = (self.itemheight - getTextManager():getFontFromEnum(self.font):getLineHeight()) / 2;
-                    if isUnknown then
+                    if isUnknown or (not workshopID or workshopID == "") then
                         self:drawText(item.text, textX, y + dy, 0.9, 0.0, 0.0, 0.9, self.font);
                     else
                         self:drawText(item.text, textX, y + dy, 0.9, 0.9, 0.9, 0.9, self.font);
