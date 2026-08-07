@@ -28,6 +28,7 @@
     "UI_modselector_btn_enable": "ENGEDÉLYEZÉS",
     "UI_modselector_btn_disable": "LETILTÁS",
     "UI_modselector_LocalMod_tooltip": "Ez a mod nem lesz letöltve a kliens oldalon.\n\nOk: Workshop ID nem található (helyi mod).\n\nHa te vagy a mod szerzője, közzé kell tenned a Workshopon és fel kell rá iratkoznod.",
+    "UI_ServerSettings_ListOfMods": "A szerver által használt módok (%1 / %2):",
     "UI_ServerSettings_SpawnRegions": "A szerver által használt spawn régiók:",
     "UI_ServerSettings_AddSpawnRegion": "Elérhető spawn régió hozzáadása a listához:",
     "UI_ServerOption_SpawnPoint": "Spawn pont:",

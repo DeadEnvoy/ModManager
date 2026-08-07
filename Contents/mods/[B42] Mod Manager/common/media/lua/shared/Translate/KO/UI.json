@@ -28,6 +28,7 @@
     "UI_modselector_btn_enable": "활성화",
     "UI_modselector_btn_disable": "비활성화",
     "UI_modselector_LocalMod_tooltip": "이 모드는 클라이언트 측에서 다운로드되지 않습니다.\n\n이유: Workshop ID를 찾을 수 없음 (로컬 모드).\n\n이 모드의 제작자인 경우 워크샵에 게시하고 구독해야 합니다.",
+    "UI_ServerSettings_ListOfMods": "서버에서 사용하는 모드 목록 (%1 / %2):",
     "UI_ServerSettings_SpawnRegions": "이 서버에서 사용하는 스폰 지역:",
     "UI_ServerSettings_AddSpawnRegion": "사용 가능한 스폰 지역을 목록에 추가:",
     "UI_ServerOption_SpawnPoint": "스폰 지점:",
