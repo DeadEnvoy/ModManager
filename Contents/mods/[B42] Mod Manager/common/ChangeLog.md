@@ -1,3 +1,16 @@
+# 1.6.1
+**UI**
+- The inline mod removal button in the server settings window has been removed for correct change processing.
+
+**FIXES**
+- Fixed incorrect display of the "UI_ServerSettings_ListOfMods" string outside the server settings window.
+
+**TECHNICAL**
+- Handled cases where the mod manager was missing on the server and UI changes were not applied ([#15](https://github.com/DeadEnvoy/ModManager/issues/15)).
+    - Adding [Mod Manager](https://steamcommunity.com/sharedfiles/filedetails/?id=3567084868) and/or [Mod Load Order Sorter](https://steamcommunity.com/sharedfiles/filedetails/?id=3423660713) to the server is now optional — they are always active without being added to the server's mod profile.
+- Changing the server's mod list now triggers a Lua reset to correctly display the updated sandbox options list.
+    - The reset is only triggered if one of the removed or added mods has sandbox options.
+
 # 1.6.0
 **UI**
 - The server profile creation and configuration process has been reworked.
