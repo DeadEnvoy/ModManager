@@ -52,6 +52,15 @@ local function buildForbiddenMods(candidateModIDs)
     return forbidden;
 end
 
+local function modHasSandboxOptions(modID)
+    local reader = getModFileReader(modID, "media/sandbox-options.txt", false);
+    if reader then
+        reader:close();
+        return true;
+    end
+    return false;
+end
+
 local function resolveWorkshopID(modID, modInfo)
     local workshopInfo = ModListData:getModWorkshopInfo(modID);
     if not workshopInfo or not workshopInfo.lastUpdate or workshopInfo.lastUpdate == 0 then
@@ -296,13 +305,84 @@ local function onModsPanelButtonChoose(self)
             end
         end
 
-        for _, panel in ipairs(pageEdit.customui) do
-            if panel.settingsFromUI then
-                panel:settingsFromUI();
+        local initialSet = {};
+        for _, modID in ipairs(initialModIDs) do
+            if modID ~= "" then
+                initialSet[modID] = true;
+            end
+        end
+        local newSet = {};
+        for _, modID in ipairs(newModIDList) do
+            newSet[modID] = true;
+        end
+
+        local diffModIDs = {};
+        for modID in pairs(initialSet) do
+            if not newSet[modID] then
+                table.insert(diffModIDs, modID);
+            end
+        end
+        for modID in pairs(newSet) do
+            if not initialSet[modID] then
+                table.insert(diffModIDs, modID);
             end
         end
 
-        local addedMods, removedMods = updateServerSettingsMods(settings, newModIDList);
+        local needsReset = false;
+        for _, modID in ipairs(diffModIDs) do
+            if modHasSandboxOptions(modID) then
+                needsReset = true;
+                break;
+            end
+        end
+
+        if not needsReset then
+            for _, panel in ipairs(pageEdit.customui) do
+                if panel.settingsFromUI then
+                    panel:settingsFromUI();
+                end
+            end
+
+            local addedMods, removedMods = updateServerSettingsMods(settings, newModIDList);
+
+            for _, panel in ipairs(pageEdit.customui) do
+                panel:setSettings(settings);
+            end
+
+            applyModsDiff(pageEdit, settings, addedMods, removedMods);
+
+            ServerSettingsScreen.instance:setVisible(true, JoypadState.getMainMenuJoypad());
+            return;
+        end
+
+        pageEdit:settingsFromUI();
+
+        local activeMods = ActiveMods.getById("serversettings");
+        local modArray = activeMods:getMods();
+        modArray:clear();
+
+        local newModSet = {};
+        for _, modID in ipairs(newModIDList) do
+            newModSet[modID] = true;
+        end
+
+        local forbidden = buildForbiddenMods(newModIDList);
+
+        for _, requiredModID in ipairs(REQUIRED_MODS) do
+            if not newModSet[requiredModID] then
+                modArray:add(requiredModID);
+            end
+        end
+
+        local filteredModIDList = {};
+        for _, modID in ipairs(newModIDList) do
+            if not forbidden[modID] then
+                modArray:add(modID);
+                table.insert(filteredModIDList, modID);
+            end
+        end
+
+        local addedMods, removedMods = updateServerSettingsMods(settings, filteredModIDList);
 
         for _, panel in ipairs(pageEdit.customui) do
             panel:setSettings(settings);
@@ -310,7 +390,15 @@ local function onModsPanelButtonChoose(self)
 
         applyModsDiff(pageEdit, settings, addedMods, removedMods);
 
+        local reason = "ServerSettingsChange" .. "=" .. settings:getName();
+        if ActiveMods.requiresResetLua(activeMods) then
+            settings:saveFiles();
+            getCore():ResetLua("serversettings", reason);
+            return;
+        end
+
         ServerSettingsScreen.instance:setVisible(true, JoypadState.getMainMenuJoypad());
+        showPageEdit(pageEdit, settings, JoypadState.getMainMenuJoypad(), modArray, addedMods, removedMods);
     end
 
     ModSelector.instance:setServerSettingsMods(initialData, finalFunc);
@@ -1662,18 +1750,6 @@ Functions.PostHook.Add(ServerSettingsScreen, "onResetLua", function(self, reason
                 modsPanel.listbox:removeItemByIndex(i);
             end
         end
-    end
-
-    local modsString = pageEdit.settings:getServerOptions():getOptionByName("Mods"):getValue();
-    local addedMods = {};
-    for _, modID in ipairs(string.split(modsString, ";")) do
-        if modID ~= "" then
-            table.insert(addedMods, modID);
-        end
-    end
-
-    if #addedMods > 0 then
-        applyModsDiff(pageEdit, pageEdit.settings, addedMods, {});
     end
 end)
 
