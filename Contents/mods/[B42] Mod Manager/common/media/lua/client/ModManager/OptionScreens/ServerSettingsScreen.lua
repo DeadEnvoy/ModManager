@@ -860,8 +860,6 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
                 panel.button:setOnClick(onModsPanelButtonChoose, panel);
 
                 local warningTexture = getTexture("media/ui/ModManager/Icons/Warning_" .. FONT_HGT_SMALL .. ".png");
-                panel.listbox.mouseOverButtonIndex = nil;
-                panel.listbox.modsPanel = panel;
 
                 function panel.listbox:doDrawItem(y, item, _)
                     self:drawRectBorder(0, y, self:getWidth(), self.itemheight - 1, 0.5, self.borderColor.r, self.borderColor.g, self.borderColor.b);
@@ -917,29 +915,10 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
                         self:drawText("[" .. workshopID .. "]", x, y + dy, 0.6, 0.6, 0.6, 0.9, UIFont.Small);
                     end
 
-                    if self.mouseoverselected == item.index and not self:isMouseOverScrollBar() and not self.modsPanel.pageEdit.quickSetupMode then
-                        local textRemove = getText("UI_btn_remove");
-                        local textRemoveWid = getTextManager():MeasureStringX(UIFont.Small, textRemove);
-                        local btnWid = 8 + textRemoveWid + 8;
-                        local btnHgt = smallFontHgt + 4;
-                        local scrollBarWid = self:isVScrollBarVisible() and 13 or 0;
-                        local btnX = self.width - 4 - scrollBarWid - btnWid;
-                        local btnY = y + (item.height - btnHgt) / 2;
-                        local isMouseOverButton = (self:getMouseX() > btnX - 8);
-                        if isMouseOverButton then
-                            self:drawRect(btnX, btnY, btnWid, btnHgt, 1, 0.85, 0, 0);
-                            self.mouseOverButtonIndex = item.index;
-                        else
-                            self:drawRect(btnX, btnY, btnWid, btnHgt, 1, 0.50, 0.50, 0.50);
-                        end
-                        self:drawTextCentre(textRemove, btnX + btnWid / 2, y + (item.height - smallFontHgt) / 2, 0, 0, 0, 1, UIFont.Small);
-                    end
-
                     return y + item.height
                 end
 
                 function panel.listbox:prerender()
-                    self.mouseOverButtonIndex = nil;
                     ISScrollingListBox.prerender(self);
 
                     local shouldShow = false;
@@ -974,24 +953,7 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
                 end
 
                 function panel.listbox:onMouseDown(x, y)
-                    if self.mouseOverButtonIndex then
-                        local item = self.items[self.mouseOverButtonIndex];
-                        if item and self.modsPanel then
-                            self:removeItemByIndex(self.mouseOverButtonIndex);
-                            self.currentItem = nil;
-
-                            local modIDList = {};
-                            for _, listItem in ipairs(self.items) do
-                                table.insert(modIDList, listItem.item.modID);
-                            end
-
-                            local settings = self.modsPanel.pageEdit.settings;
-                            local addedMods, removedMods = updateServerSettingsMods(settings, modIDList);
-                            applyModsDiff(self.modsPanel.pageEdit, settings, addedMods, removedMods);
-                        end
-                    else
-                        ISScrollingListBox.onMouseDown(self, x, y);
-                    end
+                    ISScrollingListBox.onMouseDown(self, x, y);
                 end
             elseif panel.Type == "ServerSettingsScreenMapsPanel" then
                 ---@diagnostic disable-next-line: redefined-local
