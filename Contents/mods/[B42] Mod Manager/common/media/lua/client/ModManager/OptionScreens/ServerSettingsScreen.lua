@@ -9,6 +9,49 @@ local BUTTON_HGT = FONT_HGT_SMALL + 6;
 
 local ModListData = require("ModManager/Utils/ModListData");
 
+local REQUIRED_MODS = { "ModLoadOrderSorter_b42", "ModManager" };
+
+local function isRequiredMod(modID)
+    for _, id in ipairs(REQUIRED_MODS) do
+        if id == modID then return true end
+    end
+    return false;
+end
+
+local function buildForbiddenMods(candidateModIDs)
+    local forbidden = {};
+
+    for _, requiredModID in ipairs(REQUIRED_MODS) do
+        local requiredModInfo = getModInfoByID(requiredModID);
+        if requiredModInfo and requiredModInfo:getIncompatible() then
+            local incompatibleList = requiredModInfo:getIncompatible();
+            for i = 0, incompatibleList:size() - 1 do
+                local incompatibleID = incompatibleList:get(i);
+                if incompatibleID and incompatibleID ~= "" then
+                    forbidden[incompatibleID] = true;
+                end
+            end
+        end
+    end
+
+    for _, candidateModID in ipairs(candidateModIDs) do
+        if not isRequiredMod(candidateModID) and not forbidden[candidateModID] then
+            local candidateModInfo = getModInfoByID(candidateModID);
+            if candidateModInfo and candidateModInfo:getIncompatible() then
+                local incompatibleList = candidateModInfo:getIncompatible();
+                for i = 0, incompatibleList:size() - 1 do
+                    if isRequiredMod(incompatibleList:get(i)) then
+                        forbidden[candidateModID] = true;
+                        break;
+                    end
+                end
+            end
+        end
+    end
+
+    return forbidden;
+end
+
 local function resolveWorkshopID(modID, modInfo)
     local workshopInfo = ModListData:getModWorkshopInfo(modID);
     if not workshopInfo or not workshopInfo.lastUpdate or workshopInfo.lastUpdate == 0 then
@@ -189,17 +232,29 @@ local function showPageEdit(pageEdit, settings, joyfocus, modArray, addedMods, r
 
     ---@diagnostic disable-next-line: need-check-nil
     modsPanel.listbox:clear();
+
+    local serverModSet = {};
+    local serverModsString = settings:getServerOptions():getOptionByName("Mods"):getValue();
+    for _, id in ipairs(string.split(serverModsString, ";")) do
+        if id ~= "" then
+            serverModSet[id] = true;
+        end
+    end
+
     for i = 0, modArray:size() - 1 do
-        local item = {};
-        item.modID = modArray:get(i);
-        ---@diagnostic disable-next-line: need-check-nil
-        item.modInfo = modsPanel.modInfoByID[modArray:get(i)];
-        if item.modInfo then
+        local modID = modArray:get(i);
+        if not (isRequiredMod(modID) and not serverModSet[modID]) then
+            local item = {};
+            item.modID = modID;
             ---@diagnostic disable-next-line: need-check-nil
-            modsPanel.listbox:addItem(item.modInfo:getName(), item);
-        else
-            ---@diagnostic disable-next-line: need-check-nil
-            modsPanel.listbox:addItem(item.modID, item);
+            item.modInfo = modsPanel.modInfoByID[modID];
+            if item.modInfo then
+                ---@diagnostic disable-next-line: need-check-nil
+                modsPanel.listbox:addItem(item.modInfo:getName(), item);
+            else
+                ---@diagnostic disable-next-line: need-check-nil
+                modsPanel.listbox:addItem(item.modID, item);
+            end
         end
     end
 end
@@ -1507,8 +1562,29 @@ Functions.PostHook.Add(ServerSettingsScreen, "create", function(self)
         modArray:clear();
         local modIDList = {};
         local modsString = settings:getServerOptions():getOptionByName("Mods"):getValue();
+
+        local serverModIDs = {};
         for _, modID in ipairs(string.split(modsString, ";")) do
             if modID ~= "" then
+                table.insert(serverModIDs, modID);
+            end
+        end
+
+        local serverModSet = {};
+        for _, modID in ipairs(serverModIDs) do
+            serverModSet[modID] = true;
+        end
+
+        local forbidden = buildForbiddenMods(serverModIDs);
+
+        for _, requiredModID in ipairs(REQUIRED_MODS) do
+            if not serverModSet[requiredModID] then
+                modArray:add(requiredModID);
+            end
+        end
+
+        for _, modID in ipairs(serverModIDs) do
+            if not forbidden[modID] then
                 modArray:add(modID);
                 table.insert(modIDList, modID);
             end
@@ -1565,6 +1641,29 @@ Functions.PostHook.Add(ServerSettingsScreen, "onResetLua", function(self, reason
         return;
     end
 
+    local modsPanel = nil;
+    for _, panel in ipairs(pageEdit.customui) do
+        if panel.Type == "ServerSettingsScreenModsPanel" then
+            modsPanel = panel;
+            break
+        end
+    end
+    if modsPanel then
+        local serverModSet = {};
+        local serverModsString = pageEdit.settings:getServerOptions():getOptionByName("Mods"):getValue();
+        for _, id in ipairs(string.split(serverModsString, ";")) do
+            if id ~= "" then
+                serverModSet[id] = true;
+            end
+        end
+        for i = #modsPanel.listbox.items, 1, -1 do
+            local modID = modsPanel.listbox.items[i].item.modID;
+            if isRequiredMod(modID) and not serverModSet[modID] then
+                modsPanel.listbox:removeItemByIndex(i);
+            end
+        end
+    end
+
     local modsString = pageEdit.settings:getServerOptions():getOptionByName("Mods"):getValue();
     local addedMods = {};
     for _, modID in ipairs(string.split(modsString, ";")) do
@@ -1589,9 +1688,30 @@ Events.OnMainMenuEnter.Add(function()
         local modArray = activeMods:getMods();
         modArray:clear();
         local modIDList = {};
+
+        local selectedModIDs = {};
         for _, item in ipairs(self.listbox.items) do
-            modArray:add(item.item.modID);
-            table.insert(modIDList, item.item.modID);
+            table.insert(selectedModIDs, item.item.modID);
+        end
+
+        local selectedModSet = {};
+        for _, modID in ipairs(selectedModIDs) do
+            selectedModSet[modID] = true;
+        end
+
+        local forbidden = buildForbiddenMods(selectedModIDs);
+
+        for _, requiredModID in ipairs(REQUIRED_MODS) do
+            if not selectedModSet[requiredModID] then
+                modArray:add(requiredModID);
+            end
+        end
+
+        for _, modID in ipairs(selectedModIDs) do
+            if not forbidden[modID] then
+                modArray:add(modID);
+                table.insert(modIDList, modID);
+            end
         end
 
         local addedMods, removedMods = updateServerSettingsMods(self.settings, modIDList);
