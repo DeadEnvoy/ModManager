@@ -28,7 +28,7 @@
     "UI_modselector_btn_enable": "ACTIVER",
     "UI_modselector_btn_disable": "DÉSACTIVER",
     "UI_modselector_LocalMod_tooltip": "Ce mod ne sera pas téléchargé côté client.\n\nRaison : Workshop ID introuvable (mod local).\n\nSi vous êtes l'auteur de ce mod, vous devez le publier sur le Workshop et vous y abonner.",
-    "UI_ServerSettings_ListOfMods": "Mods utilisés par ce serveur (%1 / %2) :",
+    "UI_ServerSettings_ListOfMods_VN": "Mods utilisés par ce serveur (%1 / %2) :",
     "UI_ServerSettings_SpawnRegions": "Régions d'apparition utilisées par ce serveur :",
     "UI_ServerSettings_AddSpawnRegion": "Ajouter une région d'apparition disponible à la liste :",
     "UI_ServerOption_SpawnPoint": "Point d'apparition :",

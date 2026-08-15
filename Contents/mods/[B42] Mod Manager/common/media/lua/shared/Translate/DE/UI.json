@@ -28,7 +28,7 @@
     "UI_modselector_btn_enable": "AKTIVIEREN",
     "UI_modselector_btn_disable": "DEAKTIVIEREN",
     "UI_modselector_LocalMod_tooltip": "Diese Mod wird nicht auf der Client-Seite heruntergeladen.\n\nGrund: Workshop-ID nicht gefunden (lokale Mod).\n\nWenn Sie der Autor dieser Mod sind, müssen Sie sie im Workshop veröffentlichen und abonnieren.",
-    "UI_ServerSettings_ListOfMods": "Mods die genutzt werden (%1 / %2):",
+    "UI_ServerSettings_ListOfMods_VN": "Mods die genutzt werden (%1 / %2):",
     "UI_ServerSettings_SpawnRegions": "Von diesem Server verwendete Spawn-Regionen:",
     "UI_ServerSettings_AddSpawnRegion": "Verfügbare Spawn-Region zur Liste hinzufügen:",
     "UI_ServerOption_SpawnPoint": "Spawn-Punkt:",

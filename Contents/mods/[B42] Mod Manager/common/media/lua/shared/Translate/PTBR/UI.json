@@ -28,7 +28,7 @@
     "UI_modselector_btn_enable": "HABILITAR",
     "UI_modselector_btn_disable": "DESABILITAR",
     "UI_modselector_LocalMod_tooltip": "Este mod não será baixado no lado do cliente.\n\nMotivo: Workshop ID não encontrado (mod local).\n\nSe você é o autor deste mod, precisa publicá-lo no Workshop e se inscrever nele.",
-    "UI_ServerSettings_ListOfMods": "Mods usados por este servidor (%1 / %2):",
+    "UI_ServerSettings_ListOfMods_VN": "Mods usados por este servidor (%1 / %2):",
     "UI_ServerSettings_SpawnRegions": "Regiões de spawn usadas por este servidor:",
     "UI_ServerSettings_AddSpawnRegion": "Adicionar uma região de spawn disponível à lista:",
     "UI_ServerOption_SpawnPoint": "Ponto de spawn:",

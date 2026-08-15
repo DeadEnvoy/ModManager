@@ -28,7 +28,7 @@
     "UI_modselector_btn_enable": "AKTIVER",
     "UI_modselector_btn_disable": "DEAKTIVER",
     "UI_modselector_LocalMod_tooltip": "Denne modden vil ikke bli lastet ned på klientsiden.\n\nÅrsak: Workshop ID ikke funnet (lokal mod).\n\nHvis du er forfatteren av denne modden, må du publisere den på Workshop og abonnere på den.",
-    "UI_ServerSettings_ListOfMods": "Mods brukt av denne serveren (%1 / %2):",
+    "UI_ServerSettings_ListOfMods_VN": "Mods brukt av denne serveren (%1 / %2):",
     "UI_ServerSettings_SpawnRegions": "Spawn-regioner brukt av denne serveren:",
     "UI_ServerSettings_AddSpawnRegion": "Legg til en tilgjengelig spawn-region til listen:",
     "UI_ServerOption_SpawnPoint": "Spawn-punkt:",

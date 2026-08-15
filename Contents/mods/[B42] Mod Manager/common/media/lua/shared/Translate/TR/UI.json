@@ -28,7 +28,7 @@
     "UI_modselector_btn_enable": "AÇ",
     "UI_modselector_btn_disable": "KAPAT",
     "UI_modselector_LocalMod_tooltip": "Bu mod istemci tarafında indirilmeyecek.\n\nNeden: Workshop ID bulunamadı (yerel mod).\n\nBu modun yazarıysanız, Workshop'ta yayınlamanız ve abone olmanız gerekir.",
-    "UI_ServerSettings_ListOfMods": "Bu sunucu tarafından kullanılan modlar (%1 / %2):",
+    "UI_ServerSettings_ListOfMods_VN": "Bu sunucu tarafından kullanılan modlar (%1 / %2):",
     "UI_ServerSettings_SpawnRegions": "Bu sunucunun spawn bölgeleri:",
     "UI_ServerSettings_AddSpawnRegion": "Listeye spawn bölgesi ekle:",
     "UI_ServerOption_SpawnPoint": "Spawn noktası:",

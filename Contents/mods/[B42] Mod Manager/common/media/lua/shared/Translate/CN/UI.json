@@ -28,7 +28,7 @@
     "UI_modselector_btn_enable": "启用",
     "UI_modselector_btn_disable": "禁用",
     "UI_modselector_LocalMod_tooltip": "此模组不会在客户端下载。\n\n原因：未找到 Workshop ID（本地模组）。\n\n如果你是作者，请将其发布到创意工坊并订阅。",
-    "UI_ServerSettings_ListOfMods": "服务器使用的模组 (%1 / %2):",
+    "UI_ServerSettings_ListOfMods_VN": "服务器使用的模组 (%1 / %2):",
     "UI_ServerSettings_SpawnRegions": "此服务器的重生区域：",
     "UI_ServerSettings_AddSpawnRegion": "添加可用重生区域：",
     "UI_ServerOption_SpawnPoint": "重生点：",

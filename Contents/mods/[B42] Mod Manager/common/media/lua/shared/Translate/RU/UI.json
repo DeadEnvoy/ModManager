@@ -28,7 +28,7 @@
     "UI_modselector_btn_enable": "ВКЛЮЧИТЬ",
     "UI_modselector_btn_disable": "ОТКЛЮЧИТЬ",
     "UI_modselector_LocalMod_tooltip": "Модификация не будет загружена на стороне клиента.\n\nПричина: Workshop ID не был найден (локальная модификация).\n\nЕсли Вы являетесь автором этой модификации, то Вам необходимо опубликовать её в мастерской и подписаться на неё.",
-    "UI_ServerSettings_ListOfMods": "Моды, используемые этим сервером (%1 / %2):",
+    "UI_ServerSettings_ListOfMods_VN": "Моды, используемые этим сервером (%1 / %2):",
     "UI_ServerSettings_SpawnRegions": "Регионы спавна, используемые этим сервером:",
     "UI_ServerSettings_AddSpawnRegion": "Добавить доступный регион спавна в список:",
     "UI_ServerOption_SpawnPoint": "Точка спавна:",

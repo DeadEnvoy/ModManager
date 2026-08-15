@@ -327,7 +327,7 @@ local function updateModsCountLabel(panel)
         end
     end
 
-    local newText = getText("UI_ServerSettings_ListOfMods", validCount, total);
+    local newText = getText("UI_ServerSettings_ListOfMods_VN", validCount, total);
     if label.name ~= newText then
         label:setNameWithoutMoving(newText);
     end

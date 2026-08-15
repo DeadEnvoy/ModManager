@@ -28,7 +28,7 @@
     "UI_modselector_btn_enable": "WŁĄCZ",
     "UI_modselector_btn_disable": "WYŁĄCZ",
     "UI_modselector_LocalMod_tooltip": "Ten mod nie zostanie pobrany po stronie klienta.\n\nPowód: Nie znaleziono Workshop ID (mod lokalny).\n\nJeśli jesteś autorem tego moda, musisz opublikować go w Warsztacie i zasubskrybować.",
-    "UI_ServerSettings_ListOfMods": "Mody używane na tym serwerze (%1 / %2):",
+    "UI_ServerSettings_ListOfMods_VN": "Mody używane na tym serwerze (%1 / %2):",
     "UI_ServerSettings_SpawnRegions": "Regiony spawnu używane przez ten serwer:",
     "UI_ServerSettings_AddSpawnRegion": "Dodaj dostępny region spawnu do listy:",
     "UI_ServerOption_SpawnPoint": "Punkt spawnu:",
