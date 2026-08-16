@@ -8,6 +8,7 @@ LuaEventManager.AddEvent("OnWorkshopUpdate");
 local modMap, hasQueried = {}, false;
 
 function SteamWorkshopQuery.OnSteamQueryCompleted(status, info)
+    if not ipairs then return; end
     ModListData.isQuerying = false;
     if status == "Completed" then
         ModListData:updateWorkshopData(info, modMap);
