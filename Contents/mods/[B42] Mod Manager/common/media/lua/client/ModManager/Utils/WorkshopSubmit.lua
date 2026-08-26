@@ -3,14 +3,20 @@ require "OptionScreens/WorkshopSubmitScreen";
 local WorkshopSubmit = {};
 
 local function convertInline(text)
+    -- Links must be replaced before other inline conversions, otherwise
+    -- generated BBCode tags like [b] get captured as link text.
+    text = string.gsub(text, "%[([^%]]-)%]%(([^%)]-)%)", "[url=%2]%1[/url]");
     text = string.gsub(text, "%*%*%*(.-)%*%*%*", "[b][i]%1[/i][/b]");
     text = string.gsub(text, "%*%*(.-)%*%*", "[b]%1[/b]");
-    text = string.gsub(text, "__(.-)__", "[b]%1[/b]");
-    text = string.gsub(text, "%*(.-)%*", "[i]%1[/i]");
-    text = string.gsub(text, "_(.-)_", "[i]%1[/i]");
     text = string.gsub(text, "~~(.-)~~", "[strike]%1[/strike]");
-    text = string.gsub(text, "`(.-)`", "[code]%1[/code]");
-    text = string.gsub(text, "%[(.-)%]%((.-)%)", "[url=%2]%1[/url]");
+    -- Bold/italic markers must not touch word characters (letters, digits,
+    -- underscores) so identifiers like UI_modinfopanel_AM or __index stay raw.
+    -- Padding guards markers at the start/end of the string.
+    text = "\0" .. text .. "\0";
+    text = string.gsub(text, "([^%w_])__(%S.-)__([^%w_])", "%1[b]%2[/b]%3");
+    text = string.gsub(text, "([^%w_])_(%S.-)_([^%w_])", "%1[i]%2[/i]%3");
+    text = string.gsub(text, "([^%w*])%*(%S.-)%*([^%w*])", "%1[i]%2[/i]%3");
+    text = string.sub(text, 2, -2);
     return text
 end
 
@@ -169,11 +175,14 @@ end
 local function stripInline(text)
     text = string.gsub(text, "%*%*%*(.-)%*%*%*", "%1");
     text = string.gsub(text, "%*%*(.-)%*%*", "%1");
-    text = string.gsub(text, "__(.-)__", "%1");
-    text = string.gsub(text, "%*(.-)%*", "%1");
-    text = string.gsub(text, "_(.-)_", "%1");
     text = string.gsub(text, "~~(.-)~~", "%1");
-    text = string.gsub(text, "`(.-)`", "%1");
+    -- Same word-boundary rules as convertInline so identifiers like
+    -- UI_modinfopanel_AM keep their underscores; padding guards string edges.
+    text = "\0" .. text .. "\0";
+    text = string.gsub(text, "([^%w_])__(%S.-)__([^%w_])", "%1%2%3");
+    text = string.gsub(text, "([^%w_])_(%S.-)_([^%w_])", "%1%2%3");
+    text = string.gsub(text, "([^%w*])%*(%S.-)%*([^%w*])", "%1%2%3");
+    text = string.sub(text, 2, -2);
     text = string.gsub(text, "%(%[(#%d+)%]%((.-)%)%)", "(%1)");
     text = string.gsub(text, "%[(.-)%]%((.-)%)", function(label)
         if string.match(label, "^\".-\"$") then
