@@ -20,14 +20,151 @@ local ModListData = {
     isQuerying = false
 }
 
+-- loadstring/loadstream were removed in build 42.20.4 for security reasons,
+-- so the saved file (a Lua table literal) is parsed with a hand-written parser.
+local Parser = {}
+
+function Parser.new(content)
+    return setmetatable({ content = content, pos = 1 }, { __index = Parser })
+end
+
+function Parser:skipWhitespace()
+    while self.pos <= #self.content do
+        local c = self.content:sub(self.pos, self.pos)
+        if c == " " or c == "\t" or c == "\r" or c == "\n" or c == "," then
+            self.pos = self.pos + 1
+        elseif c == "-" and self.content:sub(self.pos + 1, self.pos + 1) == "-" then
+            local newline = self.content:find("[\r\n]", self.pos + 2)
+            self.pos = newline and (newline + 1) or (#self.content + 1)
+        else
+            break
+        end
+    end
+end
+
+function Parser:peek()
+    self:skipWhitespace()
+    return self.content:sub(self.pos, self.pos)
+end
+
+function Parser:expect(c)
+    if self:peek() ~= c then
+        error("expected '" .. c .. "' at position " .. self.pos)
+    end
+    self.pos = self.pos + 1
+end
+
+function Parser:parseString()
+    self:expect('"')
+    local result = {}
+    while self.pos <= #self.content do
+        local c = self.content:sub(self.pos, self.pos)
+        self.pos = self.pos + 1
+        if c == '"' then
+            return table.concat(result)
+        elseif c == "\\" then
+            local esc = self.content:sub(self.pos, self.pos)
+            self.pos = self.pos + 1
+            if esc == "n" then
+                result[#result + 1] = "\n"
+            elseif esc == "t" then
+                result[#result + 1] = "\t"
+            elseif esc == "r" then
+                result[#result + 1] = "\r"
+            elseif esc == "a" then
+                result[#result + 1] = "\a"
+            elseif esc == "b" then
+                result[#result + 1] = "\b"
+            elseif esc == "f" then
+                result[#result + 1] = "\f"
+            elseif esc == "v" then
+                result[#result + 1] = "\v"
+            elseif esc == '"' then
+                result[#result + 1] = '"'
+            elseif esc == "\\" then
+                result[#result + 1] = "\\"
+            elseif esc:match("%d") then
+                local digits = esc
+                while #digits < 3 and self.content:sub(self.pos, self.pos):match("%d") do
+                    digits = digits .. self.content:sub(self.pos, self.pos)
+                    self.pos = self.pos + 1
+                end
+                result[#result + 1] = string.char(tonumber(digits) or 0)
+            elseif esc == "z" then
+                while self.pos <= #self.content and self.content:sub(self.pos, self.pos):match("%s") do
+                    self.pos = self.pos + 1
+                end
+            else
+                result[#result + 1] = esc
+            end
+        else
+            result[#result + 1] = c
+        end
+    end
+    error("unterminated string")
+end
+
+function Parser:parseValue()
+    local c = self:peek()
+    if c == "{" then
+        return self:parseTable()
+    elseif c == '"' then
+        return self:parseString()
+    else
+        local word = self.content:match("^[%+%-]?%d+%.?%d*[eE]?[+-]?%d*", self.pos)
+        if word and word ~= "" and word ~= "-" and word ~= "+" then
+            self.pos = self.pos + #word
+            return tonumber(word)
+        end
+        word = self.content:match("^[a-zA-Z_][%w_]*", self.pos)
+        if not word then
+            error("unexpected character at position " .. self.pos)
+        end
+        self.pos = self.pos + #word
+        if word == "true" then return true end
+        if word == "false" then return false end
+        if word == "nil" then return nil end
+        error("unknown identifier '" .. word .. "'")
+    end
+end
+
+function Parser:parseTable()
+    self:expect("{")
+    local result = {}
+    while self.pos <= #self.content do
+        local c = self:peek()
+        if c == "}" then
+            self.pos = self.pos + 1
+            return result
+        end
+        local key
+        if c == "[" then
+            self.pos = self.pos + 1
+            key = self:parseValue()
+            self:expect("]")
+            self:expect("=")
+        else
+            local word = self.content:match("^[a-zA-Z_][%w_]*", self.pos)
+            if not word then
+                error("expected key at position " .. self.pos)
+            end
+            self.pos = self.pos + #word
+            key = word
+            self:expect("=")
+        end
+        result[key] = self:parseValue()
+    end
+    error("unterminated table")
+end
+
 local function tryParseContent(content)
-    ---@diagnostic disable-next-line: deprecated
-    local func = loadstring(content)
-    if not func then return nil end
-    local env = {}
-    ---@diagnostic disable-next-line: deprecated
-    setfenv(func, env)
-    local success, res = pcall(func)
+    local startPos = content:find("return")
+    if not startPos then return nil end
+
+    local parser = Parser.new(content:sub(startPos + 6))
+    local success, res = pcall(function()
+        return parser:parseValue()
+    end)
     if success and type(res) == "table" then
         return res
     end
