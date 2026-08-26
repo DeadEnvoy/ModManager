@@ -152,6 +152,7 @@ function Parser:parseTable()
             key = word
             self:expect("=")
         end
+        ---@diagnostic disable-next-line: need-check-nil
         result[key] = self:parseValue()
     end
     error("unterminated table")
