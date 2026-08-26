@@ -1,3 +1,10 @@
+# 1.6.2
+**FIXES**
+- Fixed an intermittent crash on main menu entry when a Steam Workshop query was still pending during a Lua reset.
+
+**TECHNICAL**
+- Replaced **loadstring** (removed in 42.20.4) with a manual parser for saved mod list data (thanks to [SantaGitHub](https://github.com/SantaGitHub)).
+
 # 1.6.1
 **UI**
 - The inline mod removal button in the server settings window has been removed for correct change processing.
