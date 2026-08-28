@@ -1,9 +1,21 @@
+# 1.6.3
+**MODDING**
+- Improved Markdown changelog conversion to Steam BBCode when publishing mods.
+    - Fixed an issue where links preceded by bold text produced corrupted BBCode tags.
+    - Underscores inside identifiers and filenames (e.g., `UI_modinfopanel_AM` or `__index`) no longer trigger italic formatting.
+    - Single backticks are now preserved as raw text instead of converting into `[code]` blocks.
+
+**TECHNICAL**
+- Added compatibility with [ZombieBuddy](https://steamcommunity.com/sharedfiles/filedetails/?id=3619862853).
+    - Its built-in auto-sorting feature is forcibly disabled and replaced with custom rules via [Mod Load Order Sorter](https://steamcommunity.com/sharedfiles/filedetails/?id=3423660713).
+- Mod search now accounts for dependencies.
+
 # 1.6.2
 **FIXES**
 - Fixed an intermittent crash on main menu entry when a Steam Workshop query was still pending during a Lua reset.
 
 **TECHNICAL**
-- Replaced **loadstring** (removed in 42.20.4) with a manual parser for saved mod list data (thanks to [SantaGitHub](https://github.com/SantaGitHub)).
+- Replaced `loadstring` (removed in 42.20.4) with a manual parser for saved mod list data (thanks to [SantaGitHub](https://github.com/SantaGitHub)).
 
 # 1.6.1
 **UI**
@@ -36,7 +48,7 @@
 
 **MODDING**
 - Integrated the "ZLib" library.
-    - Added **Functions** hook system: **PreHook** and **PostHook** allow subscribing to method calls in observer mode.
+    - Added `Functions` hook system: `PreHook` and `PostHook` allow subscribing to method calls in observer mode.
 
 **TECHNICAL**
 - Workshop data storage and retrieval have been reworked.
@@ -48,7 +60,7 @@
 # 1.5.7
 **FIXES**
 - Fixed a bug where mod data could not be saved or updated ([#5](https://github.com/DeadEnvoy/ModManager/issues/5)).
-    - The 42.20.0 update restricted **getFileWriter** to a whitelist of extensions (ini, cfg, txt, log) — .lua files are no longer writable. Existing data is migrated to .ini automatically on first launch.
+    - The 42.20.0 update restricted `getFileWriter` to a whitelist of extensions (ini, cfg, txt, log) — .lua files are no longer writable. Existing data is migrated to .ini automatically on first launch.
 
 # 1.5.6
 **UI**
