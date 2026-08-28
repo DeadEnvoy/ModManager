@@ -343,6 +343,18 @@ function ModSelector.Model:filterMods(category, searchWord, favoriteMode, onlyEn
                 isMatch = true
             elseif string.find(string.lower(modData.author), searchWord, 1, true) then
                 isMatch = true
+            elseif modData.requireMods then
+                for depId in pairs(modData.requireMods) do
+                    if string.find(string.lower(depId), searchWord, 1, true) then
+                        isMatch = true
+                        break
+                    end
+                    local depMod = self.mods[depId]
+                    if depMod and depMod.name and string.find(string.lower(depMod.name), searchWord, 1, true) then
+                        isMatch = true
+                        break
+                    end
+                end
             end
 
             if not isMatch then
