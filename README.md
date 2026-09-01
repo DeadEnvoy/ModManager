@@ -1,4 +1,5 @@
-# [B42] Mod Manager
+![](.github/assets/header.png)
+
 A comprehensive mod manager that adds numerous missing features and fixes existing ones for the in-game modifications menu.
 
 # **Key Features:**
@@ -20,16 +21,9 @@ A comprehensive mod manager that adds numerous missing features and fixes existi
 - Various other interface fixes and improvements.
 
 # **F.A.Q**
-### 1. The mod doesn't show up in the mod list, is this a bug?
-No, this means you have Build 41, and the mod is intended for Build 42.
-### 2. Will Build 41 support be added?
-No.
-### 3. Is this compatible with [...]?
+### 1. Is this compatible with [...]?
 I don't know, check it yourself. And if not, report it.
-### 4. Will [...] feature be added?
+### 2. Will [...] feature be added?
 While I consider suggestions for improvements, I prefer to work on developing and implementing ideas independently.
-
-# **Update Policy:**
-I only update my mods when I'm actively playing the game. If a game patch breaks this mod, you are welcome to publish your own fix as a separate Workshop item.
 
 **Workshop ID:** [3567084868](https://steamcommunity.com/sharedfiles/filedetails/?id=3567084868) (ModManager)
